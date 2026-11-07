@@ -971,10 +971,31 @@ Expected titles in years 1–3, noise 0.2 (noise 0.35 in brackets):
 
 Single pieces on the FP board in an FP room (years 1–3, noise 0.2 / 0.35): youth ×1.03 hurts in every setting (1QB 0.52 / 0.89 vs 0.60 / 0.98 raw). RB ×1.1 and SF QB moves are neutral to negative. Injury ×1.16 is the only piece positive in all four settings, by +0.03 to +0.06. Leaning slightly *older* than FP helps year 1 and ties over years 1–3.
 
+**How much FP to blend in** (1QB, ADP room, years 1–3, noise 0.2; B5 = 5% FP):
+
+| Your board | ADP | B5 | B10 | B20 | B33 |
+|---|---|---|---|---|---|
+| raw | 0.61 | 0.66 | 0.74 | 0.82 | 0.72 |
+| injury lean only | 0.60 | 0.67 | 0.78 | 0.84 | 0.77 |
+| half lean (age ×1.03, RB ×1.05, injured ×1.16) | 0.87 | 0.93 | 0.93 | 0.94 | 0.79 |
+| lean, age ×1.03 | 0.87 | **0.94** | 0.92 | 0.91 | 0.78 |
+| lean, age ×1.06 | 0.89 | 0.93 | **0.96** | 0.95 | 0.80 |
+
+- **In 1QB**, B5 plus a lean beats ADP plus the same lean in all 12 room × noise × lean combinations, by +0.01 to +0.07. All 12 use the same 5 drafts, so this is one weak signal, not 12.
+- **In superflex**, B5 plus the lean is −0.07 to +0.06 against ADP plus the lean; 10% FP or more hurts in an ADP room.
+- **33% FP or more overshoots** in both formats.
+- **The blend and the lean are mostly the same information:** with a blend, a half-size lean does as well as the full lean, and B20 with only the injury lean (0.84) nearly matches ADP plus the full lean.
+
+**What FP adds over ADP is structural.** It is almost all an age curve, an RB tax, a superflex QB bump and a softer view of injuries:
+- ADP with FP's implied tilt applied (the multipliers above) beats FP itself in an FP room: 0.78–0.79 vs 0.60 in 1QB, 0.78 vs 0.66 in superflex. Removing FP's player-by-player views did not hurt.
+- Once the lean is in place, those player-by-player views add about 0.05 titles at most (the B5–B10 gain).
+- FP's tilt is the right direction but too strong: ×1.07 per year and ×1.45 on RBs, where the simulation does best at ×1.03–1.06 and ×1.1. That is why FP raw trails ADP plus the lean even though FP contains the lean.
+- This is about veterans in a startup. Rookies and second-year players, where expert views could matter most, are not tested, and sections 10 and 13 found specific trade-market mispricings that a formula on ADP would not capture.
+
 **Takeaway.**
 - **Don't lean on top of FP ECR.** It already contains the youth and RB adjustments, more strongly than the lean. Adding them counts the same thing twice. At most, rank last year's injured players a little lower.
 - **Start from the board your room drafts from.** A board far from the room's means reaching for players nobody else wants yet while the room takes the ones it likes: FP raw in an ADP room is the worst row (0.27 in 1QB).
-- **Real startup rooms draft near ADP** (ADP is what they draft). There, ADP plus the lean is the rule. In 1QB a 10% FP blend plus the lean is best in every setting, but only by about +0.03 to +0.07 titles, within the noise. In superflex, don't blend.
+- **Real startup rooms draft near ADP** (ADP is what they draft). There, ADP plus the lean is the rule. In 1QB a 5–10% FP blend plus the lean is a little better in every setting, by about +0.01 to +0.07 titles, within the noise. In superflex, don't blend.
 - **B10 or B20 raw** (a blend without the lean) beats raw ADP and gets part of the lean's gain, because FP's ranks lean young. It still trails ADP plus the lean over years 1–3 in an ADP room, by 0.05–0.2 titles in 1QB and 0.15–0.35 in superflex. It is the simpler option, not the better one.
 - **In a room drafting off FP or another dynasty consensus:** take that board raw in superflex. In 1QB, ADP plus the lean did better (0.77–0.86 vs 0.60), but most of that gap is the 2018 draft, whose FP ranks come from archives. Without 2018 it is a tie.
 

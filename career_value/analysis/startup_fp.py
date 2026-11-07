@@ -7,7 +7,7 @@ team starts from a board -- ADP, FP, or Bw = ADP blended with w% FP (log-rank av
 adjusted-rank lean (age x1.03 or x1.06 per year, RB x1.1, missed 8+ games x1.15, SF QB x0.86). Windows use only
 drafts with all seasons played (year 1: 2018-24, years 1-2: 2018-23, years 1-3: 2018-22). Also prints the lean FP
 already applies relative to ADP (regression of log FP rank / ADP rank on age and position).
-Env: LEAGUE=sf, NOISE, REPS (60), BOARDS ("ADP;B10;B20;FP"; also B33, B50), FOCAL ("label=strategy;...").
+Env: LEAGUE=sf, NOISE, REPS (60), BOARDS ("ADP;B10;B20;FP"; also B5, B33, B50), FOCAL ("label=strategy;...").
 Writes outputs/[sf/]startup_fp_sim.csv with the default settings.
 """
 import os
@@ -39,7 +39,7 @@ def pool(t, m, f):
     for col, own, other in (("adp", ra, rb), ("fp", rb, ra)):
         key = pd.DataFrame({"miss": own.isna(), "own": own, "other": other.fillna(999)})
         g[col] = key.sort_values(["miss", "own", "other"]).assign(r=np.arange(1, len(g) + 1)).r.reindex(g.index)
-    for w in (10, 20, 33, 50):   # ADP blended with w% FP (log-rank average)
+    for w in (5, 10, 20, 33, 50):   # ADP blended with w% FP (log-rank average)
         g[f"b{w}"] = ((1 - w / 100) * np.log(g.adp) + w / 100 * np.log(g.fp)).rank(method="first")
     return g
 
