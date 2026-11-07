@@ -1,0 +1,1324 @@
+market,outcome,grouping,level,n,players,mean_resid,ci05,ci95,resid_pct_of_avg_outcome,years,years_same_sign,horizon,robust
+fp_dynasty,vorp1,position,RB,376,143,0.24,-3.625,3.917,0.008,6,0.333,1,False
+fp_dynasty,vorp1,position,WR,490,176,-0.187,-3.555,2.693,-0.006,6,0.667,1,False
+fp_dynasty,vorp1,position,TE,166,64,-5.672,-9.589,-0.644,-0.184,6,0.833,1,True
+fp_dynasty,vorp1,position,QB,168,53,5.613,-0.269,11.775,0.182,6,0.833,1,False
+fp_dynasty,vorp1,age_band,24-25,319,213,-1.088,-5.753,2.693,-0.035,6,0.667,1,False
+fp_dynasty,vorp1,age_band,26-27,254,166,1.714,-2.963,5.567,0.056,6,0.667,1,False
+fp_dynasty,vorp1,age_band,28-29,166,110,3.51,-1.515,8.938,0.114,6,0.833,1,False
+fp_dynasty,vorp1,age_band,<=23,311,208,-6.851,-10.368,-3.397,-0.223,6,1.0,1,True
+fp_dynasty,vorp1,age_band,30+,150,74,9.731,4.043,15.451,0.316,6,1.0,1,True
+fp_dynasty,vorp1,pos_x_age,RB young(<=24),161,91,-9.076,-15.07,-4.031,-0.295,6,0.667,1,False
+fp_dynasty,vorp1,pos_x_age,WR prime(25-27),141,78,-2.104,-7.095,2.811,-0.068,6,0.667,1,False
+fp_dynasty,vorp1,pos_x_age,RB prime(25-27),150,80,6.77,1.407,11.581,0.22,6,0.5,1,False
+fp_dynasty,vorp1,pos_x_age,WR old(28+),135,59,6.807,-0.663,13.671,0.221,6,1.0,1,False
+fp_dynasty,vorp1,pos_x_age,WR young(<=24),214,116,-3.335,-8.096,0.904,-0.108,6,0.833,1,False
+fp_dynasty,vorp1,pos_x_age,TE prime(25-27),64,37,-6.291,-12.154,-0.549,-0.205,6,0.833,1,True
+fp_dynasty,vorp1,pos_x_age,TE old(28+),50,21,-0.959,-11.688,10.532,-0.031,6,0.333,1,False
+fp_dynasty,vorp1,pos_x_age,QB prime(25-27),49,24,4.356,-7.662,17.783,0.142,6,0.667,1,False
+fp_dynasty,vorp1,pos_x_age,QB young(<=24),53,30,1.77,-6.821,10.882,0.058,6,0.667,1,False
+fp_dynasty,vorp1,pos_x_age,RB old(28+),65,38,8.243,-0.947,16.918,0.268,6,0.5,1,False
+fp_dynasty,vorp1,pos_x_age,QB old(28+),66,26,9.631,1.111,17.598,0.313,6,0.667,1,False
+fp_dynasty,vorp1,pos_x_age,TE young(<=24),52,33,-9.442,-16.239,-2.97,-0.307,6,0.833,1,True
+fp_dynasty,vorp1,experience,year4-6,377,193,1.295,-2.235,4.742,0.042,6,0.5,1,False
+fp_dynasty,vorp1,experience,year3,165,165,-3.284,-8.895,2.048,-0.107,6,0.667,1,False
+fp_dynasty,vorp1,experience,year7+,271,127,8.422,3.777,13.179,0.274,6,1.0,1,True
+fp_dynasty,vorp1,experience,year2,192,192,-5.592,-10.034,-1.556,-0.182,6,0.833,1,True
+fp_dynasty,vorp1,experience,rookie,195,195,-5.923,-9.203,-2.442,-0.193,6,0.833,1,True
+fp_dynasty,vorp1,draft_round,R1,397,118,-0.301,-4.357,3.431,-0.01,6,0.5,1,False
+fp_dynasty,vorp1,draft_round,R2,304,102,-3.347,-7.791,0.761,-0.109,6,0.833,1,False
+fp_dynasty,vorp1,draft_round,R3,215,81,0.047,-4.32,4.06,0.002,6,0.5,1,False
+fp_dynasty,vorp1,draft_round,R4-7,227,104,3.517,-1.092,8.052,0.114,6,1.0,1,False
+fp_dynasty,vorp1,draft_round,UDFA,57,31,5.76,-0.998,10.755,0.187,6,0.667,1,False
+fp_dynasty,vorp1,prior_games,14+,678,288,2.596,-0.536,5.493,0.084,6,0.833,1,False
+fp_dynasty,vorp1,prior_games,10-13,205,158,0.456,-3.813,4.366,0.015,6,0.333,1,False
+fp_dynasty,vorp1,prior_games,rookie,195,195,-5.923,-9.203,-2.442,-0.193,6,0.833,1,True
+fp_dynasty,vorp1,prior_games,<=9 games,122,105,-5.728,-10.966,-0.397,-0.186,6,0.833,1,True
+fp_dynasty,vorp1,mkt_vs_last_year,aligned (+/-9),543,243,3.98,0.016,7.319,0.129,6,0.833,1,True
+fp_dynasty,vorp1,mkt_vs_last_year,market bullish vs last yr (>=10),193,149,-6.491,-11.178,-1.881,-0.211,6,0.833,1,True
+fp_dynasty,vorp1,mkt_vs_last_year,n/a (rookie/<6g),239,229,-6.754,-9.769,-3.602,-0.22,6,1.0,1,True
+fp_dynasty,vorp1,mkt_vs_last_year,market fades last yr (>=10 spots),225,150,3.138,-0.69,6.728,0.102,6,0.833,1,False
+fp_dynasty,vorp1,breakout_last_yr,other,786,345,1.647,-1.273,4.152,0.054,6,0.667,1,False
+fp_dynasty,vorp1,breakout_last_yr,first VORP season,219,192,-0.636,-5.597,4.464,-0.021,6,0.5,1,False
+fp_dynasty,vorp1,breakout_last_yr,rookie,195,195,-5.923,-9.203,-2.442,-0.193,6,0.833,1,True
+fp_dynasty,vorp1,qb_rushing,non-QB,1032,383,-0.914,-3.267,1.12,-0.03,6,0.667,1,False
+fp_dynasty,vorp1,qb_rushing,QB pocket,105,37,4.665,-1.227,9.503,0.152,6,0.667,1,False
+fp_dynasty,vorp1,qb_rushing,QB rush >=25 yd/g,41,14,13.392,-4.508,32.71,0.435,5,1.0,1,False
+fp_dynasty,vorp1,rb_receiving,RB >=4 tgt/g,80,44,8.787,-1.892,18.059,0.286,6,0.5,1,False
+fp_dynasty,vorp1,rb_receiving,non-RB,824,293,-0.109,-2.669,2.093,-0.004,6,0.667,1,False
+fp_dynasty,vorp1,rb_receiving,RB <4 tgt/g,229,107,-0.016,-4.9,5.18,-0.001,6,0.667,1,False
+fp_dynasty,vorp1,rb_receiving,RB rookie,67,67,-9.092,-13.955,-4.299,-0.296,6,1.0,1,True
+fp_dynasty,vorp1,market_tier,1-24,144,72,-0.633,-10.6,9.054,-0.021,6,0.667,1,False
+fp_dynasty,vorp1,market_tier,25-60,216,117,0.422,-6.298,6.448,0.014,6,0.5,1,False
+fp_dynasty,vorp1,market_tier,61-120,360,216,-0.505,-3.677,2.529,-0.016,6,0.5,1,False
+fp_dynasty,vorp1,market_tier,121-200,480,321,0.379,-1.31,1.884,0.012,6,0.667,1,False
+fp_dynasty,vorp1,offseason_team_change,same team,635,266,-0.996,-3.82,2.063,-0.032,6,0.667,1,False
+fp_dynasty,vorp1,offseason_team_change,new team,357,184,5.131,0.616,9.268,0.167,6,1.0,1,True
+fp_dynasty,vorp1,offseason_team_change,rookie,195,195,-5.923,-9.203,-2.442,-0.193,6,0.833,1,True
+fp_dynasty,vorp1,expert_disagreement,low,400,228,0.79,-3.174,4.216,0.026,6,0.667,1,False
+fp_dynasty,vorp1,expert_disagreement,mid,400,247,0.753,-2.325,3.636,0.024,6,0.5,1,False
+fp_dynasty,vorp1,expert_disagreement,high,400,275,-1.543,-5.384,2.18,-0.05,6,0.667,1,False
+fp_dynasty,vorp2,position,RB,320,129,-2.482,-10.494,5.619,-0.043,5,0.8,2,False
+fp_dynasty,vorp2,position,WR,406,161,0.727,-6.675,8.206,0.012,5,0.4,2,False
+fp_dynasty,vorp2,position,TE,134,56,-10.339,-19.421,-0.667,-0.177,5,1.0,2,True
+fp_dynasty,vorp2,position,QB,140,50,13.461,1.601,25.55,0.231,5,0.8,2,True
+fp_dynasty,vorp2,age_band,24-25,266,183,-1.343,-9.794,7.952,-0.023,5,0.6,2,False
+fp_dynasty,vorp2,age_band,26-27,209,139,-1.683,-9.851,6.18,-0.029,5,0.4,2,False
+fp_dynasty,vorp2,age_band,28-29,140,95,0.842,-11.202,12.773,0.014,5,0.4,2,False
+fp_dynasty,vorp2,age_band,<=23,265,182,-3.773,-11.68,5.625,-0.065,5,0.6,2,False
+fp_dynasty,vorp2,age_band,30+,120,63,13.257,1.584,24.843,0.227,5,1.0,2,True
+fp_dynasty,vorp2,pos_x_age,RB young(<=24),141,82,-10.362,-22.229,3.083,-0.178,5,0.6,2,False
+fp_dynasty,vorp2,pos_x_age,WR prime(25-27),113,66,-4.705,-14.884,6.644,-0.081,5,0.8,2,False
+fp_dynasty,vorp2,pos_x_age,RB prime(25-27),125,67,2.522,-7.117,12.184,0.043,5,0.8,2,False
+fp_dynasty,vorp2,pos_x_age,WR old(28+),112,52,5.735,-10.166,21.052,0.098,5,0.6,2,False
+fp_dynasty,vorp2,pos_x_age,WR young(<=24),181,102,1.019,-7.932,12.653,0.017,5,0.2,2,False
+fp_dynasty,vorp2,pos_x_age,TE prime(25-27),51,31,-11.45,-20.638,-1.976,-0.196,5,1.0,2,True
+fp_dynasty,vorp2,pos_x_age,TE old(28+),40,19,-0.75,-22.826,20.68,-0.013,5,0.6,2,False
+fp_dynasty,vorp2,pos_x_age,QB prime(25-27),40,22,21.547,-1.93,48.772,0.369,5,1.0,2,False
+fp_dynasty,vorp2,pos_x_age,QB young(<=24),46,28,6.041,-12.906,27.158,0.104,5,0.6,2,False
+fp_dynasty,vorp2,pos_x_age,RB old(28+),54,34,6.512,-13.922,25.664,0.112,5,0.6,2,False
+fp_dynasty,vorp2,pos_x_age,QB old(28+),54,23,13.791,-0.341,30.883,0.236,5,0.6,2,False
+fp_dynasty,vorp2,pos_x_age,TE young(<=24),43,27,-17.941,-33.504,-2.848,-0.308,5,1.0,2,True
+fp_dynasty,vorp2,experience,year4-6,316,164,-1.202,-7.821,6.28,-0.021,5,0.6,2,False
+fp_dynasty,vorp2,experience,year3,138,138,-10.325,-20.807,-0.308,-0.177,5,0.6,2,False
+fp_dynasty,vorp2,experience,year7+,221,113,9.839,-0.668,19.306,0.169,5,0.8,2,False
+fp_dynasty,vorp2,experience,year2,161,161,-1.008,-9.272,8.455,-0.017,5,0.4,2,False
+fp_dynasty,vorp2,experience,rookie,164,164,-1.265,-7.731,6.626,-0.022,5,0.4,2,False
+fp_dynasty,vorp2,draft_round,R1,324,108,2.732,-5.677,12.48,0.047,5,0.6,2,False
+fp_dynasty,vorp2,draft_round,R2,255,91,-10.765,-20.103,-1.256,-0.185,5,0.8,2,True
+fp_dynasty,vorp2,draft_round,R3,183,75,0.922,-7.104,9.333,0.016,5,0.6,2,False
+fp_dynasty,vorp2,draft_round,R4-7,187,94,7.06,-2.076,17.323,0.121,5,0.8,2,False
+fp_dynasty,vorp2,draft_round,UDFA,51,28,7.275,-5.621,17.712,0.125,5,1.0,2,False
+fp_dynasty,vorp2,prior_games,14+,555,259,3.271,-2.609,10.008,0.056,5,0.6,2,False
+fp_dynasty,vorp2,prior_games,10-13,176,139,-0.387,-9.272,8.581,-0.007,5,0.8,2,False
+fp_dynasty,vorp2,prior_games,rookie,164,164,-1.265,-7.731,6.626,-0.022,5,0.4,2,False
+fp_dynasty,vorp2,prior_games,<=9 games,105,91,-14.663,-21.897,-7.774,-0.251,5,0.8,2,True
+fp_dynasty,vorp2,mkt_vs_last_year,aligned (+/-9),442,212,4.333,-2.736,11.973,0.074,5,0.6,2,False
+fp_dynasty,vorp2,mkt_vs_last_year,market bullish vs last yr (>=10),167,131,-8.364,-17.696,1.848,-0.143,5,0.8,2,False
+fp_dynasty,vorp2,mkt_vs_last_year,n/a (rookie/<6g),202,196,-4.746,-10.52,2.532,-0.081,5,0.8,2,False
+fp_dynasty,vorp2,mkt_vs_last_year,market fades last yr (>=10 spots),189,133,2.33,-5.195,9.739,0.04,5,0.4,2,False
+fp_dynasty,vorp2,breakout_last_yr,other,654,306,0.457,-4.995,5.874,0.008,5,0.4,2,False
+fp_dynasty,vorp2,breakout_last_yr,first VORP season,182,167,-0.5,-8.592,9.141,-0.009,5,0.6,2,False
+fp_dynasty,vorp2,breakout_last_yr,rookie,164,164,-1.265,-7.731,6.626,-0.022,5,0.4,2,False
+fp_dynasty,vorp2,qb_rushing,non-QB,860,346,-2.191,-7.062,2.61,-0.038,5,0.8,2,False
+fp_dynasty,vorp2,qb_rushing,QB pocket,89,36,7.77,-2.167,16.891,0.133,5,0.6,2,False
+fp_dynasty,vorp2,qb_rushing,QB rush >=25 yd/g,31,10,31.307,-14.616,73.057,0.537,4,1.0,2,False
+fp_dynasty,vorp2,rb_receiving,RB >=4 tgt/g,72,41,7.055,-8.471,21.985,0.121,5,0.6,2,False
+fp_dynasty,vorp2,rb_receiving,non-RB,680,267,1.168,-4.517,7.05,0.02,5,0.6,2,False
+fp_dynasty,vorp2,rb_receiving,RB <4 tgt/g,191,91,-6.958,-16.378,3.045,-0.119,5,0.8,2,False
+fp_dynasty,vorp2,rb_receiving,RB rookie,57,57,0.469,-11.257,14.029,0.008,5,0.8,2,False
+fp_dynasty,vorp2,market_tier,1-24,120,63,-5.477,-24.015,14.512,-0.094,5,0.6,2,False
+fp_dynasty,vorp2,market_tier,25-60,180,105,3.651,-8.833,15.925,0.063,5,0.6,2,False
+fp_dynasty,vorp2,market_tier,61-120,300,192,-1.033,-6.9,5.309,-0.018,5,0.6,2,False
+fp_dynasty,vorp2,market_tier,121-200,400,278,0.775,-2.42,4.275,0.013,5,0.8,2,False
+fp_dynasty,vorp2,offseason_team_change,same team,528,241,-2.514,-8.576,4.226,-0.043,5,0.8,2,False
+fp_dynasty,vorp2,offseason_team_change,new team,298,166,5.584,-2.493,13.049,0.096,5,0.8,2,False
+fp_dynasty,vorp2,offseason_team_change,rookie,164,164,-1.265,-7.731,6.626,-0.022,5,0.4,2,False
+fp_dynasty,vorp2,expert_disagreement,low,334,207,-0.016,-7.27,6.98,-0.0,5,0.4,2,False
+fp_dynasty,vorp2,expert_disagreement,mid,333,224,1.075,-4.497,7.086,0.018,5,0.6,2,False
+fp_dynasty,vorp2,expert_disagreement,high,333,231,-1.059,-7.841,6.817,-0.018,5,0.8,2,False
+fp_dynasty,vorp3,position,RB,257,114,-7.344,-19.052,3.858,-0.09,4,0.75,3,False
+fp_dynasty,vorp3,position,WR,323,140,3.07,-8.977,15.905,0.038,4,0.75,3,False
+fp_dynasty,vorp3,position,TE,108,50,-10.567,-25.682,6.558,-0.13,4,1.0,3,False
+fp_dynasty,vorp3,position,QB,112,45,18.188,0.245,35.84,0.224,4,0.75,3,True
+fp_dynasty,vorp3,age_band,24-25,207,149,-0.201,-12.338,10.866,-0.002,4,0.25,3,False
+fp_dynasty,vorp3,age_band,26-27,169,115,-1.766,-13.032,10.399,-0.022,4,0.5,3,False
+fp_dynasty,vorp3,age_band,28-29,115,81,-7.155,-23.364,8.153,-0.088,4,0.75,3,False
+fp_dynasty,vorp3,age_band,<=23,213,150,0.747,-13.072,15.222,0.009,4,0.5,3,False
+fp_dynasty,vorp3,age_band,30+,96,56,10.456,-5.312,25.924,0.129,4,1.0,3,False
+fp_dynasty,vorp3,pos_x_age,RB young(<=24),115,70,-17.132,-35.013,0.924,-0.211,4,0.75,3,False
+fp_dynasty,vorp3,pos_x_age,WR prime(25-27),89,53,-11.649,-28.074,3.931,-0.143,4,1.0,3,False
+fp_dynasty,vorp3,pos_x_age,RB prime(25-27),99,58,2.976,-13.287,19.616,0.037,4,0.5,3,False
+fp_dynasty,vorp3,pos_x_age,WR old(28+),92,48,1.42,-21.276,24.354,0.017,4,0.75,3,False
+fp_dynasty,vorp3,pos_x_age,WR young(<=24),142,82,13.363,-5.757,34.522,0.164,4,1.0,3,False
+fp_dynasty,vorp3,pos_x_age,TE prime(25-27),42,25,-15.054,-25.294,-4.199,-0.185,4,1.0,3,True
+fp_dynasty,vorp3,pos_x_age,TE old(28+),33,17,-2.179,-34.658,32.741,-0.027,4,0.5,3,False
+fp_dynasty,vorp3,pos_x_age,QB prime(25-27),30,17,41.537,0.306,83.388,0.511,4,1.0,3,True
+fp_dynasty,vorp3,pos_x_age,QB young(<=24),39,24,11.716,-15.885,43.975,0.144,4,0.5,3,False
+fp_dynasty,vorp3,pos_x_age,RB old(28+),43,30,-4.927,-27.069,18.253,-0.061,4,0.75,3,False
+fp_dynasty,vorp3,pos_x_age,QB old(28+),43,19,7.769,-11.497,27.619,0.096,4,0.75,3,False
+fp_dynasty,vorp3,pos_x_age,TE young(<=24),33,23,-13.244,-44.907,20.276,-0.163,4,0.75,3,False
+fp_dynasty,vorp3,experience,year4-6,263,145,-2.797,-13.573,8.365,-0.034,4,0.75,3,False
+fp_dynasty,vorp3,experience,year3,106,106,-13.664,-28.949,1.672,-0.168,4,0.75,3,False
+fp_dynasty,vorp3,experience,year7+,176,100,5.139,-8.662,19.148,0.063,4,0.5,3,False
+fp_dynasty,vorp3,experience,year2,127,127,-2.361,-16.627,11.836,-0.029,4,0.5,3,False
+fp_dynasty,vorp3,experience,rookie,128,128,12.34,0.516,26.252,0.152,4,0.75,3,True
+fp_dynasty,vorp3,draft_round,R1,255,95,5.833,-9.234,20.978,0.072,4,0.75,3,False
+fp_dynasty,vorp3,draft_round,R2,210,85,-16.99,-30.294,-2.843,-0.209,4,0.75,3,True
+fp_dynasty,vorp3,draft_round,R3,148,67,-1.326,-15.211,12.095,-0.016,4,0.5,3,False
+fp_dynasty,vorp3,draft_round,R4-7,144,77,12.09,-3.92,29.183,0.149,4,1.0,3,False
+fp_dynasty,vorp3,draft_round,UDFA,43,25,12.455,-6.483,32.747,0.153,4,1.0,3,False
+fp_dynasty,vorp3,prior_games,14+,435,219,1.287,-8.699,10.932,0.016,4,0.25,3,False
+fp_dynasty,vorp3,prior_games,10-13,145,120,-5.202,-17.749,7.702,-0.064,4,0.5,3,False
+fp_dynasty,vorp3,prior_games,rookie,128,128,12.34,0.516,26.252,0.152,4,0.75,3,True
+fp_dynasty,vorp3,prior_games,<=9 games,92,80,-15.056,-27.215,-2.406,-0.185,4,1.0,3,True
+fp_dynasty,vorp3,mkt_vs_last_year,aligned (+/-9),355,181,3.249,-8.275,14.792,0.04,4,0.5,3,False
+fp_dynasty,vorp3,mkt_vs_last_year,market bullish vs last yr (>=10),135,110,-11.284,-25.927,4.181,-0.139,4,1.0,3,False
+fp_dynasty,vorp3,mkt_vs_last_year,n/a (rookie/<6g),161,157,5.676,-5.216,17.559,0.07,4,0.75,3,False
+fp_dynasty,vorp3,mkt_vs_last_year,market fades last yr (>=10 spots),149,108,-3.65,-13.746,6.014,-0.045,4,0.75,3,False
+fp_dynasty,vorp3,breakout_last_yr,other,528,272,-1.898,-10.03,5.934,-0.023,4,0.5,3,False
+fp_dynasty,vorp3,breakout_last_yr,first VORP season,144,134,-4.008,-17.945,10.28,-0.049,4,0.75,3,False
+fp_dynasty,vorp3,breakout_last_yr,rookie,128,128,12.34,0.516,26.252,0.152,4,0.75,3,True
+fp_dynasty,vorp3,qb_rushing,non-QB,688,304,-2.961,-10.705,4.651,-0.036,4,0.75,3,False
+fp_dynasty,vorp3,qb_rushing,QB pocket,72,32,10.866,-1.821,23.755,0.134,4,0.5,3,False
+fp_dynasty,vorp3,qb_rushing,QB rush >=25 yd/g,25,9,49.675,-21.429,117.789,0.611,3,1.0,3,False
+fp_dynasty,vorp3,rb_receiving,RB >=4 tgt/g,58,34,-0.931,-24.822,18.325,-0.011,4,0.5,3,False
+fp_dynasty,vorp3,rb_receiving,non-RB,543,235,3.476,-6.024,12.131,0.043,4,0.75,3,False
+fp_dynasty,vorp3,rb_receiving,RB <4 tgt/g,153,79,-16.427,-30.571,-1.299,-0.202,4,1.0,3,True
+fp_dynasty,vorp3,rb_receiving,RB rookie,46,46,14.781,-7.836,37.727,0.182,4,0.5,3,False
+fp_dynasty,vorp3,market_tier,1-24,96,55,-8.112,-35.682,21.44,-0.1,4,0.5,3,False
+fp_dynasty,vorp3,market_tier,25-60,144,89,5.408,-13.291,24.881,0.067,4,0.75,3,False
+fp_dynasty,vorp3,market_tier,61-120,240,160,-1.946,-12.09,8.477,-0.024,4,0.75,3,False
+fp_dynasty,vorp3,market_tier,121-200,320,233,1.46,-4.004,7.403,0.018,4,0.5,3,False
+fp_dynasty,vorp3,offseason_team_change,same team,425,213,-5.086,-14.927,4.359,-0.063,4,0.75,3,False
+fp_dynasty,vorp3,offseason_team_change,new team,237,135,3.23,-8.915,15.805,0.04,4,0.5,3,False
+fp_dynasty,vorp3,offseason_team_change,rookie,128,128,12.34,0.516,26.252,0.152,4,0.75,3,True
+fp_dynasty,vorp3,expert_disagreement,low,267,182,3.707,-7.305,15.044,0.046,4,1.0,3,False
+fp_dynasty,vorp3,expert_disagreement,mid,266,192,-1.661,-10.409,6.586,-0.02,4,0.75,3,False
+fp_dynasty,vorp3,expert_disagreement,high,267,195,-2.052,-13.848,9.93,-0.025,4,0.75,3,False
+fp_dynasty,vorp5,position,RB,126,79,-20.746,-40.861,-0.374,-0.176,2,1.0,5,False
+fp_dynasty,vorp5,position,WR,164,102,1.643,-20.304,28.268,0.014,2,0.5,5,False
+fp_dynasty,vorp5,position,TE,55,36,-11.354,-31.346,9.561,-0.097,2,1.0,5,False
+fp_dynasty,vorp5,position,QB,55,34,53.981,21.715,90.598,0.459,2,1.0,5,False
+fp_dynasty,vorp5,age_band,24-25,100,83,8.169,-13.467,32.69,0.069,2,1.0,5,False
+fp_dynasty,vorp5,age_band,26-27,90,72,-15.203,-35.866,7.69,-0.129,2,1.0,5,False
+fp_dynasty,vorp5,age_band,28-29,54,41,-24.3,-57.83,10.538,-0.207,2,1.0,5,False
+fp_dynasty,vorp5,age_band,<=23,110,87,16.182,-10.219,46.27,0.138,2,1.0,5,False
+fp_dynasty,vorp5,age_band,30+,46,31,1.816,-29.099,30.349,0.015,2,1.0,5,False
+fp_dynasty,vorp5,pos_x_age,RB young(<=24),60,42,-22.871,-53.438,9.241,-0.195,2,1.0,5,False
+fp_dynasty,vorp5,pos_x_age,WR prime(25-27),46,35,-17.687,-53.268,16.904,-0.15,2,1.0,5,False
+fp_dynasty,vorp5,pos_x_age,RB prime(25-27),49,34,-18.18,-50.333,14.174,-0.155,2,1.0,5,False
+fp_dynasty,vorp5,pos_x_age,WR old(28+),47,33,-26.17,-66.051,14.881,-0.223,2,1.0,5,False
+fp_dynasty,vorp5,pos_x_age,WR young(<=24),71,51,32.579,-0.427,72.228,0.277,2,1.0,5,False
+fp_dynasty,vorp5,pos_x_age,TE prime(25-27),25,17,-16.037,-34.039,3.911,-0.136,2,1.0,5,False
+fp_dynasty,vorp5,experience,year4-6,132,92,-9.032,-33.195,14.645,-0.077,2,1.0,5,False
+fp_dynasty,vorp5,experience,year3,55,55,-8.685,-32.603,19.833,-0.074,2,1.0,5,False
+fp_dynasty,vorp5,experience,year7+,84,58,-12.927,-39.298,11.564,-0.11,2,1.0,5,False
+fp_dynasty,vorp5,experience,year2,67,67,6.53,-16.745,32.296,0.056,2,0.5,5,False
+fp_dynasty,vorp5,experience,rookie,62,62,37.39,7.813,73.081,0.318,2,1.0,5,False
+fp_dynasty,vorp5,draft_round,R1,128,76,16.223,-9.064,46.413,0.138,2,1.0,5,False
+fp_dynasty,vorp5,draft_round,R2,102,62,-32.371,-58.56,-3.167,-0.275,2,1.0,5,False
+fp_dynasty,vorp5,draft_round,R3,74,45,-2.698,-29.577,21.456,-0.023,2,0.5,5,False
+fp_dynasty,vorp5,draft_round,R4-7,69,48,20.558,-5.263,50.711,0.175,2,1.0,5,False
+fp_dynasty,vorp5,draft_round,UDFA,27,20,0.245,-25.111,25.627,0.002,2,0.5,5,False
+fp_dynasty,vorp5,prior_games,14+,214,156,-3.113,-19.73,14.386,-0.026,2,0.5,5,False
+fp_dynasty,vorp5,prior_games,10-13,75,67,-8.858,-32.127,13.447,-0.075,2,0.5,5,False
+fp_dynasty,vorp5,prior_games,rookie,62,62,37.39,7.813,73.081,0.318,2,1.0,5,False
+fp_dynasty,vorp5,prior_games,<=9 games,49,46,-20.156,-38.353,-0.92,-0.171,2,1.0,5,False
+fp_dynasty,vorp5,mkt_vs_last_year,aligned (+/-9),180,125,2.045,-17.995,23.144,0.017,2,0.5,5,False
+fp_dynasty,vorp5,mkt_vs_last_year,market bullish vs last yr (>=10),66,61,-13.609,-37.413,14.163,-0.116,2,1.0,5,False
+fp_dynasty,vorp5,mkt_vs_last_year,n/a (rookie/<6g),80,80,25.852,1.93,52.413,0.22,2,1.0,5,False
+fp_dynasty,vorp5,mkt_vs_last_year,market fades last yr (>=10 spots),74,64,-20.785,-35.333,-9.712,-0.177,2,1.0,5,False
+fp_dynasty,vorp5,breakout_last_yr,other,264,193,-8.675,-23.195,5.387,-0.074,2,1.0,5,False
+fp_dynasty,vorp5,breakout_last_yr,first VORP season,74,74,-0.377,-24.436,24.445,-0.003,2,0.5,5,False
+fp_dynasty,vorp5,breakout_last_yr,rookie,62,62,37.39,7.813,73.081,0.318,2,1.0,5,False
+fp_dynasty,vorp5,qb_rushing,non-QB,345,217,-8.606,-22.262,6.282,-0.073,2,1.0,5,False
+fp_dynasty,vorp5,qb_rushing,QB pocket,36,24,36.948,14.08,60.822,0.314,2,1.0,5,False
+fp_dynasty,vorp5,rb_receiving,RB >=4 tgt/g,33,26,-38.671,-74.761,-4.788,-0.329,2,1.0,5,False
+fp_dynasty,vorp5,rb_receiving,non-RB,274,172,9.54,-6.324,27.681,0.081,2,1.0,5,False
+fp_dynasty,vorp5,rb_receiving,RB <4 tgt/g,73,54,-14.712,-39.536,10.902,-0.125,2,1.0,5,False
+fp_dynasty,vorp5,market_tier,1-24,48,36,-12.717,-67.005,41.361,-0.108,2,0.5,5,False
+fp_dynasty,vorp5,market_tier,25-60,72,59,8.317,-24.195,41.143,0.071,2,0.5,5,False
+fp_dynasty,vorp5,market_tier,61-120,120,96,-3.784,-22.742,16.282,-0.032,2,0.5,5,False
+fp_dynasty,vorp5,market_tier,121-200,160,138,2.911,-5.363,13.882,0.025,2,0.5,5,False
+fp_dynasty,vorp5,offseason_team_change,same team,219,151,-12.752,-26.521,2.743,-0.108,2,1.0,5,False
+fp_dynasty,vorp5,offseason_team_change,new team,117,88,4.32,-21.924,27.392,0.037,2,0.5,5,False
+fp_dynasty,vorp5,offseason_team_change,rookie,62,62,37.39,7.813,73.081,0.318,2,1.0,5,False
+fp_dynasty,vorp5,expert_disagreement,low,134,111,-6.038,-28.075,16.953,-0.051,2,1.0,5,False
+fp_dynasty,vorp5,expert_disagreement,high,133,113,0.02,-25.327,25.588,0.0,2,0.5,5,False
+fp_dynasty,vorp5,expert_disagreement,mid,133,110,6.063,-11.053,22.343,0.052,2,1.0,5,False
+mfl_dynasty,vorp1,position,RB,946,301,-2.218,-4.193,-0.192,-0.08,15,0.6,1,False
+mfl_dynasty,vorp1,position,WR,1135,337,3.939,2.021,5.913,0.142,15,0.8,1,True
+mfl_dynasty,vorp1,position,QB,470,107,-3.923,-6.294,-1.441,-0.141,15,0.733,1,True
+mfl_dynasty,vorp1,position,TE,449,134,-1.178,-3.459,0.854,-0.042,15,0.6,1,False
+mfl_dynasty,vorp1,age_band,26-27,726,465,1.277,-0.98,3.702,0.046,15,0.533,1,False
+mfl_dynasty,vorp1,age_band,24-25,796,536,1.313,-0.852,3.461,0.047,15,0.6,1,False
+mfl_dynasty,vorp1,age_band,30+,640,233,-3.789,-5.716,-1.715,-0.136,15,0.8,1,True
+mfl_dynasty,vorp1,age_band,28-29,513,326,-1.768,-4.613,1.014,-0.064,15,0.467,1,False
+mfl_dynasty,vorp1,age_band,<=23,325,271,4.182,0.021,8.872,0.15,15,0.533,1,False
+mfl_dynasty,vorp1,pos_x_age,RB prime(25-27),407,207,-1.081,-4.057,2.224,-0.039,15,0.733,1,False
+mfl_dynasty,vorp1,pos_x_age,WR old(28+),413,147,0.099,-3.069,2.998,0.004,15,0.467,1,False
+mfl_dynasty,vorp1,pos_x_age,QB old(28+),266,68,-6.547,-8.808,-4.319,-0.235,15,0.733,1,True
+mfl_dynasty,vorp1,pos_x_age,WR prime(25-27),442,220,6.217,3.137,9.954,0.224,15,0.867,1,True
+mfl_dynasty,vorp1,pos_x_age,RB young(<=24),269,179,-1.158,-5.469,3.199,-0.042,15,0.467,1,False
+mfl_dynasty,vorp1,pos_x_age,RB old(28+),270,110,-4.988,-8.209,-1.747,-0.179,15,0.667,1,False
+mfl_dynasty,vorp1,pos_x_age,WR young(<=24),280,184,6.006,1.891,9.935,0.216,15,0.8,1,True
+mfl_dynasty,vorp1,pos_x_age,TE old(28+),204,74,-1.396,-5.069,2.473,-0.05,15,0.6,1,False
+mfl_dynasty,vorp1,pos_x_age,QB prime(25-27),132,63,-3.471,-7.896,1.202,-0.125,15,0.667,1,False
+mfl_dynasty,vorp1,pos_x_age,TE young(<=24),80,57,-4.095,-7.901,-0.025,-0.147,9,0.667,1,False
+mfl_dynasty,vorp1,pos_x_age,QB young(<=24),72,50,4.944,-1.917,12.359,0.178,6,0.833,1,False
+mfl_dynasty,vorp1,pos_x_age,TE prime(25-27),165,91,0.505,-3.334,4.582,0.018,15,0.467,1,False
+mfl_dynasty,vorp1,experience,year4-6,1065,525,0.707,-1.366,2.863,0.025,15,0.533,1,False
+mfl_dynasty,vorp1,experience,year7+,963,325,-2.799,-4.572,-0.976,-0.101,15,0.733,1,True
+mfl_dynasty,vorp1,experience,year3,449,449,1.47,-1.331,4.638,0.053,15,0.467,1,False
+mfl_dynasty,vorp1,experience,year2,523,523,2.452,-0.109,5.093,0.088,15,0.533,1,False
+mfl_dynasty,vorp1,draft_round,R1,920,212,-1.596,-3.768,0.535,-0.057,15,0.6,1,False
+mfl_dynasty,vorp1,draft_round,R2,605,152,0.203,-2.326,2.971,0.007,15,0.467,1,False
+mfl_dynasty,vorp1,draft_round,R4-7,668,257,0.405,-2.092,2.749,0.015,15,0.533,1,False
+mfl_dynasty,vorp1,draft_round,R3,476,131,2.673,0.098,4.829,0.096,15,0.533,1,False
+mfl_dynasty,vorp1,draft_round,UDFA,331,127,-0.594,-3.14,2.063,-0.021,15,0.467,1,False
+mfl_dynasty,vorp1,prior_games,14+,1923,673,0.886,-0.58,2.515,0.032,15,0.533,1,False
+mfl_dynasty,vorp1,prior_games,10-13,630,436,-0.117,-2.305,2.245,-0.004,15,0.6,1,False
+mfl_dynasty,vorp1,prior_games,<=9 games,447,336,-3.645,-5.684,-1.714,-0.131,15,0.733,1,True
+mfl_dynasty,vorp1,mkt_vs_last_year,aligned (+/-9),1685,601,0.531,-1.144,2.345,0.019,15,0.6,1,False
+mfl_dynasty,vorp1,mkt_vs_last_year,market bullish vs last yr (>=10),722,498,0.347,-1.585,2.342,0.012,15,0.667,1,False
+mfl_dynasty,vorp1,mkt_vs_last_year,n/a (rookie/<6g),184,165,-4.647,-7.694,-1.888,-0.167,15,0.8,1,True
+mfl_dynasty,vorp1,mkt_vs_last_year,market fades last yr (>=10 spots),409,290,-0.712,-2.84,1.371,-0.026,15,0.667,1,False
+mfl_dynasty,vorp1,breakout_last_yr,other,2412,846,-0.176,-1.355,1.057,-0.006,15,0.533,1,False
+mfl_dynasty,vorp1,breakout_last_yr,first VORP season,588,444,0.722,-2.064,3.674,0.026,15,0.467,1,False
+mfl_dynasty,vorp1,qb_rushing,non-QB,2530,772,0.729,-0.523,1.962,0.026,15,0.733,1,False
+mfl_dynasty,vorp1,qb_rushing,QB pocket,387,93,-5.756,-7.851,-3.914,-0.207,15,0.733,1,True
+mfl_dynasty,vorp1,qb_rushing,QB rush >=25 yd/g,83,28,4.625,-4.554,14.963,0.166,9,0.667,1,False
+mfl_dynasty,vorp1,rb_receiving,RB <4 tgt/g,730,290,-3.579,-5.651,-1.62,-0.129,15,0.867,1,True
+mfl_dynasty,vorp1,rb_receiving,RB >=4 tgt/g,216,89,2.383,-3.776,8.371,0.086,15,0.6,1,False
+mfl_dynasty,vorp1,rb_receiving,non-RB,2054,578,1.021,-0.279,2.381,0.037,15,0.733,1,False
+mfl_dynasty,vorp1,market_tier,1-24,360,130,-0.0,-6.357,5.671,-0.0,15,0.533,1,False
+mfl_dynasty,vorp1,market_tier,25-60,540,257,-0.453,-3.897,3.163,-0.016,15,0.467,1,False
+mfl_dynasty,vorp1,market_tier,61-120,900,475,-0.19,-2.094,1.705,-0.007,15,0.533,1,False
+mfl_dynasty,vorp1,market_tier,121-200,1200,674,0.346,-0.398,1.097,0.012,15,0.6,1,False
+mfl_dynasty,vorp2,position,RB,885,288,-5.154,-8.934,-1.541,-0.102,14,0.786,2,True
+mfl_dynasty,vorp2,position,WR,1058,320,8.367,4.309,12.711,0.166,14,0.929,2,True
+mfl_dynasty,vorp2,position,QB,439,101,-8.192,-13.002,-2.073,-0.163,14,0.643,2,False
+mfl_dynasty,vorp2,position,TE,418,128,-1.662,-6.537,4.145,-0.033,14,0.714,2,False
+mfl_dynasty,vorp2,age_band,26-27,673,431,2.435,-1.79,7.073,0.048,14,0.571,2,False
+mfl_dynasty,vorp2,age_band,24-25,743,502,5.275,1.012,10.22,0.105,14,0.786,2,True
+mfl_dynasty,vorp2,age_band,30+,598,219,-10.579,-13.884,-7.068,-0.21,14,1.0,2,True
+mfl_dynasty,vorp2,age_band,28-29,483,307,-6.17,-11.541,-0.755,-0.122,14,0.857,2,True
+mfl_dynasty,vorp2,age_band,<=23,303,254,12.37,4.524,19.357,0.245,14,0.786,2,True
+mfl_dynasty,vorp2,pos_x_age,RB prime(25-27),378,193,-2.934,-9.241,3.702,-0.058,14,0.714,2,False
+mfl_dynasty,vorp2,pos_x_age,WR old(28+),389,140,-4.725,-9.916,0.907,-0.094,14,0.643,2,False
+mfl_dynasty,vorp2,pos_x_age,QB old(28+),250,64,-13.357,-18.126,-8.322,-0.265,14,0.857,2,True
+mfl_dynasty,vorp2,pos_x_age,WR prime(25-27),410,206,14.162,7.745,20.999,0.281,14,0.786,2,True
+mfl_dynasty,vorp2,pos_x_age,RB young(<=24),255,173,0.306,-8.382,9.274,0.006,14,0.5,2,False
+mfl_dynasty,vorp2,pos_x_age,RB old(28+),252,103,-14.01,-21.342,-7.733,-0.278,14,0.857,2,True
+mfl_dynasty,vorp2,pos_x_age,WR young(<=24),259,173,18.859,10.592,27.112,0.374,14,0.929,2,True
+mfl_dynasty,vorp2,pos_x_age,TE old(28+),190,73,-3.15,-11.294,6.229,-0.062,14,0.714,2,False
+mfl_dynasty,vorp2,pos_x_age,QB prime(25-27),122,59,-3.935,-12.561,6.027,-0.078,14,0.786,2,False
+mfl_dynasty,vorp2,pos_x_age,TE young(<=24),77,54,-2.647,-9.25,6.839,-0.053,9,0.556,2,False
+mfl_dynasty,vorp2,pos_x_age,QB young(<=24),67,48,3.326,-10.087,18.158,0.066,5,0.8,2,False
+mfl_dynasty,vorp2,pos_x_age,TE prime(25-27),151,84,0.713,-6.616,9.784,0.014,14,0.429,2,False
+mfl_dynasty,vorp2,experience,year4-6,999,493,2.032,-1.699,6.367,0.04,14,0.643,2,False
+mfl_dynasty,vorp2,experience,year7+,898,310,-8.748,-12.103,-5.625,-0.174,14,0.857,2,True
+mfl_dynasty,vorp2,experience,year3,414,414,1.697,-3.611,6.841,0.034,14,0.429,2,False
+mfl_dynasty,vorp2,experience,year2,489,489,10.476,5.246,15.114,0.208,14,0.786,2,True
+mfl_dynasty,vorp2,draft_round,R1,853,199,-2.141,-6.609,2.772,-0.042,14,0.643,2,False
+mfl_dynasty,vorp2,draft_round,R2,564,148,-0.513,-5.556,5.924,-0.01,14,0.429,2,False
+mfl_dynasty,vorp2,draft_round,R4-7,621,240,0.79,-3.975,6.424,0.016,14,0.5,2,False
+mfl_dynasty,vorp2,draft_round,R3,444,126,6.305,1.127,11.997,0.125,14,0.643,2,False
+mfl_dynasty,vorp2,draft_round,UDFA,318,124,-3.694,-8.249,1.064,-0.073,14,0.786,2,False
+mfl_dynasty,vorp2,prior_games,14+,1783,635,1.727,-1.224,4.762,0.034,14,0.571,2,False
+mfl_dynasty,vorp2,prior_games,10-13,592,413,0.157,-3.422,4.49,0.003,14,0.5,2,False
+mfl_dynasty,vorp2,prior_games,<=9 games,425,321,-7.464,-10.806,-4.392,-0.148,14,1.0,2,True
+mfl_dynasty,vorp2,mkt_vs_last_year,aligned (+/-9),1568,572,0.718,-2.499,4.174,0.014,14,0.643,2,False
+mfl_dynasty,vorp2,mkt_vs_last_year,market bullish vs last yr (>=10),678,471,1.895,-2.08,5.765,0.038,14,0.643,2,False
+mfl_dynasty,vorp2,mkt_vs_last_year,n/a (rookie/<6g),177,159,-7.798,-12.458,-3.069,-0.155,14,0.857,2,True
+mfl_dynasty,vorp2,mkt_vs_last_year,market fades last yr (>=10 spots),377,269,-2.732,-5.868,0.666,-0.054,14,0.857,2,False
+mfl_dynasty,vorp2,breakout_last_yr,other,2250,803,-0.731,-3.085,1.666,-0.015,14,0.571,2,False
+mfl_dynasty,vorp2,breakout_last_yr,first VORP season,550,420,2.991,-1.768,7.832,0.059,14,0.643,2,False
+mfl_dynasty,vorp2,qb_rushing,non-QB,2361,736,1.523,-1.056,4.113,0.03,14,0.571,2,False
+mfl_dynasty,vorp2,qb_rushing,QB pocket,367,91,-12.094,-15.648,-8.566,-0.24,14,0.786,2,True
+mfl_dynasty,vorp2,qb_rushing,QB rush >=25 yd/g,72,24,11.696,-9.486,36.534,0.232,8,0.75,2,False
+mfl_dynasty,vorp2,rb_receiving,RB <4 tgt/g,677,274,-7.59,-11.203,-3.818,-0.151,14,0.929,2,True
+mfl_dynasty,vorp2,rb_receiving,RB >=4 tgt/g,208,86,2.773,-6.442,11.358,0.055,14,0.5,2,False
+mfl_dynasty,vorp2,rb_receiving,non-RB,1915,549,2.382,-0.423,5.468,0.047,14,0.714,2,False
+mfl_dynasty,vorp2,market_tier,1-24,336,123,-0.891,-12.115,10.967,-0.018,14,0.429,2,False
+mfl_dynasty,vorp2,market_tier,25-60,504,247,-0.064,-7.246,6.773,-0.001,14,0.5,2,False
+mfl_dynasty,vorp2,market_tier,61-120,840,451,-0.068,-3.219,3.291,-0.001,14,0.571,2,False
+mfl_dynasty,vorp2,market_tier,121-200,1120,638,0.347,-1.157,1.872,0.007,14,0.5,2,False
+mfl_dynasty,vorp3,position,RB,820,276,-9.382,-15.587,-3.194,-0.138,13,0.846,3,True
+mfl_dynasty,vorp3,position,WR,986,302,12.515,5.611,19.642,0.184,13,0.923,3,True
+mfl_dynasty,vorp3,position,QB,409,97,-10.263,-17.454,-1.276,-0.151,13,0.692,3,False
+mfl_dynasty,vorp3,position,TE,385,120,-1.164,-9.25,7.678,-0.017,13,0.692,3,False
+mfl_dynasty,vorp3,age_band,26-27,624,400,3.199,-3.48,10.725,0.047,13,0.615,3,False
+mfl_dynasty,vorp3,age_band,24-25,686,469,11.483,5.187,18.194,0.169,13,0.846,3,True
+mfl_dynasty,vorp3,age_band,30+,564,209,-17.838,-22.338,-12.041,-0.263,13,1.0,3,True
+mfl_dynasty,vorp3,age_band,28-29,447,289,-12.372,-20.047,-4.912,-0.182,13,0.769,3,True
+mfl_dynasty,vorp3,age_band,<=23,279,234,20.493,9.102,31.193,0.302,13,0.846,3,True
+mfl_dynasty,vorp3,pos_x_age,RB prime(25-27),344,181,-4.918,-15.197,6.311,-0.072,13,0.615,3,False
+mfl_dynasty,vorp3,pos_x_age,WR old(28+),365,134,-10.974,-18.781,-1.783,-0.162,13,0.769,3,True
+mfl_dynasty,vorp3,pos_x_age,QB old(28+),234,60,-19.534,-25.174,-14.106,-0.288,13,0.846,3,True
+mfl_dynasty,vorp3,pos_x_age,WR prime(25-27),384,192,21.374,11.654,33.305,0.315,13,0.846,3,True
+mfl_dynasty,vorp3,pos_x_age,RB young(<=24),239,162,0.204,-13.121,12.902,0.003,13,0.462,3,False
+mfl_dynasty,vorp3,pos_x_age,RB old(28+),237,99,-25.529,-34.784,-15.97,-0.376,13,0.923,3,True
+mfl_dynasty,vorp3,pos_x_age,WR young(<=24),237,160,34.336,21.122,48.39,0.505,13,0.923,3,True
+mfl_dynasty,vorp3,pos_x_age,TE old(28+),175,68,-5.509,-17.698,10.087,-0.081,13,0.615,3,False
+mfl_dynasty,vorp3,pos_x_age,QB prime(25-27),111,54,-3.432,-17.782,12.055,-0.051,13,0.692,3,False
+mfl_dynasty,vorp3,pos_x_age,TE young(<=24),69,49,4.993,-8.887,18.883,0.073,8,0.5,3,False
+mfl_dynasty,vorp3,pos_x_age,QB young(<=24),64,45,11.783,-6.975,36.487,0.173,5,0.8,3,False
+mfl_dynasty,vorp3,pos_x_age,TE prime(25-27),141,78,1.215,-10.184,15.959,0.018,13,0.538,3,False
+mfl_dynasty,vorp3,experience,year4-6,933,469,2.948,-3.434,9.536,0.043,13,0.769,3,False
+mfl_dynasty,vorp3,experience,year7+,834,291,-16.27,-20.941,-11.159,-0.239,13,0.923,3,True
+mfl_dynasty,vorp3,experience,year3,380,380,8.267,0.684,16.041,0.122,13,0.692,3,False
+mfl_dynasty,vorp3,experience,year2,453,453,16.949,9.993,24.001,0.249,13,0.846,3,True
+mfl_dynasty,vorp3,draft_round,R1,793,189,-3.846,-10.628,3.199,-0.057,13,0.692,3,False
+mfl_dynasty,vorp3,draft_round,R2,517,139,1.301,-7.725,10.433,0.019,13,0.615,3,False
+mfl_dynasty,vorp3,draft_round,R4-7,578,230,0.376,-7.257,9.117,0.006,13,0.538,3,False
+mfl_dynasty,vorp3,draft_round,R3,408,116,10.119,1.088,20.565,0.149,13,0.769,3,True
+mfl_dynasty,vorp3,draft_round,UDFA,304,121,-6.477,-13.53,0.831,-0.095,13,0.769,3,False
+mfl_dynasty,vorp3,prior_games,14+,1641,587,1.633,-3.081,6.452,0.024,13,0.615,3,False
+mfl_dynasty,vorp3,prior_games,10-13,555,393,1.129,-4.306,7.742,0.017,13,0.538,3,False
+mfl_dynasty,vorp3,prior_games,<=9 games,404,309,-8.186,-12.659,-2.952,-0.12,13,0.846,3,True
+mfl_dynasty,vorp3,mkt_vs_last_year,aligned (+/-9),1434,528,0.196,-5.774,5.556,0.003,13,0.615,3,False
+mfl_dynasty,vorp3,mkt_vs_last_year,market bullish vs last yr (>=10),640,447,5.237,-0.984,11.546,0.077,13,0.692,3,False
+mfl_dynasty,vorp3,mkt_vs_last_year,n/a (rookie/<6g),170,153,-8.248,-14.267,-0.905,-0.121,13,0.769,3,True
+mfl_dynasty,vorp3,mkt_vs_last_year,market fades last yr (>=10 spots),356,256,-6.267,-10.046,-2.364,-0.092,13,0.846,3,True
+mfl_dynasty,vorp3,breakout_last_yr,other,2088,763,-0.638,-4.295,3.081,-0.009,13,0.615,3,False
+mfl_dynasty,vorp3,breakout_last_yr,first VORP season,512,389,2.6,-4.684,9.441,0.038,13,0.538,3,False
+mfl_dynasty,vorp3,qb_rushing,non-QB,2191,698,1.916,-2.695,6.214,0.028,13,0.692,3,False
+mfl_dynasty,vorp3,qb_rushing,QB pocket,344,87,-15.691,-20.893,-10.094,-0.231,13,0.846,3,True
+mfl_dynasty,vorp3,qb_rushing,QB rush >=25 yd/g,65,23,18.462,-13.172,55.773,0.272,7,0.714,3,False
+mfl_dynasty,vorp3,rb_receiving,RB <4 tgt/g,626,264,-12.038,-18.428,-5.22,-0.177,13,1.0,3,True
+mfl_dynasty,vorp3,rb_receiving,RB >=4 tgt/g,194,79,-0.814,-15.65,13.239,-0.012,13,0.538,3,False
+mfl_dynasty,vorp3,rb_receiving,non-RB,1780,519,4.322,-0.166,9.309,0.064,13,0.692,3,False
+mfl_dynasty,vorp3,market_tier,1-24,312,114,-1.911,-21.443,15.451,-0.028,13,0.538,3,False
+mfl_dynasty,vorp3,market_tier,25-60,468,237,0.557,-10.488,11.933,0.008,13,0.462,3,False
+mfl_dynasty,vorp3,market_tier,61-120,780,425,-0.129,-5.009,4.325,-0.002,13,0.538,3,False
+mfl_dynasty,vorp3,market_tier,121-200,1040,602,0.419,-1.889,2.913,0.006,13,0.462,3,False
+mfl_dynasty,vorp5,position,RB,692,244,-16.082,-25.542,-6.373,-0.175,11,0.818,5,True
+mfl_dynasty,vorp5,position,WR,833,271,18.931,5.165,32.804,0.206,11,1.0,5,True
+mfl_dynasty,vorp5,position,QB,346,86,-12.478,-23.235,-0.301,-0.136,11,0.636,5,False
+mfl_dynasty,vorp5,position,TE,329,109,-0.983,-14.542,15.082,-0.011,11,0.636,5,False
+mfl_dynasty,vorp5,age_band,26-27,532,350,1.087,-11.06,13.061,0.012,11,0.364,5,False
+mfl_dynasty,vorp5,age_band,24-25,573,395,24.311,12.734,37.908,0.265,11,0.818,5,True
+mfl_dynasty,vorp5,age_band,30+,492,178,-32.621,-39.671,-25.13,-0.355,11,1.0,5,True
+mfl_dynasty,vorp5,age_band,28-29,372,242,-24.085,-34.415,-12.999,-0.262,11,0.909,5,True
+mfl_dynasty,vorp5,age_band,<=23,231,196,45.461,27.601,65.591,0.495,11,0.909,5,True
+mfl_dynasty,vorp5,pos_x_age,RB prime(25-27),283,151,-17.317,-33.227,-0.64,-0.189,11,0.909,5,True
+mfl_dynasty,vorp5,pos_x_age,WR old(28+),310,120,-28.797,-39.787,-18.127,-0.314,11,1.0,5,True
+mfl_dynasty,vorp5,pos_x_age,QB old(28+),205,52,-26.072,-35.233,-15.956,-0.284,11,1.0,5,True
+mfl_dynasty,vorp5,pos_x_age,WR prime(25-27),330,169,36.221,13.82,57.278,0.395,11,0.909,5,True
+mfl_dynasty,vorp5,pos_x_age,RB young(<=24),206,142,13.566,-5.254,35.67,0.148,11,0.545,5,False
+mfl_dynasty,vorp5,pos_x_age,RB old(28+),203,80,-44.445,-57.461,-32.503,-0.484,11,1.0,5,True
+mfl_dynasty,vorp5,pos_x_age,WR young(<=24),193,137,66.028,41.132,91.376,0.719,11,1.0,5,True
+mfl_dynasty,vorp5,pos_x_age,TE old(28+),146,57,-11.748,-32.266,13.819,-0.128,11,0.909,5,False
+mfl_dynasty,vorp5,pos_x_age,QB prime(25-27),91,45,-9.158,-27.71,10.375,-0.1,11,0.727,5,False
+mfl_dynasty,vorp5,pos_x_age,TE young(<=24),58,41,10.261,-11.602,34.425,0.112,6,0.5,5,False
+mfl_dynasty,vorp5,pos_x_age,QB young(<=24),50,36,37.216,-5.256,83.753,0.405,3,1.0,5,False
+mfl_dynasty,vorp5,pos_x_age,TE prime(25-27),125,71,6.375,-14.94,28.772,0.069,11,0.545,5,False
+mfl_dynasty,vorp5,experience,year4-6,775,403,3.593,-7.286,15.257,0.039,11,0.727,5,False
+mfl_dynasty,vorp5,experience,year7+,715,245,-32.482,-39.291,-25.906,-0.354,11,1.0,5,True
+mfl_dynasty,vorp5,experience,year3,323,323,21.115,9.094,34.179,0.23,11,0.818,5,True
+mfl_dynasty,vorp5,experience,year2,387,387,35.194,23.768,47.992,0.383,11,0.909,5,True
+mfl_dynasty,vorp5,draft_round,R1,670,168,-7.555,-19.324,4.078,-0.082,11,0.818,5,False
+mfl_dynasty,vorp5,draft_round,R2,419,124,3.497,-12.973,20.406,0.038,11,0.545,5,False
+mfl_dynasty,vorp5,draft_round,R4-7,492,198,1.165,-13.199,19.127,0.013,11,0.455,5,False
+mfl_dynasty,vorp5,draft_round,R3,348,107,18.532,0.773,38.634,0.202,11,0.818,5,True
+mfl_dynasty,vorp5,draft_round,UDFA,271,113,-12.641,-24.267,1.792,-0.138,11,0.909,5,False
+mfl_dynasty,vorp5,prior_games,14+,1393,521,2.963,-5.227,11.806,0.032,11,0.545,5,False
+mfl_dynasty,vorp5,prior_games,10-13,464,335,1.28,-9.084,11.963,0.014,11,0.455,5,False
+mfl_dynasty,vorp5,prior_games,<=9 games,343,264,-13.766,-21.607,-5.948,-0.15,11,0.727,5,True
+mfl_dynasty,vorp5,mkt_vs_last_year,aligned (+/-9),1205,472,-0.276,-9.588,9.981,-0.003,11,0.636,5,False
+mfl_dynasty,vorp5,mkt_vs_last_year,market bullish vs last yr (>=10),544,389,10.403,0.443,20.681,0.113,11,0.727,5,True
+mfl_dynasty,vorp5,mkt_vs_last_year,n/a (rookie/<6g),149,134,-9.447,-19.812,2.395,-0.103,11,0.727,5,False
+mfl_dynasty,vorp5,mkt_vs_last_year,market fades last yr (>=10 spots),302,220,-12.976,-18.46,-6.649,-0.141,11,0.909,5,True
+mfl_dynasty,vorp5,breakout_last_yr,other,1763,671,-2.016,-8.716,4.953,-0.022,11,0.636,5,False
+mfl_dynasty,vorp5,breakout_last_yr,first VORP season,437,341,8.135,-3.471,20.035,0.089,11,0.727,5,False
+mfl_dynasty,vorp5,qb_rushing,non-QB,1854,624,2.329,-5.084,10.341,0.025,11,0.636,5,False
+mfl_dynasty,vorp5,qb_rushing,QB pocket,297,79,-19.628,-27.571,-10.091,-0.214,11,0.727,5,True
+mfl_dynasty,vorp5,qb_rushing,QB rush >=25 yd/g,49,20,30.862,-20.147,96.453,0.336,5,0.8,5,False
+mfl_dynasty,vorp5,rb_receiving,RB <4 tgt/g,523,231,-17.898,-28.465,-6.855,-0.195,11,0.909,5,True
+mfl_dynasty,vorp5,rb_receiving,RB >=4 tgt/g,169,73,-10.461,-31.835,12.884,-0.114,11,0.727,5,False
+mfl_dynasty,vorp5,rb_receiving,non-RB,1508,466,7.38,-1.949,16.334,0.08,11,0.727,5,False
+mfl_dynasty,vorp5,market_tier,1-24,264,100,-4.155,-32.83,23.096,-0.045,11,0.545,5,False
+mfl_dynasty,vorp5,market_tier,25-60,396,204,1.466,-16.67,20.613,0.016,11,0.636,5,False
+mfl_dynasty,vorp5,market_tier,61-120,660,371,-0.296,-8.484,8.927,-0.003,11,0.545,5,False
+mfl_dynasty,vorp5,market_tier,121-200,880,523,0.809,-3.134,5.407,0.009,11,0.545,5,False
+mfl_dynasty,vorp10,position,RB,378,155,-28.518,-42.209,-12.921,-0.274,6,0.833,10,True
+mfl_dynasty,vorp10,position,WR,451,182,29.446,4.662,55.423,0.283,6,1.0,10,True
+mfl_dynasty,vorp10,position,QB,190,61,-14.583,-33.698,3.834,-0.14,6,0.833,10,False
+mfl_dynasty,vorp10,position,TE,181,69,1.495,-19.836,29.476,0.014,6,0.5,10,False
+mfl_dynasty,vorp10,age_band,26-27,296,199,-1.339,-19.659,17.847,-0.013,6,0.5,10,False
+mfl_dynasty,vorp10,age_band,24-25,297,214,25.084,4.023,47.719,0.241,6,0.667,10,False
+mfl_dynasty,vorp10,age_band,30+,278,117,-33.784,-45.535,-19.072,-0.324,6,1.0,10,True
+mfl_dynasty,vorp10,age_band,28-29,211,146,-30.923,-45.05,-15.747,-0.297,6,1.0,10,True
+mfl_dynasty,vorp10,age_band,<=23,118,100,75.111,32.575,118.402,0.721,6,0.833,10,True
+mfl_dynasty,vorp10,pos_x_age,RB prime(25-27),156,90,-21.062,-44.765,0.96,-0.202,6,0.833,10,False
+mfl_dynasty,vorp10,pos_x_age,WR old(28+),171,77,-33.214,-49.488,-13.649,-0.319,6,1.0,10,True
+mfl_dynasty,vorp10,pos_x_age,QB old(28+),112,39,-14.873,-38.548,10.784,-0.143,6,0.833,10,False
+mfl_dynasty,vorp10,pos_x_age,WR prime(25-27),167,90,25.077,-8.632,58.276,0.241,6,0.667,10,False
+mfl_dynasty,vorp10,pos_x_age,RB young(<=24),98,74,-8.372,-32.026,17.499,-0.08,6,0.5,10,False
+mfl_dynasty,vorp10,pos_x_age,RB old(28+),124,54,-53.821,-74.737,-33.644,-0.517,6,1.0,10,True
+mfl_dynasty,vorp10,pos_x_age,WR young(<=24),113,85,130.723,73.052,191.9,1.255,6,1.0,10,True
+mfl_dynasty,vorp10,pos_x_age,TE old(28+),82,38,-23.141,-40.512,-5.604,-0.222,6,1.0,10,True
+mfl_dynasty,vorp10,pos_x_age,QB prime(25-27),57,29,-13.29,-43.56,22.736,-0.128,6,0.667,10,False
+mfl_dynasty,vorp10,pos_x_age,TE young(<=24),30,22,18.94,-30.668,71.056,0.182,3,1.0,10,False
+mfl_dynasty,vorp10,pos_x_age,TE prime(25-27),69,41,23.187,-24.422,85.068,0.223,6,0.667,10,False
+mfl_dynasty,vorp10,experience,year4-6,413,227,-3.548,-20.042,13.151,-0.034,6,0.667,10,False
+mfl_dynasty,vorp10,experience,year7+,398,159,-33.58,-45.928,-19.326,-0.322,6,1.0,10,True
+mfl_dynasty,vorp10,experience,year3,179,179,30.793,8.077,56.649,0.296,6,0.833,10,True
+mfl_dynasty,vorp10,experience,year2,210,210,44.372,21.656,68.403,0.426,6,1.0,10,True
+mfl_dynasty,vorp10,draft_round,R1,385,118,-8.187,-28.775,13.451,-0.079,6,0.667,10,False
+mfl_dynasty,vorp10,draft_round,R2,215,81,4.666,-25.292,34.725,0.045,6,0.5,10,False
+mfl_dynasty,vorp10,draft_round,R4-7,274,133,1.342,-22.152,33.702,0.013,6,0.333,10,False
+mfl_dynasty,vorp10,draft_round,R3,179,71,26.854,-0.968,57.456,0.258,6,1.0,10,False
+mfl_dynasty,vorp10,draft_round,UDFA,147,64,-20.583,-37.092,-1.568,-0.198,6,0.833,10,True
+mfl_dynasty,vorp10,prior_games,14+,765,339,1.552,-10.626,15.285,0.015,6,0.5,10,False
+mfl_dynasty,vorp10,prior_games,10-13,248,200,6.571,-12.481,28.383,0.063,6,0.667,10,False
+mfl_dynasty,vorp10,prior_games,<=9 games,187,157,-15.065,-28.518,0.176,-0.145,6,0.667,10,False
+mfl_dynasty,vorp10,mkt_vs_last_year,aligned (+/-9),651,292,-0.852,-14.82,14.692,-0.008,6,0.5,10,False
+mfl_dynasty,vorp10,mkt_vs_last_year,market bullish vs last yr (>=10),309,237,19.996,-0.444,42.159,0.192,6,0.833,10,False
+mfl_dynasty,vorp10,mkt_vs_last_year,n/a (rookie/<6g),78,73,-19.126,-32.737,-2.312,-0.184,6,0.833,10,True
+mfl_dynasty,vorp10,mkt_vs_last_year,market fades last yr (>=10 spots),162,128,-25.509,-31.726,-18.304,-0.245,6,1.0,10,True
+mfl_dynasty,vorp10,breakout_last_yr,other,969,440,-2.673,-13.473,9.192,-0.026,6,0.833,10,False
+mfl_dynasty,vorp10,breakout_last_yr,first VORP season,231,206,11.213,-8.042,36.111,0.108,6,0.5,10,False
+mfl_dynasty,vorp10,qb_rushing,non-QB,1010,406,2.743,-9.351,17.175,0.026,6,0.333,10,False
+mfl_dynasty,vorp10,qb_rushing,QB pocket,165,57,-16.414,-33.999,4.879,-0.158,6,0.833,10,False
+mfl_dynasty,vorp10,qb_rushing,QB rush >=25 yd/g,25,11,-2.498,-78.817,66.726,-0.024,3,0.333,10,False
+mfl_dynasty,vorp10,rb_receiving,RB <4 tgt/g,293,144,-34.144,-47.449,-19.254,-0.328,6,1.0,10,True
+mfl_dynasty,vorp10,rb_receiving,RB >=4 tgt/g,85,42,-9.125,-41.328,23.377,-0.088,6,0.833,10,False
+mfl_dynasty,vorp10,rb_receiving,non-RB,822,312,13.114,-1.601,30.216,0.126,6,1.0,10,False
+mfl_dynasty,vorp10,market_tier,1-24,144,62,-6.308,-46.913,39.952,-0.061,6,0.667,10,False
+mfl_dynasty,vorp10,market_tier,25-60,216,123,0.892,-27.127,35.498,0.009,6,0.5,10,False
+mfl_dynasty,vorp10,market_tier,61-120,360,224,1.408,-15.354,18.953,0.014,6,0.5,10,False
+mfl_dynasty,vorp10,market_tier,121-200,480,322,0.435,-7.882,9.083,0.004,6,0.5,10,False
+dd_ktc,vorp1,position,QB,146,52,-3.639,-9.212,1.546,-0.116,5,0.6,1,False
+dd_ktc,vorp1,position,RB,298,120,5.222,0.741,10.267,0.167,5,0.6,1,False
+dd_ktc,vorp1,position,WR,421,164,-0.58,-4.355,3.038,-0.019,5,0.4,1,False
+dd_ktc,vorp1,position,TE,135,56,-5.784,-10.561,-1.124,-0.185,5,1.0,1,True
+dd_ktc,vorp1,age_band,26-27,205,139,4.668,-0.005,9.885,0.149,5,0.8,1,False
+dd_ktc,vorp1,age_band,24-25,274,181,-0.41,-4.857,4.003,-0.013,5,0.8,1,False
+dd_ktc,vorp1,age_band,<=23,278,189,-11.584,-15.134,-7.761,-0.371,5,1.0,1,True
+dd_ktc,vorp1,age_band,28-29,135,96,6.769,-0.457,13.158,0.217,5,0.8,1,False
+dd_ktc,vorp1,age_band,30+,108,56,13.537,6.018,21.018,0.433,5,1.0,1,True
+dd_ktc,vorp1,pos_x_age,QB prime(25-27),44,23,-7.164,-17.086,4.638,-0.229,5,0.8,1,False
+dd_ktc,vorp1,pos_x_age,RB prime(25-27),119,68,14.027,7.817,21.709,0.449,5,0.8,1,True
+dd_ktc,vorp1,pos_x_age,QB young(<=24),49,30,-9.377,-17.046,-0.68,-0.3,5,0.8,1,True
+dd_ktc,vorp1,pos_x_age,RB young(<=24),133,79,-7.41,-13.576,-0.757,-0.237,5,0.8,1,True
+dd_ktc,vorp1,pos_x_age,WR young(<=24),192,105,-6.902,-11.136,-2.796,-0.221,5,1.0,1,True
+dd_ktc,vorp1,pos_x_age,QB old(28+),53,22,4.593,-7.213,13.575,0.147,5,0.6,1,False
+dd_ktc,vorp1,pos_x_age,WR old(28+),106,50,11.888,2.776,20.125,0.38,5,1.0,1,True
+dd_ktc,vorp1,pos_x_age,TE old(28+),38,17,-0.007,-14.333,10.261,-0.0,5,0.4,1,False
+dd_ktc,vorp1,pos_x_age,WR prime(25-27),123,68,-1.456,-7.045,4.678,-0.047,5,0.6,1,False
+dd_ktc,vorp1,pos_x_age,TE young(<=24),46,30,-14.276,-23.005,-6.922,-0.457,5,1.0,1,True
+dd_ktc,vorp1,pos_x_age,RB old(28+),46,27,18.969,4.991,31.909,0.607,5,0.6,1,False
+dd_ktc,vorp1,pos_x_age,TE prime(25-27),51,34,-2.428,-8.963,4.023,-0.078,5,0.6,1,False
+dd_ktc,vorp1,experience,year4-6,310,173,3.516,-0.267,7.494,0.112,5,0.8,1,False
+dd_ktc,vorp1,experience,year3,140,140,-0.886,-6.836,5.566,-0.028,5,0.6,1,False
+dd_ktc,vorp1,experience,year2,169,169,-8.44,-13.2,-3.416,-0.27,5,1.0,1,True
+dd_ktc,vorp1,experience,rookie,175,175,-11.841,-15.322,-8.537,-0.379,5,1.0,1,True
+dd_ktc,vorp1,experience,year7+,206,97,12.294,5.64,19.149,0.393,5,1.0,1,True
+dd_ktc,vorp1,draft_round,R1,323,106,-1.849,-6.08,2.114,-0.059,5,0.6,1,False
+dd_ktc,vorp1,draft_round,R2,254,90,-2.217,-7.005,2.456,-0.071,5,0.8,1,False
+dd_ktc,vorp1,draft_round,R4-7,209,100,3.371,-1.317,7.761,0.108,5,1.0,1,False
+dd_ktc,vorp1,draft_round,R3,170,71,0.335,-4.727,4.522,0.011,5,0.6,1,False
+dd_ktc,vorp1,draft_round,UDFA,44,25,9.068,-1.467,18.363,0.29,5,0.8,1,False
+dd_ktc,vorp1,prior_games,14+,554,253,4.324,0.811,7.529,0.138,5,1.0,1,True
+dd_ktc,vorp1,prior_games,<=9 games,99,88,-5.098,-10.748,2.112,-0.163,5,0.8,1,False
+dd_ktc,vorp1,prior_games,rookie,175,175,-11.841,-15.322,-8.537,-0.379,5,1.0,1,True
+dd_ktc,vorp1,prior_games,10-13,172,139,1.053,-3.919,6.375,0.034,5,0.4,1,False
+dd_ktc,vorp1,mkt_vs_last_year,aligned (+/-9),401,203,4.662,0.127,8.802,0.149,5,0.8,1,True
+dd_ktc,vorp1,mkt_vs_last_year,n/a (rookie/<6g),213,202,-11.767,-15.051,-8.538,-0.376,5,1.0,1,True
+dd_ktc,vorp1,mkt_vs_last_year,market bullish vs last yr (>=10),179,141,-5.544,-10.236,-0.038,-0.177,5,0.8,1,True
+dd_ktc,vorp1,mkt_vs_last_year,market fades last yr (>=10 spots),207,130,7.871,3.837,12.36,0.252,5,1.0,1,True
+dd_ktc,vorp1,breakout_last_yr,other,649,310,3.404,0.36,6.348,0.109,5,0.8,1,True
+dd_ktc,vorp1,breakout_last_yr,first VORP season,176,163,-0.777,-6.644,5.69,-0.025,5,0.6,1,False
+dd_ktc,vorp1,breakout_last_yr,rookie,175,175,-11.841,-15.322,-8.537,-0.379,5,1.0,1,True
+dd_ktc,vorp1,qb_rushing,QB pocket,85,32,-0.882,-7.41,5.286,-0.028,5,0.6,1,False
+dd_ktc,vorp1,qb_rushing,QB rush >=25 yd/g,38,15,-3.545,-18.266,10.577,-0.113,5,0.6,1,False
+dd_ktc,vorp1,qb_rushing,non-QB,854,340,0.622,-1.954,3.05,0.02,5,0.6,1,False
+dd_ktc,vorp1,rb_receiving,non-RB,702,272,-2.217,-5.103,0.242,-0.071,5,0.8,1,False
+dd_ktc,vorp1,rb_receiving,RB >=4 tgt/g,60,34,23.856,10.523,36.643,0.763,5,0.8,1,True
+dd_ktc,vorp1,rb_receiving,RB <4 tgt/g,180,89,4.775,-0.566,10.674,0.153,5,0.6,1,False
+dd_ktc,vorp1,rb_receiving,RB rookie,58,58,-12.665,-18.998,-6.84,-0.405,5,1.0,1,True
+dd_ktc,vorp1,market_tier,1-24,120,63,-0.624,-10.591,9.536,-0.02,5,0.6,1,False
+dd_ktc,vorp1,market_tier,25-60,180,115,-2.176,-9.182,5.405,-0.07,5,0.6,1,False
+dd_ktc,vorp1,market_tier,61-120,300,190,1.411,-2.618,5.632,0.045,5,0.8,1,False
+dd_ktc,vorp1,market_tier,121-200,400,265,0.108,-1.983,2.215,0.003,5,0.8,1,False
+dd_ktc,vorp2,position,QB,116,48,-6.299,-16.03,4.397,-0.108,4,0.75,2,False
+dd_ktc,vorp2,position,RB,235,104,8.086,-2.545,17.776,0.138,4,0.75,2,False
+dd_ktc,vorp2,position,WR,343,151,-0.429,-7.086,6.452,-0.007,4,0.75,2,False
+dd_ktc,vorp2,position,TE,106,49,-9.643,-22.171,2.679,-0.165,4,1.0,2,False
+dd_ktc,vorp2,age_band,26-27,162,114,4.347,-4.652,13.733,0.074,4,0.75,2,False
+dd_ktc,vorp2,age_band,24-25,220,154,-1.983,-9.926,6.062,-0.034,4,0.5,2,False
+dd_ktc,vorp2,age_band,<=23,225,159,-13.411,-21.536,-5.528,-0.229,4,1.0,2,True
+dd_ktc,vorp2,age_band,28-29,111,81,9.625,-3.68,23.017,0.164,4,0.75,2,False
+dd_ktc,vorp2,age_band,30+,82,46,20.501,6.424,36.04,0.35,4,1.0,2,True
+dd_ktc,vorp2,pos_x_age,QB prime(25-27),35,21,-1.853,-21.246,17.51,-0.032,4,0.75,2,False
+dd_ktc,vorp2,pos_x_age,RB prime(25-27),93,55,18.588,5.36,32.384,0.317,4,0.75,2,True
+dd_ktc,vorp2,pos_x_age,QB young(<=24),40,26,-18.589,-34.392,1.796,-0.317,4,1.0,2,False
+dd_ktc,vorp2,pos_x_age,RB young(<=24),107,66,-8.053,-22.607,5.837,-0.137,4,0.5,2,False
+dd_ktc,vorp2,pos_x_age,WR young(<=24),160,93,-6.128,-15.396,4.099,-0.105,4,0.75,2,False
+dd_ktc,vorp2,pos_x_age,QB old(28+),41,19,1.897,-16.962,18.607,0.032,4,0.5,2,False
+dd_ktc,vorp2,pos_x_age,WR old(28+),87,43,17.587,-0.183,34.375,0.3,4,1.0,2,False
+dd_ktc,vorp2,pos_x_age,TE old(28+),30,15,3.625,-26.315,26.841,0.062,4,0.75,2,False
+dd_ktc,vorp2,pos_x_age,WR prime(25-27),96,56,-7.259,-16.798,4.032,-0.124,4,0.75,2,False
+dd_ktc,vorp2,pos_x_age,TE young(<=24),37,24,-23.77,-43.69,-6.188,-0.406,4,1.0,2,True
+dd_ktc,vorp2,pos_x_age,RB old(28+),35,23,29.514,-0.556,58.166,0.504,4,1.0,2,False
+dd_ktc,vorp2,pos_x_age,TE prime(25-27),39,28,-6.446,-16.384,5.084,-0.11,4,1.0,2,False
+dd_ktc,vorp2,experience,year4-6,251,145,2.453,-4.937,9.689,0.042,4,0.75,2,False
+dd_ktc,vorp2,experience,year3,110,110,-4.515,-15.174,6.807,-0.077,4,0.5,2,False
+dd_ktc,vorp2,experience,year2,137,137,-7.592,-17.303,1.674,-0.13,4,0.75,2,False
+dd_ktc,vorp2,experience,rookie,140,140,-14.202,-20.847,-7.833,-0.242,4,1.0,2,True
+dd_ktc,vorp2,experience,year7+,162,84,17.96,5.741,29.879,0.307,4,1.0,2,True
+dd_ktc,vorp2,draft_round,R1,252,97,-1.433,-11.319,7.957,-0.024,4,0.5,2,False
+dd_ktc,vorp2,draft_round,R2,205,79,-7.918,-18.077,1.959,-0.135,4,0.75,2,False
+dd_ktc,vorp2,draft_round,R4-7,164,87,7.887,-0.861,18.701,0.135,4,1.0,2,False
+dd_ktc,vorp2,draft_round,R3,141,66,1.287,-9.058,11.152,0.022,4,0.5,2,False
+dd_ktc,vorp2,draft_round,UDFA,38,23,13.403,-4.624,28.536,0.229,4,0.75,2,False
+dd_ktc,vorp2,prior_games,14+,436,224,6.666,0.05,13.506,0.114,4,1.0,2,True
+dd_ktc,vorp2,prior_games,<=9 games,80,72,-15.697,-24.525,-7.573,-0.268,4,1.0,2,True
+dd_ktc,vorp2,prior_games,rookie,140,140,-14.202,-20.847,-7.833,-0.242,4,1.0,2,True
+dd_ktc,vorp2,prior_games,10-13,144,120,2.345,-8.256,11.359,0.04,4,0.5,2,False
+dd_ktc,vorp2,mkt_vs_last_year,aligned (+/-9),319,173,6.233,-1.764,13.55,0.106,4,0.5,2,False
+dd_ktc,vorp2,mkt_vs_last_year,n/a (rookie/<6g),172,166,-16.271,-21.93,-10.183,-0.278,4,1.0,2,True
+dd_ktc,vorp2,mkt_vs_last_year,market bullish vs last yr (>=10),147,118,-6.516,-15.839,3.92,-0.111,4,0.75,2,False
+dd_ktc,vorp2,mkt_vs_last_year,market fades last yr (>=10 spots),162,103,10.914,2.991,20.059,0.186,4,1.0,2,True
+dd_ktc,vorp2,breakout_last_yr,other,520,268,4.548,-1.536,10.477,0.078,4,0.75,2,False
+dd_ktc,vorp2,breakout_last_yr,first VORP season,140,136,-2.692,-11.439,6.834,-0.046,4,0.75,2,False
+dd_ktc,vorp2,breakout_last_yr,rookie,140,140,-14.202,-20.847,-7.833,-0.242,4,1.0,2,True
+dd_ktc,vorp2,qb_rushing,QB pocket,69,31,-6.31,-18.72,4.829,-0.108,4,0.75,2,False
+dd_ktc,vorp2,qb_rushing,QB rush >=25 yd/g,28,11,0.291,-32.501,29.859,0.005,4,0.5,2,False
+dd_ktc,vorp2,qb_rushing,non-QB,684,304,1.068,-4.435,6.106,0.018,4,0.5,2,False
+dd_ktc,vorp2,rb_receiving,non-RB,565,248,-3.363,-8.444,1.844,-0.057,4,0.75,2,False
+dd_ktc,vorp2,rb_receiving,RB >=4 tgt/g,52,31,32.44,9.163,54.445,0.554,4,1.0,2,True
+dd_ktc,vorp2,rb_receiving,RB <4 tgt/g,139,72,2.77,-9.555,14.966,0.047,4,0.5,2,False
+dd_ktc,vorp2,rb_receiving,RB rookie,44,44,-3.904,-17.065,8.737,-0.067,4,0.75,2,False
+dd_ktc,vorp2,market_tier,1-24,96,54,-3.799,-23.702,14.307,-0.065,4,0.75,2,False
+dd_ktc,vorp2,market_tier,25-60,144,95,-2.363,-17.951,10.685,-0.04,4,0.5,2,False
+dd_ktc,vorp2,market_tier,61-120,240,164,1.374,-6.586,8.453,0.023,4,0.75,2,False
+dd_ktc,vorp2,market_tier,121-200,320,224,1.173,-2.834,5.808,0.02,4,0.75,2,False
+dd_ktc,vorp3,position,QB,87,42,-9.122,-25.337,8.855,-0.113,3,0.667,3,False
+dd_ktc,vorp3,position,RB,174,89,3.826,-11.953,20.046,0.047,3,0.333,3,False
+dd_ktc,vorp3,position,WR,258,126,3.671,-7.687,15.388,0.045,3,0.667,3,False
+dd_ktc,vorp3,position,TE,81,43,-10.113,-29.824,10.256,-0.125,3,1.0,3,False
+dd_ktc,vorp3,age_band,26-27,126,92,6.36,-5.936,20.503,0.079,3,1.0,3,False
+dd_ktc,vorp3,age_band,24-25,159,117,-3.079,-15.043,8.695,-0.038,3,0.667,3,False
+dd_ktc,vorp3,age_band,<=23,171,125,-12.311,-25.524,0.932,-0.152,3,1.0,3,False
+dd_ktc,vorp3,age_band,28-29,85,67,7.735,-12.793,27.238,0.096,3,0.667,3,False
+dd_ktc,vorp3,age_band,30+,59,38,19.25,0.767,39.819,0.238,3,1.0,3,True
+dd_ktc,vorp3,pos_x_age,QB prime(25-27),25,16,5.476,-30.614,40.592,0.068,3,0.667,3,False
+dd_ktc,vorp3,pos_x_age,RB prime(25-27),70,46,21.364,0.987,41.831,0.264,3,1.0,3,True
+dd_ktc,vorp3,pos_x_age,QB young(<=24),32,21,-22.294,-45.202,11.463,-0.275,3,1.0,3,False
+dd_ktc,vorp3,pos_x_age,RB young(<=24),81,53,-16.002,-37.924,5.292,-0.198,3,0.667,3,False
+dd_ktc,vorp3,pos_x_age,WR young(<=24),118,70,2.359,-15.741,22.262,0.029,3,0.667,3,False
+dd_ktc,vorp3,pos_x_age,QB old(28+),30,15,-7.237,-28.435,11.602,-0.089,3,0.667,3,False
+dd_ktc,vorp3,pos_x_age,WR old(28+),68,39,22.297,-4.519,47.239,0.275,3,1.0,3,False
+dd_ktc,vorp3,pos_x_age,WR prime(25-27),72,44,-11.771,-24.679,1.096,-0.145,3,0.667,3,False
+dd_ktc,vorp3,pos_x_age,TE young(<=24),27,20,-20.192,-62.622,23.34,-0.249,3,1.0,3,False
+dd_ktc,vorp3,pos_x_age,TE prime(25-27),31,22,-9.731,-18.622,0.473,-0.12,3,1.0,3,False
+dd_ktc,vorp3,experience,year4-6,201,126,0.406,-8.819,10.936,0.005,3,0.667,3,False
+dd_ktc,vorp3,experience,year3,80,80,-8.399,-23.048,7.019,-0.104,3,0.667,3,False
+dd_ktc,vorp3,experience,year2,103,103,-12.196,-27.904,2.2,-0.151,3,0.667,3,False
+dd_ktc,vorp3,experience,rookie,99,99,-3.077,-16.302,10.023,-0.038,3,0.667,3,False
+dd_ktc,vorp3,experience,year7+,117,71,18.386,1.309,36.854,0.227,3,1.0,3,True
+dd_ktc,vorp3,draft_round,R1,184,83,-0.554,-15.553,14.254,-0.007,3,0.667,3,False
+dd_ktc,vorp3,draft_round,R2,162,73,-13.399,-28.45,2.874,-0.165,3,0.667,3,False
+dd_ktc,vorp3,draft_round,R4-7,119,69,12.65,-3.902,28.029,0.156,3,1.0,3,False
+dd_ktc,vorp3,draft_round,R3,106,55,1.958,-13.073,18.007,0.024,3,0.667,3,False
+dd_ktc,vorp3,draft_round,UDFA,29,20,19.297,-4.215,42.056,0.238,3,1.0,3,False
+dd_ktc,vorp3,prior_games,14+,320,182,4.831,-6.465,15.941,0.06,3,1.0,3,False
+dd_ktc,vorp3,prior_games,<=9 games,67,61,-11.918,-28.059,3.499,-0.147,3,1.0,3,False
+dd_ktc,vorp3,prior_games,rookie,99,99,-3.077,-16.302,10.023,-0.038,3,0.667,3,False
+dd_ktc,vorp3,prior_games,10-13,114,100,-3.885,-16.579,9.803,-0.048,3,0.667,3,False
+dd_ktc,vorp3,mkt_vs_last_year,aligned (+/-9),235,140,0.945,-10.323,14.574,0.012,3,0.333,3,False
+dd_ktc,vorp3,mkt_vs_last_year,n/a (rookie/<6g),125,121,-7.314,-19.056,3.311,-0.09,3,0.667,3,False
+dd_ktc,vorp3,mkt_vs_last_year,market bullish vs last yr (>=10),117,99,-8.05,-23.844,9.046,-0.099,3,1.0,3,False
+dd_ktc,vorp3,mkt_vs_last_year,market fades last yr (>=10 spots),123,86,13.285,0.028,26.791,0.164,3,1.0,3,True
+dd_ktc,vorp3,breakout_last_yr,other,398,236,3.537,-5.121,12.29,0.044,3,0.667,3,False
+dd_ktc,vorp3,breakout_last_yr,first VORP season,103,101,-10.71,-24.792,4.209,-0.132,3,1.0,3,False
+dd_ktc,vorp3,breakout_last_yr,rookie,99,99,-3.077,-16.302,10.023,-0.038,3,0.667,3,False
+dd_ktc,vorp3,qb_rushing,QB pocket,52,27,-10.443,-24.115,4.14,-0.129,3,0.667,3,False
+dd_ktc,vorp3,qb_rushing,non-QB,513,258,1.547,-6.163,9.92,0.019,3,0.667,3,False
+dd_ktc,vorp3,rb_receiving,non-RB,426,211,-1.563,-10.136,8.054,-0.019,3,0.667,3,False
+dd_ktc,vorp3,rb_receiving,RB >=4 tgt/g,39,25,22.923,-6.558,50.269,0.283,3,0.667,3,False
+dd_ktc,vorp3,rb_receiving,RB <4 tgt/g,103,62,-9.86,-30.091,12.05,-0.122,3,0.667,3,False
+dd_ktc,vorp3,rb_receiving,RB rookie,32,32,24.605,-2.717,54.5,0.304,3,0.667,3,False
+dd_ktc,vorp3,market_tier,1-24,72,46,-4.478,-36.711,31.882,-0.055,3,0.667,3,False
+dd_ktc,vorp3,market_tier,25-60,108,74,-5.978,-24.745,12.058,-0.074,3,0.333,3,False
+dd_ktc,vorp3,market_tier,61-120,180,133,2.629,-9.356,15.96,0.032,3,0.667,3,False
+dd_ktc,vorp3,market_tier,121-200,240,174,2.062,-4.717,8.273,0.025,3,0.667,3,False
+dd_ktc,vorp5,position,QB,29,29,20.114,-14.334,59.105,0.166,1,1.0,5,False
+dd_ktc,vorp5,position,RB,56,56,-13.245,-39.162,15.01,-0.109,1,1.0,5,False
+dd_ktc,vorp5,position,WR,88,88,7.838,-12.858,30.1,0.065,1,1.0,5,False
+dd_ktc,vorp5,position,TE,27,27,-19.679,-44.112,4.764,-0.162,1,1.0,5,False
+dd_ktc,vorp5,age_band,26-27,46,46,-6.215,-28.45,14.655,-0.051,1,1.0,5,False
+dd_ktc,vorp5,age_band,24-25,47,47,16.475,-8.629,47.876,0.136,1,1.0,5,False
+dd_ktc,vorp5,age_band,<=23,60,60,-12.42,-38.661,20.586,-0.102,1,1.0,5,False
+dd_ktc,vorp5,age_band,28-29,30,30,0.735,-38.842,39.768,0.006,1,1.0,5,False
+dd_ktc,vorp5,pos_x_age,RB young(<=24),28,28,-31.522,-68.715,10.235,-0.26,1,1.0,5,False
+dd_ktc,vorp5,pos_x_age,WR young(<=24),40,40,20.552,-14.965,58.407,0.17,1,1.0,5,False
+dd_ktc,vorp5,experience,year4-6,70,70,3.961,-16.267,24.683,0.033,1,1.0,5,False
+dd_ktc,vorp5,experience,year3,25,25,5.697,-24.787,45.992,0.047,1,1.0,5,False
+dd_ktc,vorp5,experience,year2,37,37,-24.238,-57.319,11.292,-0.2,1,1.0,5,False
+dd_ktc,vorp5,experience,rookie,31,31,17.441,-22.529,63.337,0.144,1,1.0,5,False
+dd_ktc,vorp5,experience,year7+,37,37,-1.718,-30.639,25.89,-0.014,1,1.0,5,False
+dd_ktc,vorp5,draft_round,R1,62,62,7.094,-16.046,33.444,0.059,1,1.0,5,False
+dd_ktc,vorp5,draft_round,R2,51,51,-28.544,-59.152,0.258,-0.236,1,1.0,5,False
+dd_ktc,vorp5,draft_round,R4-7,39,39,18.012,-11.253,48.788,0.149,1,1.0,5,False
+dd_ktc,vorp5,draft_round,R3,34,34,-0.381,-28.739,25.536,-0.003,1,1.0,5,False
+dd_ktc,vorp5,prior_games,14+,103,103,4.466,-14.266,22.052,0.037,1,1.0,5,False
+dd_ktc,vorp5,prior_games,rookie,31,31,17.441,-22.529,63.337,0.144,1,1.0,5,False
+dd_ktc,vorp5,prior_games,10-13,43,43,-17.31,-41.541,9.812,-0.143,1,1.0,5,False
+dd_ktc,vorp5,mkt_vs_last_year,aligned (+/-9),76,76,-0.008,-22.049,24.556,-0.0,1,1.0,5,False
+dd_ktc,vorp5,mkt_vs_last_year,n/a (rookie/<6g),41,41,7.795,-22.828,43.011,0.064,1,1.0,5,False
+dd_ktc,vorp5,mkt_vs_last_year,market bullish vs last yr (>=10),40,40,-11.076,-44.825,24.884,-0.091,1,1.0,5,False
+dd_ktc,vorp5,mkt_vs_last_year,market fades last yr (>=10 spots),43,43,2.884,-15.507,21.813,0.024,1,1.0,5,False
+dd_ktc,vorp5,breakout_last_yr,other,135,135,2.968,-11.894,19.621,0.024,1,1.0,5,False
+dd_ktc,vorp5,breakout_last_yr,first VORP season,34,34,-27.687,-58.348,5.364,-0.228,1,1.0,5,False
+dd_ktc,vorp5,breakout_last_yr,rookie,31,31,17.441,-22.529,63.337,0.144,1,1.0,5,False
+dd_ktc,vorp5,qb_rushing,non-QB,171,171,-3.411,-18.101,11.461,-0.028,1,1.0,5,False
+dd_ktc,vorp5,rb_receiving,non-RB,144,144,5.151,-10.608,21.854,0.043,1,1.0,5,False
+dd_ktc,vorp5,rb_receiving,RB <4 tgt/g,31,31,-13.61,-51.481,29.345,-0.112,1,1.0,5,False
+dd_ktc,vorp5,market_tier,25-60,36,36,22.971,-19.3,66.158,0.19,1,1.0,5,False
+dd_ktc,vorp5,market_tier,61-120,60,60,-2.514,-27.611,25.369,-0.021,1,1.0,5,False
+dd_ktc,vorp5,market_tier,121-200,80,80,3.034,-7.996,14.781,0.025,1,1.0,5,False
+dd_fantasycalc,vorp1,position,QB,130,55,-4.787,-9.883,0.657,-0.154,4,0.75,1,False
+dd_fantasycalc,vorp1,position,WR,316,139,0.171,-3.707,4.097,0.005,4,0.75,1,False
+dd_fantasycalc,vorp1,position,RB,248,111,4.834,-0.234,10.096,0.155,4,0.5,1,False
+dd_fantasycalc,vorp1,position,TE,106,50,-5.948,-11.165,-0.528,-0.191,4,1.0,1,True
+dd_fantasycalc,vorp1,age_band,26-27,160,110,4.445,-0.859,10.661,0.143,4,0.75,1,False
+dd_fantasycalc,vorp1,age_band,24-25,223,152,1.007,-3.862,6.323,0.032,4,0.5,1,False
+dd_fantasycalc,vorp1,age_band,<=23,206,149,-12.494,-16.514,-8.495,-0.401,4,1.0,1,True
+dd_fantasycalc,vorp1,age_band,28-29,105,75,5.671,-0.863,12.518,0.182,4,0.75,1,False
+dd_fantasycalc,vorp1,age_band,30+,106,57,9.837,3.115,16.124,0.315,4,0.75,1,True
+dd_fantasycalc,vorp1,pos_x_age,QB prime(25-27),43,24,-4.996,-13.199,4.739,-0.16,4,0.75,1,False
+dd_fantasycalc,vorp1,pos_x_age,QB young(<=24),39,27,-10.06,-18.392,-0.738,-0.323,4,0.75,1,True
+dd_fantasycalc,vorp1,pos_x_age,WR young(<=24),143,87,-6.232,-11.809,-0.451,-0.2,4,1.0,1,True
+dd_fantasycalc,vorp1,pos_x_age,RB young(<=24),101,66,-9.036,-15.997,-1.625,-0.29,4,0.75,1,True
+dd_fantasycalc,vorp1,pos_x_age,TE young(<=24),33,24,-12.708,-22.814,-3.163,-0.408,3,1.0,1,True
+dd_fantasycalc,vorp1,pos_x_age,QB old(28+),48,23,-0.316,-9.865,8.27,-0.01,4,0.5,1,False
+dd_fantasycalc,vorp1,pos_x_age,WR old(28+),79,39,12.411,4.209,20.38,0.398,4,1.0,1,True
+dd_fantasycalc,vorp1,pos_x_age,WR prime(25-27),94,56,-0.374,-6.561,5.813,-0.012,4,0.75,1,False
+dd_fantasycalc,vorp1,pos_x_age,TE prime(25-27),34,23,-4.146,-12.044,4.403,-0.133,4,0.75,1,False
+dd_fantasycalc,vorp1,pos_x_age,RB prime(25-27),102,62,13.415,6.904,20.786,0.43,4,0.75,1,True
+dd_fantasycalc,vorp1,pos_x_age,TE old(28+),39,19,-1.799,-11.821,6.346,-0.058,4,0.5,1,False
+dd_fantasycalc,vorp1,pos_x_age,RB old(28+),45,24,16.511,2.385,29.809,0.529,4,0.75,1,True
+dd_fantasycalc,vorp1,experience,year4-6,237,143,4.622,0.572,9.671,0.148,4,0.75,1,True
+dd_fantasycalc,vorp1,experience,year3,113,113,-0.697,-7.217,5.671,-0.022,4,0.75,1,False
+dd_fantasycalc,vorp1,experience,year2,123,123,-9.505,-15.805,-3.879,-0.305,4,0.75,1,True
+dd_fantasycalc,vorp1,experience,year7+,185,93,10.213,4.403,15.903,0.328,4,1.0,1,True
+dd_fantasycalc,vorp1,experience,rookie,142,142,-12.231,-15.302,-8.739,-0.392,4,1.0,1,True
+dd_fantasycalc,vorp1,draft_round,R1,271,103,-1.648,-6.448,3.595,-0.053,4,0.75,1,False
+dd_fantasycalc,vorp1,draft_round,R2,201,85,-0.25,-5.073,5.074,-0.008,4,0.5,1,False
+dd_fantasycalc,vorp1,draft_round,R4-7,164,86,3.487,-1.492,8.923,0.112,4,1.0,1,False
+dd_fantasycalc,vorp1,draft_round,R3,131,62,-3.453,-9.074,1.748,-0.111,4,0.75,1,False
+dd_fantasycalc,vorp1,draft_round,UDFA,33,19,11.434,2.806,18.709,0.367,4,1.0,1,True
+dd_fantasycalc,vorp1,prior_games,14+,449,225,3.276,-0.747,7.093,0.105,4,1.0,1,False
+dd_fantasycalc,vorp1,prior_games,10-13,131,111,3.688,-1.039,8.797,0.118,4,0.5,1,False
+dd_fantasycalc,vorp1,prior_games,rookie,142,142,-12.231,-15.302,-8.739,-0.392,4,1.0,1,True
+dd_fantasycalc,vorp1,prior_games,<=9 games,78,71,-2.786,-9.996,6.649,-0.089,4,0.75,1,False
+dd_fantasycalc,vorp1,mkt_vs_last_year,aligned (+/-9),338,187,4.853,0.285,9.39,0.156,4,0.75,1,True
+dd_fantasycalc,vorp1,mkt_vs_last_year,market bullish vs last yr (>=10),129,109,-5.188,-10.891,0.718,-0.166,4,0.75,1,False
+dd_fantasycalc,vorp1,mkt_vs_last_year,n/a (rookie/<6g),169,163,-10.514,-13.629,-6.868,-0.337,4,1.0,1,True
+dd_fantasycalc,vorp1,mkt_vs_last_year,market fades last yr (>=10 spots),164,111,4.914,0.467,9.266,0.158,4,1.0,1,True
+dd_fantasycalc,vorp1,breakout_last_yr,other,517,271,3.653,0.593,7.122,0.117,4,1.0,1,True
+dd_fantasycalc,vorp1,breakout_last_yr,first VORP season,141,134,-1.075,-8.091,5.46,-0.034,4,0.75,1,False
+dd_fantasycalc,vorp1,breakout_last_yr,rookie,142,142,-12.231,-15.302,-8.739,-0.392,4,1.0,1,True
+dd_fantasycalc,vorp1,qb_rushing,QB rush >=25 yd/g,34,15,0.819,-12.547,16.797,0.026,4,0.5,1,False
+dd_fantasycalc,vorp1,qb_rushing,QB pocket,77,33,-5.858,-12.359,0.061,-0.188,4,0.75,1,False
+dd_fantasycalc,vorp1,qb_rushing,non-QB,670,300,0.929,-1.728,4.064,0.03,4,0.5,1,False
+dd_fantasycalc,vorp1,rb_receiving,non-RB,552,244,-2.172,-4.805,0.864,-0.07,4,1.0,1,False
+dd_fantasycalc,vorp1,rb_receiving,RB <4 tgt/g,152,80,4.087,-1.72,10.376,0.131,4,0.5,1,False
+dd_fantasycalc,vorp1,rb_receiving,RB >=4 tgt/g,45,26,30.037,15.208,44.699,0.963,4,1.0,1,True
+dd_fantasycalc,vorp1,rb_receiving,RB rookie,51,51,-15.18,-20.882,-9.893,-0.487,4,1.0,1,True
+dd_fantasycalc,vorp1,market_tier,1-24,96,54,-1.67,-12.833,9.105,-0.054,4,0.5,1,False
+dd_fantasycalc,vorp1,market_tier,25-60,144,101,-0.365,-6.731,6.801,-0.012,4,0.5,1,False
+dd_fantasycalc,vorp1,market_tier,61-120,240,166,0.887,-3.097,4.786,0.028,4,0.5,1,False
+dd_fantasycalc,vorp1,market_tier,121-200,320,225,-0.0,-1.896,2.276,-0.0,4,0.25,1,False
+dd_fantasycalc,vorp2,position,QB,99,50,-11.644,-23.314,-1.056,-0.2,3,1.0,2,True
+dd_fantasycalc,vorp2,position,WR,240,125,2.706,-5.19,11.542,0.046,3,1.0,2,False
+dd_fantasycalc,vorp2,position,RB,183,96,7.458,-3.41,17.411,0.128,3,0.667,2,False
+dd_fantasycalc,vorp2,position,TE,78,43,-11.043,-25.179,1.38,-0.19,3,1.0,2,False
+dd_fantasycalc,vorp2,age_band,26-27,116,84,1.685,-8.407,10.395,0.029,3,0.333,2,False
+dd_fantasycalc,vorp2,age_band,24-25,170,125,-1.567,-11.537,8.95,-0.027,3,0.667,2,False
+dd_fantasycalc,vorp2,age_band,<=23,156,119,-11.055,-22.265,-1.313,-0.19,3,1.0,2,True
+dd_fantasycalc,vorp2,age_band,28-29,81,60,7.834,-6.31,21.927,0.135,3,0.667,2,False
+dd_fantasycalc,vorp2,age_band,30+,77,44,15.078,0.84,29.024,0.259,3,1.0,2,True
+dd_fantasycalc,vorp2,pos_x_age,QB prime(25-27),33,21,-3.766,-19.645,14.213,-0.065,3,0.667,2,False
+dd_fantasycalc,vorp2,pos_x_age,QB young(<=24),30,23,-26.502,-42.268,-8.332,-0.455,3,1.0,2,True
+dd_fantasycalc,vorp2,pos_x_age,WR young(<=24),111,74,-3.063,-14.985,9.459,-0.053,3,0.667,2,False
+dd_fantasycalc,vorp2,pos_x_age,RB young(<=24),77,54,-5.802,-21.828,10.485,-0.1,3,0.333,2,False
+dd_fantasycalc,vorp2,pos_x_age,TE young(<=24),25,18,-23.712,-46.903,-0.039,-0.407,2,1.0,2,False
+dd_fantasycalc,vorp2,pos_x_age,QB old(28+),36,20,-6.485,-27.681,12.096,-0.111,3,0.667,2,False
+dd_fantasycalc,vorp2,pos_x_age,WR old(28+),60,32,20.86,3.369,38.548,0.358,3,1.0,2,True
+dd_fantasycalc,vorp2,pos_x_age,WR prime(25-27),69,46,-3.802,-15.656,8.39,-0.065,3,0.667,2,False
+dd_fantasycalc,vorp2,pos_x_age,RB prime(25-27),74,49,13.463,1.875,25.216,0.231,3,0.667,2,False
+dd_fantasycalc,vorp2,pos_x_age,TE old(28+),30,17,-1.263,-20.66,14.688,-0.022,3,0.667,2,False
+dd_fantasycalc,vorp2,pos_x_age,RB old(28+),32,20,25.477,-3.461,54.834,0.438,3,1.0,2,False
+dd_fantasycalc,vorp2,experience,year4-6,179,115,2.044,-5.516,9.53,0.035,3,0.667,2,False
+dd_fantasycalc,vorp2,experience,year3,86,86,-5.402,-18.061,8.735,-0.093,3,0.667,2,False
+dd_fantasycalc,vorp2,experience,year2,92,92,-4.042,-18.839,10.275,-0.069,3,0.667,2,False
+dd_fantasycalc,vorp2,experience,year7+,138,79,15.359,3.831,26.464,0.264,3,1.0,2,True
+dd_fantasycalc,vorp2,experience,rookie,105,105,-15.704,-22.657,-8.555,-0.27,3,1.0,2,True
+dd_fantasycalc,vorp2,draft_round,R1,200,94,-2.704,-14.125,7.157,-0.046,3,0.667,2,False
+dd_fantasycalc,vorp2,draft_round,R2,152,73,-2.464,-13.101,7.585,-0.042,3,0.667,2,False
+dd_fantasycalc,vorp2,draft_round,R4-7,120,74,6.14,-3.457,16.038,0.105,3,1.0,2,False
+dd_fantasycalc,vorp2,draft_round,R3,102,56,-2.123,-14.28,10.461,-0.036,3,0.667,2,False
+dd_fantasycalc,vorp2,draft_round,UDFA,26,17,15.196,-7.386,32.621,0.261,3,1.0,2,False
+dd_fantasycalc,vorp2,prior_games,14+,334,198,5.399,-2.442,13.027,0.093,3,1.0,2,False
+dd_fantasycalc,vorp2,prior_games,10-13,101,90,6.334,-3.442,17.219,0.109,3,0.667,2,False
+dd_fantasycalc,vorp2,prior_games,rookie,105,105,-15.704,-22.657,-8.555,-0.27,3,1.0,2,True
+dd_fantasycalc,vorp2,prior_games,<=9 games,60,55,-13.235,-22.668,-4.306,-0.227,3,1.0,2,True
+dd_fantasycalc,vorp2,mkt_vs_last_year,aligned (+/-9),255,156,4.778,-3.775,12.823,0.082,3,0.333,2,False
+dd_fantasycalc,vorp2,mkt_vs_last_year,market bullish vs last yr (>=10),101,89,-5.069,-17.396,8.088,-0.087,3,0.667,2,False
+dd_fantasycalc,vorp2,mkt_vs_last_year,n/a (rookie/<6g),126,124,-15.642,-22.065,-9.663,-0.269,3,1.0,2,True
+dd_fantasycalc,vorp2,mkt_vs_last_year,market fades last yr (>=10 spots),118,85,10.717,1.429,20.571,0.184,3,1.0,2,True
+dd_fantasycalc,vorp2,breakout_last_yr,other,390,229,4.045,-2.188,9.692,0.069,3,0.667,2,False
+dd_fantasycalc,vorp2,breakout_last_yr,first VORP season,105,103,0.678,-12.857,13.157,0.012,3,0.333,2,False
+dd_fantasycalc,vorp2,breakout_last_yr,rookie,105,105,-15.704,-22.657,-8.555,-0.27,3,1.0,2,True
+dd_fantasycalc,vorp2,qb_rushing,QB pocket,61,32,-16.837,-29.289,-4.15,-0.289,3,1.0,2,True
+dd_fantasycalc,vorp2,qb_rushing,non-QB,501,264,2.301,-3.304,8.176,0.04,3,0.333,2,False
+dd_fantasycalc,vorp2,rb_receiving,non-RB,417,218,-3.273,-9.24,2.539,-0.056,3,1.0,2,False
+dd_fantasycalc,vorp2,rb_receiving,RB <4 tgt/g,109,62,2.111,-10.305,15.782,0.036,3,0.333,2,False
+dd_fantasycalc,vorp2,rb_receiving,RB >=4 tgt/g,37,23,37.529,9.336,61.117,0.645,3,1.0,2,True
+dd_fantasycalc,vorp2,rb_receiving,RB rookie,37,37,-6.861,-17.843,5.24,-0.118,3,0.333,2,False
+dd_fantasycalc,vorp2,market_tier,1-24,72,45,-2.169,-28.394,19.348,-0.037,3,0.667,2,False
+dd_fantasycalc,vorp2,market_tier,25-60,108,81,-5.55,-18.792,6.827,-0.095,3,0.667,2,False
+dd_fantasycalc,vorp2,market_tier,61-120,180,137,4.197,-3.634,12.732,0.072,3,0.667,2,False
+dd_fantasycalc,vorp2,market_tier,121-200,240,182,-0.0,-5.039,4.765,-0.0,3,0.667,2,False
+dd_fantasycalc,vorp3,position,QB,68,44,-12.204,-28.046,3.798,-0.151,2,1.0,3,False
+dd_fantasycalc,vorp3,position,WR,158,99,6.225,-5.857,19.519,0.077,2,1.0,3,False
+dd_fantasycalc,vorp3,position,RB,120,76,5.48,-11.839,22.648,0.068,2,0.5,3,False
+dd_fantasycalc,vorp3,position,TE,54,37,-15.022,-33.95,4.844,-0.186,2,1.0,3,False
+dd_fantasycalc,vorp3,age_band,26-27,79,62,5.34,-11.622,22.984,0.066,2,1.0,3,False
+dd_fantasycalc,vorp3,age_band,24-25,109,86,-3.888,-19.095,11.268,-0.048,2,0.5,3,False
+dd_fantasycalc,vorp3,age_band,<=23,104,85,-4.084,-17.808,11.619,-0.051,2,0.5,3,False
+dd_fantasycalc,vorp3,age_band,28-29,55,46,-1.933,-21.42,20.435,-0.024,2,0.5,3,False
+dd_fantasycalc,vorp3,age_band,30+,53,37,10.058,-6.927,28.151,0.125,2,0.5,3,False
+dd_fantasycalc,vorp3,pos_x_age,WR young(<=24),72,51,10.812,-8.237,34.453,0.134,2,1.0,3,False
+dd_fantasycalc,vorp3,pos_x_age,RB young(<=24),51,40,-8.321,-34.854,19.265,-0.103,2,0.5,3,False
+dd_fantasycalc,vorp3,pos_x_age,WR old(28+),41,28,19.579,-5.092,43.523,0.243,2,1.0,3,False
+dd_fantasycalc,vorp3,pos_x_age,WR prime(25-27),45,33,-13.283,-32.231,7.325,-0.165,2,1.0,3,False
+dd_fantasycalc,vorp3,pos_x_age,RB prime(25-27),49,38,17.151,-5.448,38.489,0.213,2,1.0,3,False
+dd_fantasycalc,vorp3,experience,year4-6,130,98,-0.772,-14.711,12.115,-0.01,2,0.5,3,False
+dd_fantasycalc,vorp3,experience,year3,57,57,-12.585,-33.59,8.153,-0.156,2,1.0,3,False
+dd_fantasycalc,vorp3,experience,year2,60,60,-9.331,-28.395,10.444,-0.116,2,0.5,3,False
+dd_fantasycalc,vorp3,experience,year7+,92,66,11.396,-5.789,28.971,0.141,2,1.0,3,False
+dd_fantasycalc,vorp3,experience,rookie,61,61,5.396,-9.063,20.193,0.067,2,0.5,3,False
+dd_fantasycalc,vorp3,draft_round,R1,131,80,1.082,-14.018,17.572,0.013,2,0.5,3,False
+dd_fantasycalc,vorp3,draft_round,R2,110,67,-6.604,-21.921,9.477,-0.082,2,0.5,3,False
+dd_fantasycalc,vorp3,draft_round,R4-7,73,51,7.811,-9.422,26.158,0.097,2,1.0,3,False
+dd_fantasycalc,vorp3,draft_round,R3,69,46,-3.004,-20.341,16.292,-0.037,2,1.0,3,False
+dd_fantasycalc,vorp3,prior_games,14+,219,154,0.631,-11.033,13.93,0.008,2,1.0,3,False
+dd_fantasycalc,vorp3,prior_games,10-13,73,69,0.209,-15.056,16.685,0.003,2,0.5,3,False
+dd_fantasycalc,vorp3,prior_games,rookie,61,61,5.396,-9.063,20.193,0.067,2,0.5,3,False
+dd_fantasycalc,vorp3,prior_games,<=9 games,47,44,-10.269,-25.036,4.793,-0.127,2,1.0,3,False
+dd_fantasycalc,vorp3,mkt_vs_last_year,aligned (+/-9),173,127,-2.355,-15.395,11.473,-0.029,2,1.0,3,False
+dd_fantasycalc,vorp3,mkt_vs_last_year,market bullish vs last yr (>=10),79,73,-6.066,-22.752,13.897,-0.075,2,1.0,3,False
+dd_fantasycalc,vorp3,mkt_vs_last_year,n/a (rookie/<6g),77,76,1.394,-12.166,14.74,0.017,2,0.5,3,False
+dd_fantasycalc,vorp3,mkt_vs_last_year,market fades last yr (>=10 spots),71,56,10.976,-2.989,27.09,0.136,2,1.0,3,False
+dd_fantasycalc,vorp3,breakout_last_yr,other,271,197,1.353,-8.018,11.119,0.017,2,0.5,3,False
+dd_fantasycalc,vorp3,breakout_last_yr,first VORP season,68,68,-10.232,-28.118,10.884,-0.127,2,1.0,3,False
+dd_fantasycalc,vorp3,breakout_last_yr,rookie,61,61,5.396,-9.063,20.193,0.067,2,0.5,3,False
+dd_fantasycalc,vorp3,qb_rushing,QB pocket,43,28,-16.558,-32.786,1.684,-0.205,2,1.0,3,False
+dd_fantasycalc,vorp3,qb_rushing,non-QB,332,212,2.5,-6.81,12.036,0.031,2,0.5,3,False
+dd_fantasycalc,vorp3,rb_receiving,non-RB,280,180,-2.348,-10.772,7.775,-0.029,2,1.0,3,False
+dd_fantasycalc,vorp3,rb_receiving,RB <4 tgt/g,73,49,-13.592,-32.38,5.664,-0.169,2,1.0,3,False
+dd_fantasycalc,vorp3,market_tier,1-24,48,37,-2.742,-37.547,36.487,-0.034,2,0.5,3,False
+dd_fantasycalc,vorp3,market_tier,25-60,72,61,-3.713,-25.037,19.527,-0.046,2,0.5,3,False
+dd_fantasycalc,vorp3,market_tier,61-120,120,102,2.657,-10.318,15.762,0.033,2,1.0,3,False
+dd_fantasycalc,vorp3,market_tier,121-200,160,134,0.501,-7.13,8.469,0.006,2,0.5,3,False
+dd_dynastyprocess,vorp1,position,QB,86,40,-0.884,-7.732,6.236,-0.028,3,0.333,1,False
+dd_dynastyprocess,vorp1,position,WR,246,119,-2.454,-6.918,1.163,-0.078,3,0.667,1,False
+dd_dynastyprocess,vorp1,position,RB,182,96,6.344,0.744,11.702,0.203,3,0.667,1,False
+dd_dynastyprocess,vorp1,position,TE,86,44,-5.521,-10.308,-0.117,-0.176,3,1.0,1,True
+dd_dynastyprocess,vorp1,age_band,28-29,82,60,4.583,-3.519,11.599,0.146,3,0.667,1,False
+dd_dynastyprocess,vorp1,age_band,26-27,121,89,-0.482,-6.471,5.195,-0.015,3,0.667,1,False
+dd_dynastyprocess,vorp1,age_band,24-25,171,124,0.334,-4.507,6.105,0.011,3,0.333,1,False
+dd_dynastyprocess,vorp1,age_band,<=23,149,109,-9.114,-13.722,-4.212,-0.291,3,1.0,1,True
+dd_dynastyprocess,vorp1,age_band,30+,77,42,12.774,4.858,21.016,0.408,3,1.0,1,True
+dd_dynastyprocess,vorp1,pos_x_age,QB old(28+),34,18,6.189,-6.018,17.295,0.198,3,0.667,1,False
+dd_dynastyprocess,vorp1,pos_x_age,QB prime(25-27),30,18,-3.401,-13.327,7.429,-0.109,3,0.667,1,False
+dd_dynastyprocess,vorp1,pos_x_age,WR young(<=24),107,70,-7.055,-12.752,-0.735,-0.225,3,1.0,1,True
+dd_dynastyprocess,vorp1,pos_x_age,RB young(<=24),70,47,-0.09,-9.812,10.0,-0.003,3,0.333,1,False
+dd_dynastyprocess,vorp1,pos_x_age,WR prime(25-27),75,48,-6.865,-13.524,-0.057,-0.219,3,1.0,1,True
+dd_dynastyprocess,vorp1,pos_x_age,RB prime(25-27),76,46,7.503,0.03,14.75,0.24,3,0.667,1,False
+dd_dynastyprocess,vorp1,pos_x_age,TE young(<=24),31,23,-8.508,-14.928,-1.916,-0.272,3,1.0,1,True
+dd_dynastyprocess,vorp1,pos_x_age,WR old(28+),64,33,10.405,1.725,17.315,0.333,3,1.0,1,True
+dd_dynastyprocess,vorp1,pos_x_age,TE old(28+),25,13,-4.307,-14.062,5.308,-0.138,3,0.667,1,False
+dd_dynastyprocess,vorp1,pos_x_age,TE prime(25-27),30,20,-3.447,-12.434,7.623,-0.11,3,0.667,1,False
+dd_dynastyprocess,vorp1,pos_x_age,RB old(28+),36,23,16.407,1.316,31.074,0.524,3,0.667,1,False
+dd_dynastyprocess,vorp1,experience,year7+,144,78,11.119,4.839,17.263,0.355,3,1.0,1,True
+dd_dynastyprocess,vorp1,experience,year4-6,175,110,0.754,-3.766,4.591,0.024,3,0.333,1,False
+dd_dynastyprocess,vorp1,experience,year3,85,85,-2.921,-10.539,5.413,-0.093,3,0.667,1,False
+dd_dynastyprocess,vorp1,experience,rookie,97,97,-4.725,-9.06,-0.303,-0.151,3,1.0,1,True
+dd_dynastyprocess,vorp1,experience,year2,99,99,-10.368,-15.753,-4.47,-0.331,3,1.0,1,True
+dd_dynastyprocess,vorp1,draft_round,R1,204,90,-0.882,-6.478,4.844,-0.028,3,0.667,1,False
+dd_dynastyprocess,vorp1,draft_round,R2,148,74,0.106,-5.773,5.567,0.003,3,0.333,1,False
+dd_dynastyprocess,vorp1,draft_round,R4-7,124,68,1.669,-2.89,6.13,0.053,3,1.0,1,False
+dd_dynastyprocess,vorp1,draft_round,R3,102,52,-1.829,-7.279,3.588,-0.058,3,0.333,1,False
+dd_dynastyprocess,vorp1,prior_games,14+,357,204,1.26,-2.978,5.161,0.04,3,0.333,1,False
+dd_dynastyprocess,vorp1,prior_games,10-13,96,83,2.534,-3.56,9.449,0.081,3,0.667,1,False
+dd_dynastyprocess,vorp1,prior_games,rookie,97,97,-4.725,-9.06,-0.303,-0.151,3,1.0,1,True
+dd_dynastyprocess,vorp1,prior_games,<=9 games,50,48,-4.696,-13.57,6.109,-0.15,3,0.667,1,False
+dd_dynastyprocess,vorp1,mkt_vs_last_year,aligned (+/-9),268,160,2.398,-2.155,7.379,0.077,3,0.667,1,False
+dd_dynastyprocess,vorp1,mkt_vs_last_year,market bullish vs last yr (>=10),103,87,-7.609,-13.603,-1.312,-0.243,3,0.667,1,False
+dd_dynastyprocess,vorp1,mkt_vs_last_year,n/a (rookie/<6g),114,110,-3.732,-8.676,1.641,-0.119,3,1.0,1,False
+dd_dynastyprocess,vorp1,mkt_vs_last_year,market fades last yr (>=10 spots),115,83,4.926,-0.29,10.064,0.157,3,1.0,1,False
+dd_dynastyprocess,vorp1,breakout_last_yr,other,396,229,1.735,-1.724,5.01,0.055,3,0.667,1,False
+dd_dynastyprocess,vorp1,breakout_last_yr,first VORP season,107,104,-2.139,-9.228,5.353,-0.068,3,0.667,1,False
+dd_dynastyprocess,vorp1,breakout_last_yr,rookie,97,97,-4.725,-9.06,-0.303,-0.151,3,1.0,1,True
+dd_dynastyprocess,vorp1,qb_rushing,QB pocket,51,25,-3.117,-12.352,5.703,-0.1,3,0.667,1,False
+dd_dynastyprocess,vorp1,qb_rushing,non-QB,514,259,0.148,-2.79,3.105,0.005,3,0.667,1,False
+dd_dynastyprocess,vorp1,rb_receiving,non-RB,418,203,-2.762,-5.784,0.135,-0.088,3,1.0,1,False
+dd_dynastyprocess,vorp1,rb_receiving,RB rookie,33,33,-4.712,-12.187,2.662,-0.151,3,1.0,1,False
+dd_dynastyprocess,vorp1,rb_receiving,RB >=4 tgt/g,33,22,24.274,5.451,41.894,0.776,3,0.667,1,False
+dd_dynastyprocess,vorp1,rb_receiving,RB <4 tgt/g,116,74,4.389,-2.375,10.243,0.14,3,0.667,1,False
+dd_dynastyprocess,vorp1,market_tier,1-24,72,39,-1.806,-13.739,13.111,-0.058,3,0.667,1,False
+dd_dynastyprocess,vorp1,market_tier,25-60,108,73,-1.247,-9.305,7.246,-0.04,3,0.333,1,False
+dd_dynastyprocess,vorp1,market_tier,121-200,240,187,0.439,-1.918,3.07,0.014,3,0.667,1,False
+dd_dynastyprocess,vorp1,market_tier,61-120,180,131,0.885,-3.412,5.397,0.028,3,0.667,1,False
+dd_dynastyprocess,vorp2,position,QB,58,36,0.903,-12.022,16.439,0.015,2,0.5,2,False
+dd_dynastyprocess,vorp2,position,WR,162,104,-3.527,-12.342,4.585,-0.06,2,1.0,2,False
+dd_dynastyprocess,vorp2,position,RB,126,83,8.812,-4.819,23.046,0.151,2,0.5,2,False
+dd_dynastyprocess,vorp2,position,TE,54,34,-10.949,-23.193,1.531,-0.187,2,1.0,2,False
+dd_dynastyprocess,vorp2,age_band,28-29,56,45,3.294,-11.624,19.408,0.056,2,0.5,2,False
+dd_dynastyprocess,vorp2,age_band,26-27,76,61,-5.187,-15.562,5.436,-0.089,2,1.0,2,False
+dd_dynastyprocess,vorp2,age_band,24-25,118,94,-3.065,-13.349,7.332,-0.052,2,0.5,2,False
+dd_dynastyprocess,vorp2,age_band,<=23,103,83,-4.225,-17.745,9.696,-0.072,2,0.5,2,False
+dd_dynastyprocess,vorp2,age_band,30+,47,31,21.415,3.397,39.785,0.366,2,1.0,2,False
+dd_dynastyprocess,vorp2,pos_x_age,WR young(<=24),74,56,-3.195,-15.916,8.975,-0.055,2,1.0,2,False
+dd_dynastyprocess,vorp2,pos_x_age,RB young(<=24),50,38,11.193,-13.009,37.682,0.191,2,1.0,2,False
+dd_dynastyprocess,vorp2,pos_x_age,WR prime(25-27),47,36,-16.549,-29.944,-4.121,-0.283,2,1.0,2,False
+dd_dynastyprocess,vorp2,pos_x_age,RB prime(25-27),51,34,-0.155,-12.268,13.176,-0.003,2,0.5,2,False
+dd_dynastyprocess,vorp2,pos_x_age,WR old(28+),41,26,10.8,-5.654,26.673,0.185,2,0.5,2,False
+dd_dynastyprocess,vorp2,pos_x_age,RB old(28+),25,19,22.341,-12.028,59.319,0.382,2,0.5,2,False
+dd_dynastyprocess,vorp2,experience,year7+,94,63,14.97,2.002,28.226,0.256,2,1.0,2,False
+dd_dynastyprocess,vorp2,experience,year4-6,114,80,-6.394,-14.731,2.024,-0.109,2,1.0,2,False
+dd_dynastyprocess,vorp2,experience,year3,58,58,-6.856,-21.265,7.479,-0.117,2,0.5,2,False
+dd_dynastyprocess,vorp2,experience,rookie,66,66,-2.892,-13.263,8.24,-0.049,2,0.5,2,False
+dd_dynastyprocess,vorp2,experience,year2,68,68,-1.319,-16.125,14.349,-0.023,2,0.5,2,False
+dd_dynastyprocess,vorp2,draft_round,R1,131,79,2.695,-9.787,15.057,0.046,2,0.5,2,False
+dd_dynastyprocess,vorp2,draft_round,R2,99,62,-5.321,-17.44,8.132,-0.091,2,0.5,2,False
+dd_dynastyprocess,vorp2,draft_round,R4-7,84,59,2.326,-6.219,11.909,0.04,2,0.5,2,False
+dd_dynastyprocess,vorp2,draft_round,R3,70,45,-0.771,-13.428,13.158,-0.013,2,0.5,2,False
+dd_dynastyprocess,vorp2,prior_games,14+,234,169,2.211,-6.094,10.467,0.038,2,0.5,2,False
+dd_dynastyprocess,vorp2,prior_games,10-13,67,62,7.666,-6.273,22.446,0.131,2,0.5,2,False
+dd_dynastyprocess,vorp2,prior_games,rookie,66,66,-2.892,-13.263,8.24,-0.049,2,0.5,2,False
+dd_dynastyprocess,vorp2,prior_games,<=9 games,33,31,-25.46,-34.251,-17.173,-0.436,2,1.0,2,False
+dd_dynastyprocess,vorp2,mkt_vs_last_year,aligned (+/-9),172,126,1.212,-8.397,10.977,0.021,2,0.5,2,False
+dd_dynastyprocess,vorp2,mkt_vs_last_year,market bullish vs last yr (>=10),74,65,-8.111,-20.078,5.541,-0.139,2,0.5,2,False
+dd_dynastyprocess,vorp2,mkt_vs_last_year,n/a (rookie/<6g),77,76,-5.842,-15.03,4.425,-0.1,2,0.5,2,False
+dd_dynastyprocess,vorp2,mkt_vs_last_year,market fades last yr (>=10 spots),77,63,10.93,0.237,22.683,0.187,2,1.0,2,False
+dd_dynastyprocess,vorp2,breakout_last_yr,other,264,188,1.026,-5.826,8.426,0.018,2,0.5,2,False
+dd_dynastyprocess,vorp2,breakout_last_yr,first VORP season,70,70,-1.141,-16.019,14.089,-0.02,2,0.5,2,False
+dd_dynastyprocess,vorp2,breakout_last_yr,rookie,66,66,-2.892,-13.263,8.24,-0.049,2,0.5,2,False
+dd_dynastyprocess,vorp2,qb_rushing,QB pocket,35,23,-5.805,-21.117,8.528,-0.099,2,0.5,2,False
+dd_dynastyprocess,vorp2,qb_rushing,non-QB,342,221,-0.153,-6.733,6.18,-0.003,2,0.5,2,False
+dd_dynastyprocess,vorp2,rb_receiving,non-RB,274,174,-4.052,-10.535,1.832,-0.069,2,1.0,2,False
+dd_dynastyprocess,vorp2,rb_receiving,RB >=4 tgt/g,25,19,33.546,-0.602,68.222,0.574,2,1.0,2,False
+dd_dynastyprocess,vorp2,rb_receiving,RB <4 tgt/g,78,57,1.559,-12.633,18.57,0.027,2,0.5,2,False
+dd_dynastyprocess,vorp2,market_tier,1-24,48,31,-3.847,-29.738,22.309,-0.066,2,0.5,2,False
+dd_dynastyprocess,vorp2,market_tier,25-60,72,60,1.233,-16.072,17.482,0.021,2,0.5,2,False
+dd_dynastyprocess,vorp2,market_tier,121-200,160,138,1.13,-4.121,5.947,0.019,2,0.5,2,False
+dd_dynastyprocess,vorp2,market_tier,61-120,120,100,-0.709,-10.322,8.753,-0.012,2,0.5,2,False
+dd_dynastyprocess,vorp3,position,QB,30,30,-1.597,-21.074,20.91,-0.02,1,1.0,3,False
+dd_dynastyprocess,vorp3,position,WR,80,80,-1.266,-15.883,12.802,-0.016,1,1.0,3,False
+dd_dynastyprocess,vorp3,position,RB,62,62,8.511,-12.65,32.292,0.105,1,1.0,3,False
+dd_dynastyprocess,vorp3,position,TE,28,28,-13.518,-32.615,8.863,-0.167,1,1.0,3,False
+dd_dynastyprocess,vorp3,age_band,28-29,31,31,-18.381,-38.268,1.817,-0.227,1,1.0,3,False
+dd_dynastyprocess,vorp3,age_band,26-27,37,37,1.42,-19.472,21.811,0.018,1,1.0,3,False
+dd_dynastyprocess,vorp3,age_band,24-25,58,58,-4.499,-22.01,14.871,-0.056,1,1.0,3,False
+dd_dynastyprocess,vorp3,age_band,<=23,51,51,1.601,-19.98,25.756,0.02,1,1.0,3,False
+dd_dynastyprocess,vorp3,pos_x_age,WR young(<=24),35,35,8.195,-17.818,36.804,0.101,1,1.0,3,False
+dd_dynastyprocess,vorp3,experience,year7+,49,49,9.62,-10.565,29.928,0.119,1,1.0,3,False
+dd_dynastyprocess,vorp3,experience,year4-6,62,62,-13.476,-26.098,0.885,-0.166,1,1.0,3,False
+dd_dynastyprocess,vorp3,experience,year3,26,26,-11.393,-38.803,20.249,-0.141,1,1.0,3,False
+dd_dynastyprocess,vorp3,experience,rookie,29,29,30.503,-0.89,64.298,0.377,1,1.0,3,False
+dd_dynastyprocess,vorp3,experience,year2,34,34,-6.595,-28.884,17.766,-0.081,1,1.0,3,False
+dd_dynastyprocess,vorp3,draft_round,R1,64,64,4.562,-15.138,23.941,0.056,1,1.0,3,False
+dd_dynastyprocess,vorp3,draft_round,R2,54,54,-4.633,-23.315,18.308,-0.057,1,1.0,3,False
+dd_dynastyprocess,vorp3,draft_round,R4-7,40,40,-3.668,-18.96,11.324,-0.045,1,1.0,3,False
+dd_dynastyprocess,vorp3,draft_round,R3,34,34,-0.234,-23.697,23.487,-0.003,1,1.0,3,False
+dd_dynastyprocess,vorp3,prior_games,14+,114,114,-3.009,-15.534,10.258,-0.037,1,1.0,3,False
+dd_dynastyprocess,vorp3,prior_games,10-13,37,37,-2.83,-24.032,20.619,-0.035,1,1.0,3,False
+dd_dynastyprocess,vorp3,prior_games,rookie,29,29,30.503,-0.89,64.298,0.377,1,1.0,3,False
+dd_dynastyprocess,vorp3,mkt_vs_last_year,aligned (+/-9),86,86,-5.584,-19.973,8.386,-0.069,1,1.0,3,False
+dd_dynastyprocess,vorp3,mkt_vs_last_year,market bullish vs last yr (>=10),42,42,-16.283,-35.914,7.041,-0.201,1,1.0,3,False
+dd_dynastyprocess,vorp3,mkt_vs_last_year,n/a (rookie/<6g),35,35,23.4,-3.205,52.89,0.289,1,1.0,3,False
+dd_dynastyprocess,vorp3,mkt_vs_last_year,market fades last yr (>=10 spots),37,37,9.327,-11.989,30.681,0.115,1,1.0,3,False
+dd_dynastyprocess,vorp3,breakout_last_yr,other,139,139,-0.013,-10.086,12.095,-0.0,1,1.0,3,False
+dd_dynastyprocess,vorp3,breakout_last_yr,first VORP season,32,32,-27.587,-45.167,-9.64,-0.341,1,1.0,3,False
+dd_dynastyprocess,vorp3,breakout_last_yr,rookie,29,29,30.503,-0.89,64.298,0.377,1,1.0,3,False
+dd_dynastyprocess,vorp3,qb_rushing,non-QB,170,170,0.282,-10.746,12.029,0.003,1,1.0,3,False
+dd_dynastyprocess,vorp3,rb_receiving,non-RB,138,138,-3.824,-14.074,6.586,-0.047,1,1.0,3,False
+dd_dynastyprocess,vorp3,rb_receiving,RB <4 tgt/g,39,39,-14.309,-34.713,9.838,-0.177,1,1.0,3,False
+dd_dynastyprocess,vorp3,market_tier,25-60,36,36,-5.219,-31.057,23.246,-0.064,1,1.0,3,False
+dd_dynastyprocess,vorp3,market_tier,121-200,80,80,3.041,-6.927,14.3,0.038,1,1.0,3,False
+dd_dynastyprocess,vorp3,market_tier,61-120,60,60,-0.923,-21.132,19.157,-0.011,1,1.0,3,False
+dd_dynastysuperflex,vorp1,position,QB,65,39,-9.132,-16.873,-0.963,-0.276,2,0.5,1,False
+dd_dynastysuperflex,vorp1,position,WR,166,100,-3.447,-8.178,1.146,-0.104,2,1.0,1,False
+dd_dynastysuperflex,vorp1,position,RB,116,76,13.083,5.107,20.549,0.396,2,1.0,1,False
+dd_dynastysuperflex,vorp1,position,TE,53,33,-6.637,-12.668,-0.556,-0.201,2,1.0,1,False
+dd_dynastysuperflex,vorp1,age_band,28-29,50,41,10.575,0.099,20.3,0.32,2,1.0,1,False
+dd_dynastysuperflex,vorp1,age_band,<=23,100,82,-8.946,-14.369,-2.958,-0.27,2,1.0,1,False
+dd_dynastysuperflex,vorp1,age_band,24-25,111,87,1.436,-5.349,7.758,0.043,2,0.5,1,False
+dd_dynastysuperflex,vorp1,age_band,26-27,82,64,-1.375,-8.072,6.258,-0.042,2,0.5,1,False
+dd_dynastysuperflex,vorp1,age_band,30+,57,38,5.6,-2.908,15.255,0.169,2,1.0,1,False
+dd_dynastysuperflex,vorp1,pos_x_age,QB old(28+),27,18,0.747,-11.124,11.827,0.023,2,0.5,1,False
+dd_dynastysuperflex,vorp1,pos_x_age,WR prime(25-27),51,34,-9.067,-18.45,0.328,-0.274,2,1.0,1,False
+dd_dynastysuperflex,vorp1,pos_x_age,WR young(<=24),73,54,-4.135,-12.464,4.36,-0.125,2,1.0,1,False
+dd_dynastysuperflex,vorp1,pos_x_age,RB young(<=24),47,37,2.133,-8.721,13.661,0.064,2,0.5,1,False
+dd_dynastysuperflex,vorp1,pos_x_age,WR old(28+),42,27,4.572,-3.125,12.269,0.138,2,1.0,1,False
+dd_dynastysuperflex,vorp1,pos_x_age,RB prime(25-27),47,36,15.226,4.494,26.277,0.46,2,1.0,1,False
+dd_dynastysuperflex,vorp1,experience,year7+,97,62,8.463,1.053,16.646,0.256,2,1.0,1,False
+dd_dynastysuperflex,vorp1,experience,year2,62,62,-10.281,-18.633,-1.386,-0.311,2,1.0,1,False
+dd_dynastysuperflex,vorp1,experience,year4-6,111,80,3.33,-3.165,9.901,0.101,2,0.5,1,False
+dd_dynastysuperflex,vorp1,experience,rookie,72,72,-8.651,-13.879,-3.426,-0.262,2,1.0,1,False
+dd_dynastysuperflex,vorp1,experience,year3,58,58,1.202,-8.272,9.521,0.036,2,0.5,1,False
+dd_dynastysuperflex,vorp1,draft_round,R1,144,81,-3.276,-10.257,3.675,-0.099,2,1.0,1,False
+dd_dynastysuperflex,vorp1,draft_round,R2,91,56,5.412,-3.156,13.982,0.164,2,0.5,1,False
+dd_dynastysuperflex,vorp1,draft_round,R4-7,85,56,0.813,-4.538,5.963,0.025,2,0.5,1,False
+dd_dynastysuperflex,vorp1,draft_round,R3,66,44,-2.892,-8.731,3.259,-0.087,2,0.5,1,False
+dd_dynastysuperflex,vorp1,prior_games,14+,239,166,0.988,-4.757,6.391,0.03,2,0.5,1,False
+dd_dynastysuperflex,vorp1,prior_games,10-13,59,56,7.89,-0.56,15.546,0.239,2,1.0,1,False
+dd_dynastysuperflex,vorp1,prior_games,rookie,72,72,-8.651,-13.879,-3.426,-0.262,2,1.0,1,False
+dd_dynastysuperflex,vorp1,prior_games,<=9 games,30,30,-2.626,-15.225,14.919,-0.079,2,0.5,1,False
+dd_dynastysuperflex,vorp1,mkt_vs_last_year,aligned (+/-9),180,131,1.95,-5.051,7.964,0.059,2,0.5,1,False
+dd_dynastysuperflex,vorp1,mkt_vs_last_year,market bullish vs last yr (>=10),59,56,-0.584,-9.419,8.028,-0.018,2,0.5,1,False
+dd_dynastysuperflex,vorp1,mkt_vs_last_year,n/a (rookie/<6g),83,80,-7.103,-13.416,-0.081,-0.215,2,1.0,1,False
+dd_dynastysuperflex,vorp1,mkt_vs_last_year,market fades last yr (>=10 spots),78,64,3.499,-2.431,8.965,0.106,2,1.0,1,False
+dd_dynastysuperflex,vorp1,breakout_last_yr,other,253,184,2.461,-1.968,7.064,0.074,2,0.5,1,False
+dd_dynastysuperflex,vorp1,breakout_last_yr,first VORP season,75,75,0.002,-9.815,9.328,0.0,2,0.5,1,False
+dd_dynastysuperflex,vorp1,breakout_last_yr,rookie,72,72,-8.651,-13.879,-3.426,-0.262,2,1.0,1,False
+dd_dynastysuperflex,vorp1,qb_rushing,QB pocket,39,24,-10.995,-22.081,-0.593,-0.332,2,0.5,1,False
+dd_dynastysuperflex,vorp1,qb_rushing,non-QB,335,209,1.772,-2.186,5.807,0.054,2,1.0,1,False
+dd_dynastysuperflex,vorp1,rb_receiving,non-RB,284,172,-5.344,-9.117,-1.845,-0.162,2,1.0,1,False
+dd_dynastysuperflex,vorp1,rb_receiving,RB <4 tgt/g,72,56,13.088,4.197,21.92,0.396,2,1.0,1,False
+dd_dynastysuperflex,vorp1,market_tier,1-24,48,36,-1.061,-15.735,14.682,-0.032,2,0.5,1,False
+dd_dynastysuperflex,vorp1,market_tier,25-60,72,58,-2.464,-13.904,9.611,-0.074,2,0.5,1,False
+dd_dynastysuperflex,vorp1,market_tier,61-120,120,95,0.594,-5.452,6.476,0.018,2,0.5,1,False
+dd_dynastysuperflex,vorp1,market_tier,121-200,160,131,0.982,-2.155,4.006,0.03,2,1.0,1,False
+dd_dynastysuperflex,vorp2,position,QB,36,36,-27.22,-43.324,-11.3,-0.429,1,1.0,2,False
+dd_dynastysuperflex,vorp2,position,WR,82,82,-2.584,-12.926,8.217,-0.041,1,1.0,2,False
+dd_dynastysuperflex,vorp2,position,RB,58,58,25.906,10.098,43.056,0.408,1,1.0,2,False
+dd_dynastysuperflex,vorp2,age_band,28-29,26,26,14.86,-6.932,36.725,0.234,1,1.0,2,False
+dd_dynastysuperflex,vorp2,age_band,<=23,51,51,-0.013,-18.212,19.93,-0.0,1,1.0,2,False
+dd_dynastysuperflex,vorp2,age_band,24-25,60,60,-1.278,-13.929,12.795,-0.02,1,1.0,2,False
+dd_dynastysuperflex,vorp2,age_band,26-27,36,36,-14.054,-30.004,0.148,-0.222,1,1.0,2,False
+dd_dynastysuperflex,vorp2,age_band,30+,27,27,7.293,-10.005,26.876,0.115,1,1.0,2,False
+dd_dynastysuperflex,vorp2,pos_x_age,WR young(<=24),39,39,0.698,-14.906,17.805,0.011,1,1.0,2,False
+dd_dynastysuperflex,vorp2,pos_x_age,RB young(<=24),25,25,22.037,-4.278,54.273,0.347,1,1.0,2,False
+dd_dynastysuperflex,vorp2,experience,year7+,49,49,11.628,-4.005,25.584,0.183,1,1.0,2,False
+dd_dynastysuperflex,vorp2,experience,year2,33,33,9.867,-15.934,37.547,0.156,1,1.0,2,False
+dd_dynastysuperflex,vorp2,experience,year4-6,50,50,-9.071,-22.414,3.031,-0.143,1,1.0,2,False
+dd_dynastysuperflex,vorp2,experience,rookie,37,37,-20.153,-30.519,-8.49,-0.318,1,1.0,2,False
+dd_dynastysuperflex,vorp2,experience,year3,31,31,9.801,-7.584,30.99,0.155,1,1.0,2,False
+dd_dynastysuperflex,vorp2,draft_round,R1,71,71,-7.674,-23.959,8.038,-0.121,1,1.0,2,False
+dd_dynastysuperflex,vorp2,draft_round,R2,44,44,9.52,-8.403,26.72,0.15,1,1.0,2,False
+dd_dynastysuperflex,vorp2,draft_round,R4-7,43,43,4.128,-7.493,17.363,0.065,1,1.0,2,False
+dd_dynastysuperflex,vorp2,draft_round,R3,34,34,-2.435,-16.11,13.188,-0.038,1,1.0,2,False
+dd_dynastysuperflex,vorp2,prior_games,14+,118,118,4.001,-7.461,14.363,0.063,1,1.0,2,False
+dd_dynastysuperflex,vorp2,prior_games,10-13,31,31,23.62,0.881,46.871,0.372,1,1.0,2,False
+dd_dynastysuperflex,vorp2,prior_games,rookie,37,37,-20.153,-30.519,-8.49,-0.318,1,1.0,2,False
+dd_dynastysuperflex,vorp2,mkt_vs_last_year,aligned (+/-9),89,89,3.278,-10.319,16.722,0.052,1,1.0,2,False
+dd_dynastysuperflex,vorp2,mkt_vs_last_year,market bullish vs last yr (>=10),31,31,8.86,-11.456,30.23,0.14,1,1.0,2,False
+dd_dynastysuperflex,vorp2,mkt_vs_last_year,n/a (rookie/<6g),42,42,-21.617,-32.051,-10.469,-0.341,1,1.0,2,False
+dd_dynastysuperflex,vorp2,mkt_vs_last_year,market fades last yr (>=10 spots),38,38,8.987,-2.473,22.595,0.142,1,1.0,2,False
+dd_dynastysuperflex,vorp2,breakout_last_yr,other,125,125,2.765,-6.508,11.407,0.044,1,1.0,2,False
+dd_dynastysuperflex,vorp2,breakout_last_yr,first VORP season,38,38,10.528,-17.71,37.202,0.166,1,1.0,2,False
+dd_dynastysuperflex,vorp2,breakout_last_yr,rookie,37,37,-20.153,-30.519,-8.49,-0.318,1,1.0,2,False
+dd_dynastysuperflex,vorp2,qb_rushing,non-QB,164,164,5.975,-2.823,14.304,0.094,1,1.0,2,False
+dd_dynastysuperflex,vorp2,rb_receiving,non-RB,142,142,-10.581,-17.94,-2.755,-0.167,1,1.0,2,False
+dd_dynastysuperflex,vorp2,rb_receiving,RB <4 tgt/g,34,34,28.385,6.031,49.098,0.448,1,1.0,2,False
+dd_dynastysuperflex,vorp2,market_tier,25-60,36,36,-4.863,-29.177,21.579,-0.077,1,1.0,2,False
+dd_dynastysuperflex,vorp2,market_tier,61-120,60,60,4.764,-7.912,17.656,0.075,1,1.0,2,False
+dd_dynastysuperflex,vorp2,market_tier,121-200,80,80,1.222,-5.415,9.628,0.019,1,1.0,2,False
+dd_pfn,vorp1,position,QB,51,30,8.496,0.471,16.86,0.259,2,1.0,1,False
+dd_pfn,vorp1,position,WR,171,106,-4.349,-9.246,0.409,-0.132,2,1.0,1,False
+dd_pfn,vorp1,position,RB,126,80,5.107,-1.437,11.098,0.156,2,1.0,1,False
+dd_pfn,vorp1,position,TE,52,33,-6.407,-12.921,-0.262,-0.195,2,1.0,1,False
+dd_pfn,vorp1,age_band,28-29,49,38,12.558,3.72,21.193,0.383,2,1.0,1,False
+dd_pfn,vorp1,age_band,<=23,98,81,-10.095,-15.353,-4.43,-0.308,2,1.0,1,False
+dd_pfn,vorp1,age_band,24-25,112,88,2.768,-3.951,9.733,0.084,2,0.5,1,False
+dd_pfn,vorp1,age_band,26-27,83,65,-2.22,-9.615,5.169,-0.068,2,0.5,1,False
+dd_pfn,vorp1,age_band,30+,58,41,4.279,-4.675,13.054,0.13,2,1.0,1,False
+dd_pfn,vorp1,pos_x_age,WR prime(25-27),52,36,-6.1,-16.162,3.698,-0.186,2,1.0,1,False
+dd_pfn,vorp1,pos_x_age,WR young(<=24),76,57,-7.483,-14.716,-0.393,-0.228,2,1.0,1,False
+dd_pfn,vorp1,pos_x_age,RB young(<=24),48,37,-4.541,-14.291,5.926,-0.138,2,1.0,1,False
+dd_pfn,vorp1,pos_x_age,WR old(28+),43,28,3.307,-5.356,13.35,0.101,2,1.0,1,False
+dd_pfn,vorp1,pos_x_age,RB prime(25-27),54,40,7.052,-2.667,16.804,0.215,2,1.0,1,False
+dd_pfn,vorp1,experience,year7+,98,64,7.304,0.291,14.233,0.223,2,1.0,1,False
+dd_pfn,vorp1,experience,year2,62,62,-12.584,-20.353,-4.415,-0.383,2,1.0,1,False
+dd_pfn,vorp1,experience,year4-6,112,82,5.604,-0.785,11.952,0.171,2,1.0,1,False
+dd_pfn,vorp1,experience,rookie,70,70,-7.598,-12.64,-1.907,-0.231,2,1.0,1,False
+dd_pfn,vorp1,experience,year3,58,58,-0.54,-9.296,8.887,-0.016,2,0.5,1,False
+dd_pfn,vorp1,draft_round,R1,136,77,1.717,-4.185,8.607,0.052,2,0.5,1,False
+dd_pfn,vorp1,draft_round,R2,88,56,3.843,-4.749,12.479,0.117,2,0.5,1,False
+dd_pfn,vorp1,draft_round,R4-7,89,59,-1.609,-7.32,3.717,-0.049,2,1.0,1,False
+dd_pfn,vorp1,draft_round,R3,71,45,-6.001,-11.595,-0.698,-0.183,2,1.0,1,False
+dd_pfn,vorp1,prior_games,14+,237,165,0.417,-4.421,5.283,0.013,2,0.5,1,False
+dd_pfn,vorp1,prior_games,10-13,62,58,6.687,-1.452,15.329,0.204,2,1.0,1,False
+dd_pfn,vorp1,prior_games,rookie,70,70,-7.598,-12.64,-1.907,-0.231,2,1.0,1,False
+dd_pfn,vorp1,prior_games,<=9 games,31,30,0.592,-12.273,15.742,0.018,2,0.5,1,False
+dd_pfn,vorp1,mkt_vs_last_year,aligned (+/-9),185,134,3.065,-2.503,8.589,0.093,2,0.5,1,False
+dd_pfn,vorp1,mkt_vs_last_year,market bullish vs last yr (>=10),54,52,-6.475,-15.317,2.291,-0.197,2,1.0,1,False
+dd_pfn,vorp1,mkt_vs_last_year,n/a (rookie/<6g),81,79,-5.792,-11.464,1.238,-0.176,2,1.0,1,False
+dd_pfn,vorp1,mkt_vs_last_year,market fades last yr (>=10 spots),80,63,3.148,-2.764,8.731,0.096,2,1.0,1,False
+dd_pfn,vorp1,breakout_last_yr,other,256,187,2.97,-1.058,6.563,0.09,2,1.0,1,False
+dd_pfn,vorp1,breakout_last_yr,first VORP season,74,74,-3.089,-12.506,5.988,-0.094,2,1.0,1,False
+dd_pfn,vorp1,breakout_last_yr,rookie,70,70,-7.598,-12.64,-1.907,-0.231,2,1.0,1,False
+dd_pfn,vorp1,qb_rushing,QB pocket,30,18,3.253,-6.047,13.284,0.099,2,0.5,1,False
+dd_pfn,vorp1,qb_rushing,non-QB,349,219,-1.242,-4.717,2.228,-0.038,2,1.0,1,False
+dd_pfn,vorp1,rb_receiving,non-RB,274,169,-2.349,-6.046,1.259,-0.072,2,1.0,1,False
+dd_pfn,vorp1,rb_receiving,RB <4 tgt/g,80,60,5.014,-3.008,12.392,0.153,2,1.0,1,False
+dd_pfn,vorp1,rb_receiving,RB rookie,25,25,-11.098,-19.231,-2.333,-0.338,2,1.0,1,False
+dd_pfn,vorp1,market_tier,25-60,72,60,-1.441,-12.162,9.905,-0.044,2,0.5,1,False
+dd_pfn,vorp1,market_tier,61-120,120,97,0.019,-5.616,5.233,0.001,2,0.5,1,False
+dd_pfn,vorp1,market_tier,1-24,48,36,-0.302,-17.728,16.907,-0.009,2,0.5,1,False
+dd_pfn,vorp1,market_tier,121-200,160,135,0.725,-2.309,3.915,0.022,2,1.0,1,False
+dd_pfn,vorp2,position,QB,28,28,19.531,2.757,36.679,0.307,1,1.0,2,False
+dd_pfn,vorp2,position,WR,85,85,-12.187,-22.039,-1.259,-0.191,1,1.0,2,False
+dd_pfn,vorp2,position,RB,62,62,11.206,-2.41,28.209,0.176,1,1.0,2,False
+dd_pfn,vorp2,position,TE,25,25,-8.231,-22.902,6.583,-0.129,1,1.0,2,False
+dd_pfn,vorp2,age_band,<=23,51,51,-2.171,-16.461,13.265,-0.034,1,1.0,2,False
+dd_pfn,vorp2,age_band,24-25,62,62,-1.299,-14.112,12.376,-0.02,1,1.0,2,False
+dd_pfn,vorp2,age_band,26-27,36,36,-12.386,-27.039,2.346,-0.195,1,1.0,2,False
+dd_pfn,vorp2,age_band,30+,27,27,9.592,-10.039,29.209,0.151,1,1.0,2,False
+dd_pfn,vorp2,pos_x_age,WR young(<=24),43,43,-10.384,-24.968,5.748,-0.163,1,1.0,2,False
+dd_pfn,vorp2,pos_x_age,RB young(<=24),25,25,5.96,-15.056,31.737,0.094,1,1.0,2,False
+dd_pfn,vorp2,pos_x_age,RB prime(25-27),26,26,6.818,-14.056,26.664,0.107,1,1.0,2,False
+dd_pfn,vorp2,experience,year7+,48,48,11.507,-2.102,26.506,0.181,1,1.0,2,False
+dd_pfn,vorp2,experience,year2,33,33,3.265,-19.005,27.64,0.051,1,1.0,2,False
+dd_pfn,vorp2,experience,year4-6,50,50,-1.246,-13.175,10.522,-0.02,1,1.0,2,False
+dd_pfn,vorp2,experience,rookie,40,40,-15.415,-27.462,-4.771,-0.242,1,1.0,2,False
+dd_pfn,vorp2,experience,year3,29,29,0.649,-18.954,19.093,0.01,1,1.0,2,False
+dd_pfn,vorp2,draft_round,R1,68,68,2.141,-12.315,16.031,0.034,1,1.0,2,False
+dd_pfn,vorp2,draft_round,R2,44,44,2.96,-14.351,20.562,0.046,1,1.0,2,False
+dd_pfn,vorp2,draft_round,R4-7,45,45,1.54,-11.044,17.59,0.024,1,1.0,2,False
+dd_pfn,vorp2,draft_round,R3,36,36,-8.742,-21.625,6.544,-0.137,1,1.0,2,False
+dd_pfn,vorp2,prior_games,14+,114,114,2.744,-6.469,12.675,0.043,1,1.0,2,False
+dd_pfn,vorp2,prior_games,10-13,32,32,17.644,-3.385,39.699,0.277,1,1.0,2,False
+dd_pfn,vorp2,prior_games,rookie,40,40,-15.415,-27.462,-4.771,-0.242,1,1.0,2,False
+dd_pfn,vorp2,mkt_vs_last_year,aligned (+/-9),87,87,3.79,-7.322,15.772,0.06,1,1.0,2,False
+dd_pfn,vorp2,mkt_vs_last_year,market bullish vs last yr (>=10),29,29,8.333,-11.247,30.167,0.131,1,1.0,2,False
+dd_pfn,vorp2,mkt_vs_last_year,n/a (rookie/<6g),45,45,-15.818,-26.716,-6.453,-0.248,1,1.0,2,False
+dd_pfn,vorp2,mkt_vs_last_year,market fades last yr (>=10 spots),39,39,3.601,-9.403,16.231,0.057,1,1.0,2,False
+dd_pfn,vorp2,breakout_last_yr,other,122,122,3.788,-4.277,12.757,0.059,1,1.0,2,False
+dd_pfn,vorp2,breakout_last_yr,first VORP season,38,38,4.064,-16.408,29.922,0.064,1,1.0,2,False
+dd_pfn,vorp2,breakout_last_yr,rookie,40,40,-15.415,-27.462,-4.771,-0.242,1,1.0,2,False
+dd_pfn,vorp2,qb_rushing,non-QB,172,172,-3.179,-10.651,4.687,-0.05,1,1.0,2,False
+dd_pfn,vorp2,rb_receiving,non-RB,138,138,-5.035,-12.574,3.621,-0.079,1,1.0,2,False
+dd_pfn,vorp2,rb_receiving,RB <4 tgt/g,36,36,19.916,0.429,41.001,0.313,1,1.0,2,False
+dd_pfn,vorp2,market_tier,25-60,36,36,3.484,-20.325,31.588,0.055,1,1.0,2,False
+dd_pfn,vorp2,market_tier,61-120,60,60,-3.341,-11.835,5.633,-0.052,1,1.0,2,False
+dd_pfn,vorp2,market_tier,121-200,80,80,3.265,-4.608,11.92,0.051,1,1.0,2,False
+dd_draftsharks,vorp1,position,QB,27,27,3.558,-7.437,16.224,0.104,1,1.0,1,False
+dd_draftsharks,vorp1,position,WR,85,85,-7.182,-14.561,1.195,-0.21,1,1.0,1,False
+dd_draftsharks,vorp1,position,RB,59,59,11.116,1.53,22.806,0.325,1,1.0,1,False
+dd_draftsharks,vorp1,position,TE,29,29,-4.879,-12.889,3.129,-0.143,1,1.0,1,False
+dd_draftsharks,vorp1,age_band,24-25,54,54,6.857,-3.092,17.739,0.2,1,1.0,1,False
+dd_draftsharks,vorp1,age_band,28-29,25,25,2.014,-11.788,17.038,0.059,1,1.0,1,False
+dd_draftsharks,vorp1,age_band,26-27,43,43,9.177,-1.693,20.959,0.268,1,1.0,1,False
+dd_draftsharks,vorp1,age_band,<=23,50,50,-18.706,-26.792,-11.67,-0.547,1,1.0,1,False
+dd_draftsharks,vorp1,age_band,30+,28,28,4.287,-6.002,16.856,0.125,1,1.0,1,False
+dd_draftsharks,vorp1,pos_x_age,WR prime(25-27),29,29,-6.212,-17.8,5.663,-0.182,1,1.0,1,False
+dd_draftsharks,vorp1,pos_x_age,WR young(<=24),35,35,-11.678,-25.158,3.86,-0.341,1,1.0,1,False
+dd_draftsharks,vorp1,pos_x_age,RB prime(25-27),26,26,23.758,9.638,39.699,0.694,1,1.0,1,False
+dd_draftsharks,vorp1,experience,year2,29,29,-23.785,-36.233,-12.72,-0.695,1,1.0,1,False
+dd_draftsharks,vorp1,experience,year7+,47,47,3.851,-4.575,14.708,0.113,1,1.0,1,False
+dd_draftsharks,vorp1,experience,year4-6,58,58,10.725,0.667,21.117,0.313,1,1.0,1,False
+dd_draftsharks,vorp1,experience,year3,28,28,12.561,-3.401,29.26,0.367,1,1.0,1,False
+dd_draftsharks,vorp1,experience,rookie,38,38,-12.237,-16.415,-8.147,-0.358,1,1.0,1,False
+dd_draftsharks,vorp1,draft_round,R1,70,70,-6.254,-17.943,4.057,-0.183,1,1.0,1,False
+dd_draftsharks,vorp1,draft_round,R2,47,47,10.432,0.706,21.868,0.305,1,1.0,1,False
+dd_draftsharks,vorp1,draft_round,R4-7,43,43,1.279,-6.588,10.201,0.037,1,1.0,1,False
+dd_draftsharks,vorp1,draft_round,R3,33,33,-6.907,-13.417,0.499,-0.202,1,1.0,1,False
+dd_draftsharks,vorp1,prior_games,14+,119,119,3.12,-4.204,10.637,0.091,1,1.0,1,False
+dd_draftsharks,vorp1,prior_games,rookie,38,38,-12.237,-16.415,-8.147,-0.358,1,1.0,1,False
+dd_draftsharks,vorp1,prior_games,10-13,28,28,0.275,-9.493,9.575,0.008,1,1.0,1,False
+dd_draftsharks,vorp1,mkt_vs_last_year,aligned (+/-9),85,85,6.297,-2.734,15.219,0.184,1,1.0,1,False
+dd_draftsharks,vorp1,mkt_vs_last_year,n/a (rookie/<6g),43,43,-9.592,-16.115,-0.795,-0.28,1,1.0,1,False
+dd_draftsharks,vorp1,mkt_vs_last_year,market bullish vs last yr (>=10),29,29,-8.755,-22.274,5.317,-0.256,1,1.0,1,False
+dd_draftsharks,vorp1,mkt_vs_last_year,market fades last yr (>=10 spots),43,43,3.05,-3.811,10.745,0.089,1,1.0,1,False
+dd_draftsharks,vorp1,breakout_last_yr,first VORP season,37,37,-4.197,-19.546,11.708,-0.123,1,1.0,1,False
+dd_draftsharks,vorp1,breakout_last_yr,other,125,125,4.962,-1.448,11.455,0.145,1,1.0,1,False
+dd_draftsharks,vorp1,breakout_last_yr,rookie,38,38,-12.237,-16.415,-8.147,-0.358,1,1.0,1,False
+dd_draftsharks,vorp1,qb_rushing,non-QB,173,173,-0.555,-6.052,5.131,-0.016,1,1.0,1,False
+dd_draftsharks,vorp1,rb_receiving,non-RB,141,141,-4.651,-9.929,0.861,-0.136,1,1.0,1,False
+dd_draftsharks,vorp1,rb_receiving,RB <4 tgt/g,39,39,12.388,1.593,23.989,0.362,1,1.0,1,False
+dd_draftsharks,vorp1,market_tier,25-60,36,36,-2.036,-15.963,16.149,-0.06,1,1.0,1,False
+dd_draftsharks,vorp1,market_tier,61-120,60,60,0.658,-6.354,7.696,0.019,1,1.0,1,False
+dd_draftsharks,vorp1,market_tier,121-200,80,80,0.423,-3.384,4.706,0.012,1,1.0,1,False
+dd_dd_adp,vorp1,position,QB,62,37,-2.155,-9.071,5.172,-0.065,2,1.0,1,False
+dd_dd_adp,vorp1,position,WR,160,101,-3.317,-8.422,1.469,-0.101,2,0.5,1,False
+dd_dd_adp,vorp1,position,RB,126,79,9.808,2.734,16.767,0.298,2,1.0,1,False
+dd_dd_adp,vorp1,position,TE,52,32,-10.99,-18.461,-4.113,-0.334,2,1.0,1,False
+dd_dd_adp,vorp1,age_band,28-29,52,43,9.276,-0.07,18.6,0.282,2,1.0,1,False
+dd_dd_adp,vorp1,age_band,<=23,107,85,-9.848,-15.228,-4.314,-0.299,2,1.0,1,False
+dd_dd_adp,vorp1,age_band,24-25,107,83,2.023,-4.492,8.661,0.061,2,0.5,1,False
+dd_dd_adp,vorp1,age_band,26-27,80,63,0.376,-6.729,7.424,0.011,2,0.5,1,False
+dd_dd_adp,vorp1,age_band,30+,54,38,6.018,-2.27,15.69,0.183,2,1.0,1,False
+dd_dd_adp,vorp1,pos_x_age,QB old(28+),25,16,8.949,-2.673,21.33,0.272,2,1.0,1,False
+dd_dd_adp,vorp1,pos_x_age,WR prime(25-27),48,34,-4.54,-14.948,6.041,-0.138,2,0.5,1,False
+dd_dd_adp,vorp1,pos_x_age,WR young(<=24),72,54,-5.799,-13.739,1.094,-0.176,2,1.0,1,False
+dd_dd_adp,vorp1,pos_x_age,RB young(<=24),51,38,0.021,-10.893,12.0,0.001,2,0.5,1,False
+dd_dd_adp,vorp1,pos_x_age,RB old(28+),26,17,22.326,5.075,39.906,0.679,2,1.0,1,False
+dd_dd_adp,vorp1,pos_x_age,WR old(28+),40,28,2.617,-5.625,11.068,0.08,2,1.0,1,False
+dd_dd_adp,vorp1,pos_x_age,RB prime(25-27),49,37,13.353,3.604,23.514,0.406,2,1.0,1,False
+dd_dd_adp,vorp1,experience,year7+,94,61,7.807,1.071,14.949,0.237,2,1.0,1,False
+dd_dd_adp,vorp1,experience,year2,64,64,-12.706,-21.115,-3.447,-0.386,2,1.0,1,False
+dd_dd_adp,vorp1,experience,year4-6,108,78,5.97,-0.596,12.557,0.181,2,0.5,1,False
+dd_dd_adp,vorp1,experience,rookie,77,77,-8.75,-14.039,-3.327,-0.266,2,1.0,1,False
+dd_dd_adp,vorp1,experience,year3,57,57,1.899,-7.694,11.305,0.058,2,0.5,1,False
+dd_dd_adp,vorp1,draft_round,R1,141,81,-1.676,-8.772,5.173,-0.051,2,0.5,1,False
+dd_dd_adp,vorp1,draft_round,R2,90,54,4.048,-4.027,12.061,0.123,2,0.5,1,False
+dd_dd_adp,vorp1,draft_round,R4-7,87,58,0.843,-3.988,5.763,0.026,2,0.5,1,False
+dd_dd_adp,vorp1,draft_round,R3,66,44,-4.053,-9.865,2.037,-0.123,2,1.0,1,False
+dd_dd_adp,vorp1,prior_games,14+,231,160,0.365,-5.036,6.01,0.011,2,0.5,1,False
+dd_dd_adp,vorp1,prior_games,10-13,60,57,8.376,1.255,16.17,0.255,2,1.0,1,False
+dd_dd_adp,vorp1,prior_games,rookie,77,77,-8.75,-14.039,-3.327,-0.266,2,1.0,1,False
+dd_dd_adp,vorp1,prior_games,<=9 games,32,30,2.712,-8.538,18.522,0.082,2,0.5,1,False
+dd_dd_adp,vorp1,mkt_vs_last_year,aligned (+/-9),175,130,1.442,-5.052,8.006,0.044,2,0.5,1,False
+dd_dd_adp,vorp1,mkt_vs_last_year,market bullish vs last yr (>=10),61,57,-1.535,-9.728,6.822,-0.047,2,1.0,1,False
+dd_dd_adp,vorp1,mkt_vs_last_year,n/a (rookie/<6g),88,85,-6.9,-13.384,-0.382,-0.21,2,1.0,1,False
+dd_dd_adp,vorp1,mkt_vs_last_year,market fades last yr (>=10 spots),76,62,5.901,-0.29,12.624,0.179,2,1.0,1,False
+dd_dd_adp,vorp1,breakout_last_yr,other,249,184,3.581,-0.992,7.636,0.109,2,1.0,1,False
+dd_dd_adp,vorp1,breakout_last_yr,first VORP season,74,74,-2.946,-13.159,7.601,-0.09,2,0.5,1,False
+dd_dd_adp,vorp1,breakout_last_yr,rookie,77,77,-8.75,-14.039,-3.327,-0.266,2,1.0,1,False
+dd_dd_adp,vorp1,qb_rushing,QB pocket,35,21,-2.17,-13.024,9.512,-0.066,2,0.5,1,False
+dd_dd_adp,vorp1,qb_rushing,non-QB,338,212,0.395,-3.524,4.2,0.012,2,0.5,1,False
+dd_dd_adp,vorp1,rb_receiving,non-RB,274,170,-4.51,-8.289,-1.099,-0.137,2,1.0,1,False
+dd_dd_adp,vorp1,rb_receiving,RB <4 tgt/g,80,60,9.802,2.275,18.064,0.298,2,1.0,1,False
+dd_dd_adp,vorp1,rb_receiving,RB rookie,25,25,-11.917,-20.989,-3.513,-0.362,2,1.0,1,False
+dd_dd_adp,vorp1,market_tier,1-24,48,35,-6.454,-25.272,12.648,-0.196,2,1.0,1,False
+dd_dd_adp,vorp1,market_tier,25-60,72,58,1.879,-10.396,12.077,0.057,2,0.5,1,False
+dd_dd_adp,vorp1,market_tier,61-120,120,96,0.703,-5.147,5.739,0.021,2,0.5,1,False
+dd_dd_adp,vorp1,market_tier,121-200,160,133,0.563,-2.524,3.566,0.017,2,1.0,1,False
+dd_dd_adp,vorp2,position,QB,30,30,2.929,-14.391,21.256,0.046,1,1.0,2,False
+dd_dd_adp,vorp2,position,WR,84,84,-8.753,-19.188,3.214,-0.138,1,1.0,2,False
+dd_dd_adp,vorp2,position,RB,62,62,17.433,4.019,32.156,0.275,1,1.0,2,False
+dd_dd_adp,vorp2,age_band,28-29,27,27,10.151,-7.038,28.25,0.16,1,1.0,2,False
+dd_dd_adp,vorp2,age_band,<=23,54,54,-3.249,-18.189,14.427,-0.051,1,1.0,2,False
+dd_dd_adp,vorp2,age_band,24-25,58,58,-1.375,-14.17,13.836,-0.022,1,1.0,2,False
+dd_dd_adp,vorp2,age_band,26-27,36,36,-7.884,-22.021,6.013,-0.124,1,1.0,2,False
+dd_dd_adp,vorp2,age_band,30+,25,25,10.598,-7.256,33.759,0.167,1,1.0,2,False
+dd_dd_adp,vorp2,pos_x_age,WR young(<=24),40,40,-7.854,-22.468,9.956,-0.124,1,1.0,2,False
+dd_dd_adp,vorp2,pos_x_age,RB young(<=24),26,26,16.399,-5.419,45.215,0.259,1,1.0,2,False
+dd_dd_adp,vorp2,experience,year7+,47,47,10.411,-2.762,26.378,0.164,1,1.0,2,False
+dd_dd_adp,vorp2,experience,year2,33,33,6.72,-15.281,32.994,0.106,1,1.0,2,False
+dd_dd_adp,vorp2,experience,year4-6,49,49,-1.704,-15.033,10.325,-0.027,1,1.0,2,False
+dd_dd_adp,vorp2,experience,rookie,40,40,-17.484,-30.585,-4.638,-0.276,1,1.0,2,False
+dd_dd_adp,vorp2,experience,year3,31,31,2.315,-14.067,20.251,0.037,1,1.0,2,False
+dd_dd_adp,vorp2,draft_round,R1,70,70,-2.472,-16.058,12.534,-0.039,1,1.0,2,False
+dd_dd_adp,vorp2,draft_round,R2,42,42,7.732,-9.301,27.59,0.122,1,1.0,2,False
+dd_dd_adp,vorp2,draft_round,R4-7,45,45,1.646,-9.849,13.42,0.026,1,1.0,2,False
+dd_dd_adp,vorp2,draft_round,R3,35,35,-6.288,-19.097,7.862,-0.099,1,1.0,2,False
+dd_dd_adp,vorp2,prior_games,14+,116,116,2.765,-6.468,13.574,0.044,1,1.0,2,False
+dd_dd_adp,vorp2,prior_games,10-13,31,31,21.55,-0.534,43.674,0.34,1,1.0,2,False
+dd_dd_adp,vorp2,prior_games,rookie,40,40,-17.484,-30.585,-4.638,-0.276,1,1.0,2,False
+dd_dd_adp,vorp2,mkt_vs_last_year,aligned (+/-9),89,89,1.137,-10.441,14.042,0.018,1,1.0,2,False
+dd_dd_adp,vorp2,mkt_vs_last_year,market bullish vs last yr (>=10),32,32,11.471,-6.11,34.362,0.181,1,1.0,2,False
+dd_dd_adp,vorp2,mkt_vs_last_year,n/a (rookie/<6g),45,45,-18.385,-30.573,-6.685,-0.29,1,1.0,2,False
+dd_dd_adp,vorp2,mkt_vs_last_year,market fades last yr (>=10 spots),34,34,10.56,-3.464,26.297,0.167,1,1.0,2,False
+dd_dd_adp,vorp2,breakout_last_yr,other,122,122,2.643,-6.07,12.688,0.042,1,1.0,2,False
+dd_dd_adp,vorp2,breakout_last_yr,first VORP season,38,38,9.917,-11.29,32.029,0.156,1,1.0,2,False
+dd_dd_adp,vorp2,breakout_last_yr,rookie,40,40,-17.484,-30.585,-4.638,-0.276,1,1.0,2,False
+dd_dd_adp,vorp2,qb_rushing,non-QB,170,170,-0.517,-8.097,8.342,-0.008,1,1.0,2,False
+dd_dd_adp,vorp2,rb_receiving,non-RB,138,138,-7.832,-15.309,0.764,-0.124,1,1.0,2,False
+dd_dd_adp,vorp2,rb_receiving,RB <4 tgt/g,37,37,21.463,3.701,41.943,0.339,1,1.0,2,False
+dd_dd_adp,vorp2,market_tier,25-60,36,36,-1.082,-21.073,20.807,-0.017,1,1.0,2,False
+dd_dd_adp,vorp2,market_tier,61-120,60,60,0.397,-9.319,11.693,0.006,1,1.0,2,False
+dd_dd_adp,vorp2,market_tier,121-200,80,80,2.642,-3.868,10.814,0.042,1,1.0,2,False
+fp_redraft,vorp1,position,RB,390,150,-1.963,-4.514,1.41,-0.063,6,0.667,1,False
+fp_redraft,vorp1,position,WR,491,169,0.782,-2.323,3.785,0.025,6,0.667,1,False
+fp_redraft,vorp1,position,TE,153,58,-4.58,-7.567,-1.024,-0.146,6,0.667,1,False
+fp_redraft,vorp1,position,QB,166,53,6.519,1.685,12.317,0.208,6,0.833,1,True
+fp_redraft,vorp1,age_band,24-25,304,202,1.208,-2.791,5.344,0.039,6,0.333,1,False
+fp_redraft,vorp1,age_band,26-27,260,173,-0.419,-4.44,3.596,-0.013,6,0.5,1,False
+fp_redraft,vorp1,age_band,28-29,179,117,-1.598,-6.306,3.151,-0.051,6,0.5,1,False
+fp_redraft,vorp1,age_band,<=23,260,173,1.6,-2.177,5.841,0.051,6,0.667,1,False
+fp_redraft,vorp1,age_band,30+,197,98,-1.97,-6.435,2.606,-0.063,6,0.667,1,False
+fp_redraft,vorp1,pos_x_age,RB young(<=24),149,89,-4.13,-9.552,1.554,-0.132,6,0.333,1,False
+fp_redraft,vorp1,pos_x_age,RB prime(25-27),160,84,1.616,-2.71,6.227,0.052,6,0.5,1,False
+fp_redraft,vorp1,pos_x_age,WR prime(25-27),151,82,-0.731,-5.474,5.066,-0.023,6,0.667,1,False
+fp_redraft,vorp1,pos_x_age,WR old(28+),154,66,-2.209,-7.884,2.659,-0.07,6,0.667,1,False
+fp_redraft,vorp1,pos_x_age,TE old(28+),63,27,-4.828,-11.156,1.825,-0.154,6,0.667,1,False
+fp_redraft,vorp1,pos_x_age,TE prime(25-27),59,36,-3.783,-10.035,2.538,-0.121,6,0.5,1,False
+fp_redraft,vorp1,pos_x_age,WR young(<=24),186,99,4.486,-0.388,9.587,0.143,6,0.833,1,False
+fp_redraft,vorp1,pos_x_age,QB prime(25-27),47,24,7.681,-4.256,19.758,0.245,6,0.667,1,False
+fp_redraft,vorp1,pos_x_age,QB young(<=24),41,25,8.353,-0.448,17.941,0.267,6,0.667,1,False
+fp_redraft,vorp1,pos_x_age,RB old(28+),81,45,-5.045,-10.578,0.229,-0.161,6,0.667,1,False
+fp_redraft,vorp1,pos_x_age,QB old(28+),78,29,4.856,-1.042,10.714,0.155,6,0.667,1,False
+fp_redraft,vorp1,pos_x_age,TE young(<=24),31,21,-5.593,-12.101,2.3,-0.178,4,0.5,1,False
+fp_redraft,vorp1,experience,year4-6,387,201,-0.593,-3.595,3.037,-0.019,6,0.667,1,False
+fp_redraft,vorp1,experience,year3,161,161,-0.353,-6.132,5.221,-0.011,6,0.667,1,False
+fp_redraft,vorp1,experience,year7+,330,149,-0.649,-4.371,2.957,-0.021,6,0.667,1,False
+fp_redraft,vorp1,experience,rookie,153,153,4.231,0.07,8.581,0.135,6,0.667,1,False
+fp_redraft,vorp1,experience,year2,169,169,-0.867,-5.617,3.799,-0.028,6,0.333,1,False
+fp_redraft,vorp1,draft_round,R1,389,121,2.35,-1.122,5.882,0.075,6,0.667,1,False
+fp_redraft,vorp1,draft_round,R3,196,69,-1.731,-5.03,1.599,-0.055,6,0.667,1,False
+fp_redraft,vorp1,draft_round,R2,297,98,-1.119,-4.319,2.547,-0.036,6,0.667,1,False
+fp_redraft,vorp1,draft_round,R4-7,242,106,-0.729,-4.202,3.626,-0.023,6,0.5,1,False
+fp_redraft,vorp1,draft_round,UDFA,76,36,-0.872,-5.62,4.035,-0.028,6,0.5,1,False
+fp_redraft,vorp1,prior_games,14+,707,309,0.104,-2.323,3.031,0.003,6,0.5,1,False
+fp_redraft,vorp1,prior_games,10-13,210,155,0.008,-3.802,3.895,0.0,6,0.5,1,False
+fp_redraft,vorp1,prior_games,rookie,153,153,4.231,0.07,8.581,0.135,6,0.667,1,False
+fp_redraft,vorp1,prior_games,<=9 games,130,112,-5.56,-9.619,-0.693,-0.177,6,0.833,1,True
+fp_redraft,vorp1,mkt_vs_last_year,aligned (+/-9),636,276,0.008,-2.537,3.027,0.0,6,0.5,1,False
+fp_redraft,vorp1,mkt_vs_last_year,n/a (rookie/<6g),198,189,1.18,-2.423,4.833,0.038,6,0.5,1,False
+fp_redraft,vorp1,mkt_vs_last_year,market bullish vs last yr (>=10),188,146,1.882,-2.4,6.764,0.06,6,0.333,1,False
+fp_redraft,vorp1,mkt_vs_last_year,market fades last yr (>=10 spots),178,130,-3.329,-6.572,-0.469,-0.106,6,0.833,1,True
+fp_redraft,vorp1,breakout_last_yr,other,824,355,-0.61,-2.731,1.544,-0.019,6,0.667,1,False
+fp_redraft,vorp1,breakout_last_yr,rookie,153,153,4.231,0.07,8.581,0.135,6,0.667,1,False
+fp_redraft,vorp1,breakout_last_yr,first VORP season,223,195,-0.647,-5.807,4.425,-0.021,6,0.5,1,False
+fp_redraft,vorp1,qb_rushing,non-QB,1034,377,-1.047,-2.798,0.819,-0.033,6,0.667,1,False
+fp_redraft,vorp1,qb_rushing,QB pocket,115,39,4.084,-0.187,8.31,0.13,6,0.667,1,False
+fp_redraft,vorp1,qb_rushing,QB rush >=25 yd/g,39,15,15.375,-1.758,32.586,0.491,5,1.0,1,False
+fp_redraft,vorp1,rb_receiving,RB >=4 tgt/g,79,44,-0.411,-8.039,8.743,-0.013,6,0.5,1,False
+fp_redraft,vorp1,rb_receiving,non-RB,810,280,0.945,-1.191,3.235,0.03,6,0.833,1,False
+fp_redraft,vorp1,rb_receiving,RB <4 tgt/g,249,115,-2.337,-5.616,1.391,-0.075,6,0.667,1,False
+fp_redraft,vorp1,rb_receiving,RB rookie,62,62,-2.438,-7.996,3.078,-0.078,6,0.667,1,False
+fp_redraft,vorp1,market_tier,1-24,144,68,-0.0,-8.067,8.772,-0.0,6,0.667,1,False
+fp_redraft,vorp1,market_tier,25-60,216,123,0.0,-5.307,5.668,0.0,6,0.5,1,False
+fp_redraft,vorp1,market_tier,61-120,360,227,-0.27,-3.545,2.939,-0.009,6,0.667,1,False
+fp_redraft,vorp1,market_tier,121-200,480,312,0.203,-1.16,1.676,0.006,6,0.5,1,False
+fp_redraft,vorp1,offseason_team_change,same team,630,264,-1.608,-4.041,1.109,-0.051,6,0.667,1,False
+fp_redraft,vorp1,offseason_team_change,new team,412,211,0.959,-2.039,4.097,0.031,6,0.667,1,False
+fp_redraft,vorp1,offseason_team_change,rookie,153,153,4.231,0.07,8.581,0.135,6,0.667,1,False
+fp_redraft,vorp1,expert_disagreement,low,400,219,4.148,0.28,8.074,0.132,6,0.833,1,True
+fp_redraft,vorp1,expert_disagreement,high,400,277,-2.859,-5.765,0.217,-0.091,6,0.667,1,False
+fp_redraft,vorp1,expert_disagreement,mid,400,271,-1.289,-4.098,1.897,-0.041,6,0.833,1,False
+ffc_redraft,vorp1,position,RB,773,248,-5.037,-7.727,-2.521,-0.147,13,0.846,1,True
+ffc_redraft,vorp1,position,WR,837,247,4.005,1.604,6.277,0.117,13,0.769,1,True
+ffc_redraft,vorp1,position,TE,245,81,-0.399,-4.04,3.453,-0.012,13,0.538,1,False
+ffc_redraft,vorp1,position,QB,309,76,2.068,-1.114,5.363,0.06,13,0.462,1,False
+ffc_redraft,vorp1,age_band,28-29,335,221,-1.96,-6.096,2.117,-0.057,13,0.538,1,False
+ffc_redraft,vorp1,age_band,26-27,469,307,1.859,-1.238,5.359,0.054,13,0.538,1,False
+ffc_redraft,vorp1,age_band,24-25,522,348,1.683,-1.614,4.671,0.049,13,0.462,1,False
+ffc_redraft,vorp1,age_band,<=23,418,281,1.505,-2.076,5.468,0.044,13,0.538,1,False
+ffc_redraft,vorp1,age_band,30+,420,160,-4.102,-6.721,-1.426,-0.12,13,0.692,1,False
+ffc_redraft,vorp1,pos_x_age,RB old(28+),195,82,-9.34,-14.0,-5.08,-0.272,13,0.769,1,True
+ffc_redraft,vorp1,pos_x_age,RB prime(25-27),281,142,-3.522,-7.811,0.538,-0.103,13,0.692,1,False
+ffc_redraft,vorp1,pos_x_age,WR old(28+),283,102,-0.86,-4.817,3.163,-0.025,13,0.538,1,False
+ffc_redraft,vorp1,pos_x_age,RB young(<=24),297,160,-3.645,-8.372,0.706,-0.106,13,0.538,1,False
+ffc_redraft,vorp1,pos_x_age,WR prime(25-27),283,146,8.101,3.48,12.661,0.236,13,0.846,1,True
+ffc_redraft,vorp1,pos_x_age,TE prime(25-27),86,51,3.895,-2.157,10.235,0.114,10,0.7,1,False
+ffc_redraft,vorp1,pos_x_age,WR young(<=24),271,151,4.808,0.729,8.998,0.14,13,0.769,1,True
+ffc_redraft,vorp1,pos_x_age,QB old(28+),164,42,-0.997,-4.388,2.034,-0.029,13,0.615,1,False
+ffc_redraft,vorp1,pos_x_age,TE young(<=24),46,32,-6.113,-12.502,0.98,-0.178,4,0.5,1,False
+ffc_redraft,vorp1,pos_x_age,TE old(28+),113,45,-1.34,-7.339,5.331,-0.039,13,0.462,1,False
+ffc_redraft,vorp1,pos_x_age,QB young(<=24),60,40,9.152,1.348,16.767,0.267,5,1.0,1,True
+ffc_redraft,vorp1,pos_x_age,QB prime(25-27),85,41,2.983,-3.582,9.967,0.087,12,0.583,1,False
+ffc_redraft,vorp1,experience,year7+,641,229,-2.914,-5.458,-0.486,-0.085,13,0.615,1,False
+ffc_redraft,vorp1,experience,year4-6,688,348,2.223,-0.606,5.023,0.065,13,0.538,1,False
+ffc_redraft,vorp1,experience,year2,318,318,1.763,-2.663,5.673,0.051,13,0.538,1,False
+ffc_redraft,vorp1,experience,year3,289,289,-0.656,-4.776,3.644,-0.019,13,0.615,1,False
+ffc_redraft,vorp1,experience,rookie,228,228,-0.142,-3.601,3.084,-0.004,13,0.538,1,False
+ffc_redraft,vorp1,draft_round,R1,709,176,1.186,-1.769,3.847,0.035,13,0.538,1,False
+ffc_redraft,vorp1,draft_round,R3,356,94,1.96,-1.669,5.494,0.057,13,0.538,1,False
+ffc_redraft,vorp1,draft_round,UDFA,181,77,-3.638,-8.414,0.287,-0.106,13,0.692,1,False
+ffc_redraft,vorp1,draft_round,R2,487,138,-0.526,-3.348,2.425,-0.015,13,0.615,1,False
+ffc_redraft,vorp1,draft_round,R4-7,431,167,-1.446,-5.103,2.055,-0.042,13,0.615,1,False
+ffc_redraft,vorp1,prior_games,14+,1332,489,0.758,-1.544,2.899,0.022,13,0.615,1,False
+ffc_redraft,vorp1,prior_games,10-13,379,277,0.725,-2.814,4.061,0.021,13,0.385,1,False
+ffc_redraft,vorp1,prior_games,<=9 games,225,183,-5.564,-9.4,-1.773,-0.162,13,0.769,1,True
+ffc_redraft,vorp1,prior_games,rookie,228,228,-0.142,-3.601,3.084,-0.004,13,0.538,1,False
+ffc_redraft,vorp1,mkt_vs_last_year,aligned (+/-9),1166,440,1.473,-0.596,3.792,0.043,13,0.692,1,False
+ffc_redraft,vorp1,mkt_vs_last_year,market bullish vs last yr (>=10),413,307,-1.227,-4.267,1.929,-0.036,13,0.538,1,False
+ffc_redraft,vorp1,mkt_vs_last_year,market fades last yr (>=10 spots),282,191,-1.946,-4.51,0.814,-0.057,13,0.692,1,False
+ffc_redraft,vorp1,mkt_vs_last_year,n/a (rookie/<6g),303,274,-2.184,-5.404,0.715,-0.064,13,0.769,1,False
+ffc_redraft,vorp1,breakout_last_yr,other,1475,554,0.164,-1.627,1.911,0.005,13,0.462,1,False
+ffc_redraft,vorp1,breakout_last_yr,first VORP season,461,361,-0.455,-3.98,3.079,-0.013,13,0.538,1,False
+ffc_redraft,vorp1,breakout_last_yr,rookie,228,228,-0.142,-3.601,3.084,-0.004,13,0.538,1,False
+ffc_redraft,vorp1,qb_rushing,non-QB,1855,576,-0.345,-2.238,1.276,-0.01,13,0.615,1,False
+ffc_redraft,vorp1,qb_rushing,QB pocket,229,58,-1.061,-3.911,1.493,-0.031,13,0.692,1,False
+ffc_redraft,vorp1,qb_rushing,QB rush >=25 yd/g,64,21,13.417,1.827,25.177,0.391,6,1.0,1,True
+ffc_redraft,vorp1,rb_receiving,RB <4 tgt/g,481,208,-7.143,-10.082,-4.398,-0.208,13,0.846,1,True
+ffc_redraft,vorp1,rb_receiving,RB >=4 tgt/g,180,78,0.007,-7.138,6.864,0.0,13,0.538,1,False
+ffc_redraft,vorp1,rb_receiving,non-RB,1391,404,2.799,1.115,4.647,0.082,13,0.769,1,True
+ffc_redraft,vorp1,rb_receiving,RB rookie,112,112,-4.101,-9.129,0.788,-0.12,12,0.75,1,False
+ffc_redraft,vorp1,market_tier,1-24,312,124,-0.228,-7.339,6.402,-0.007,13,0.615,1,False
+ffc_redraft,vorp1,market_tier,25-60,468,239,-0.79,-4.407,2.855,-0.023,13,0.692,1,False
+ffc_redraft,vorp1,market_tier,61-120,780,417,0.353,-1.836,2.403,0.01,13,0.462,1,False
+ffc_redraft,vorp1,market_tier,121-200,604,411,0.274,-1.319,1.913,0.008,13,0.538,1,False

@@ -1,0 +1,4 @@
+signal,spearman,top24_hit,top50_hit
+stats model,0.58,0.458,0.61
+FP dynasty ECR,0.648,0.479,0.67
+rank average,0.624,0.542,0.64

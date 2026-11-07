@@ -1,0 +1,9 @@
+row_type,position,n,r2,spearman,top24_hit
+rookie,QB,40,-0.856,0.295,0.667
+rookie,RB,82,-0.031,0.33,0.458
+rookie,TE,63,-0.014,0.271,0.417
+rookie,WR,121,0.246,0.507,0.625
+veteran,QB,286,0.267,0.615,0.625
+veteran,RB,555,0.268,0.529,0.5
+veteran,TE,477,-0.25,0.476,0.458
+veteran,WR,837,0.334,0.616,0.333

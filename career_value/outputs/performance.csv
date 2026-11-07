@@ -1,0 +1,5 @@
+,r2,spearman,top24_hit
+full_model,0.236,0.554,0.208
+pos_x_age_mean,-0.003,0.084,0.125
+current_vorp_only,0.122,0.388,0.083
+age_pos_draft,0.046,0.359,0.083
