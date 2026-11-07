@@ -9,7 +9,10 @@ isotonic fit (pooled over years), then average residuals (actual - expected)
 within groupings defined from information available at snapshot time.
 
 Markets (snapshot t = offseason after NFL season t):
-  fp_dynasty   FantasyPros dynasty ECR, first scrape on/after May 10 of t+1   (this repo)
+  fp_dynasty   FantasyPros dynasty ECR, first scrape May 10-Aug 31 of t+1     (this repo)
+               t=2018 (1QB): files/archives/fantasypros weekly CSV of 2019-05-14
+               t=2018-19 (LEAGUE=sf): FP 2QB ECR carried in DynastyProcess values-players.csv (git history,
+               May 2019 / May 2020; see fetch_markets.py), as FP's own superflex ECR starts Oct 2020
   mfl_dynasty  MFL keeper-league PPR ADP for year t+1, veterans only          (MFL API)
   fp_redraft   FantasyPros redraft ECR, last scrape before Sept 9 of t+1      (this repo)
   ffc_redraft  FantasyFootballCalculator 12-team PPR ADP, final preseason      (FFC API)
@@ -89,11 +92,78 @@ def fp_market(ecr_type, pages, pick) -> pd.DataFrame:
     return pd.concat(out, ignore_index=True)
 
 
-def fp_dynasty():
+def fp_offseason(ds, y):
+    """first scrape May 10-Aug 31 of year y (none -> skip the cohort rather than use an in-season scrape)"""
+    return next((d for d in ds if f"{y}-05-10" <= d <= f"{y}-08-31"), None)
+
+
+NAME_ALIAS = {"robby anderson": "robbie chosen", "mitch trubisky": "mitchell trubisky"}
+
+
+def match_names(x, t, panel):
+    """x(name, pos) -> gsis_id by normalized name + position; duplicates resolved by a panel row at t.
+    Fallback for players whose current position differs (e.g. Cordarrelle Patterson): name only, if the candidate
+    has a panel row at t."""
+    pl = pd.read_parquet(RAW / "players" / "players.parquet", columns=["gsis_id", "display_name", "position"])
+    pl = pl[pl.position.isin(POS)].assign(nm=lambda d: d.display_name.map(norm_name))
+    pl["key"] = pl.nm + "|" + pl.position
+    ok = panel[panel.t == t][["gsis_id"]].drop_duplicates().assign(ok=1)
+    x = x.assign(nm=x.name.map(norm_name).replace(NAME_ALIAS))
+    x["key"] = x.nm + "|" + x.pos
+    m = x.merge(pl[["gsis_id", "key"]], on="key").merge(ok, on="gsis_id", how="left")
+    m = m.sort_values("ok", na_position="last").drop_duplicates("key")
+    r = x[~x.key.isin(m.key)].merge(pl[["gsis_id", "nm"]], on="nm").merge(ok, on="gsis_id")
+    r = r.drop_duplicates("key", keep=False)  # ambiguous -> drop
+    m = pd.concat([m, r]).drop_duplicates("gsis_id").drop(columns=["ok", "nm"])
+    print(f"  name match t={t}: {len(m)}/{len(x)}")
+    return m
+
+
+def fp_archive_name(s):
+    """'Odell Beckham Jr.O. Beckham NYG' -> 'Odell Beckham Jr.' (full name, then abbreviated name, then team)"""
+    s = s.strip().rsplit(" ", 1)[0] if re.search(r" [A-Z]{2,3}$", s.strip()) else s.strip()
+    for mt in reversed(list(re.finditer(r"(?<=[A-Za-z.'])[A-Z]\. ", s))):
+        k = mt.start()
+        if s[k + 3:] and s[k + 3:] in s[:k]:
+            return s[:k]
+    return s
+
+
+def fp_dynasty_early(panel):
+    if SF:
+        out = []
+        for f, t, col in (("dp_values_2019-05-27.csv", 2018, "dyno2QBECR"), ("dp_values_2020-05-15.csv", 2019, "ecr_2qb")):
+            x = pd.read_csv(RAW / "markets" / f, encoding="utf-8-sig")
+            x = x.rename(columns={"mergename": "name", "player": "name"})
+            x = x[x.pos.isin(POS)]
+            if "fp_id" in x:
+                ids = (pd.read_csv(FILES / "db_playerids.csv", dtype=str, usecols=["fantasypros_id", "gsis_id"])
+                       .dropna().drop_duplicates("fantasypros_id"))
+                a = x.assign(fp_id=x.fp_id.astype(str)).merge(ids, left_on="fp_id", right_on="fantasypros_id")
+                b = match_names(x[~x.name.isin(a.name)], t, panel)
+                m = pd.concat([a, b]).drop_duplicates("gsis_id")
+                print(f"  DP {f}: fp_id + name match {len(m)}/{len(x)}")
+            else:
+                m = match_names(x, t, panel)
+            out.append(pd.DataFrame({"gsis_id": m.gsis_id, "t": t, "mkt": m[col].astype(float),
+                                     "scrape_date": f[10:20]}))
+        return pd.concat(out, ignore_index=True)
+    date = "20190514"
+    x = pd.read_csv(FILES / "archives" / "fantasypros" / f"dynasty-overall-{date}.csv").dropna(subset=["Overall (Team)"])
+    x = x.assign(name=x["Overall (Team)"].map(fp_archive_name), pos=x.Pos.str.extract(r"^([A-Z]+)")[0])
+    x = x[x.pos.isin(POS)]
+    m = match_names(x, 2018, panel)
+    return pd.DataFrame({"gsis_id": m.gsis_id, "t": 2018, "mkt": m.Rank.astype(float), "sd": m["Std Dev"],
+                         "scrape_date": f"{date[:4]}-{date[4:6]}-{date[6:]}"})
+
+
+def fp_dynasty(panel):
     if SF:  # FP superflex dynasty ECR ("OP" page), from Oct 2020
-        return fp_market("dsf", ["dynasty-op"], lambda ds, y: next((d for d in ds if d >= f"{y}-05-10"), None))
-    return fp_market("do", ["dynasty-overall", "dynasty-offense"],
-                     lambda ds, y: next((d for d in ds if d >= f"{y}-05-10"), None))
+        cur = fp_market("dsf", ["dynasty-op"], fp_offseason)
+    else:
+        cur = fp_market("do", ["dynasty-overall", "dynasty-offense"], fp_offseason)
+    early = fp_dynasty_early(panel)
+    return pd.concat([early[~early.t.isin(cur.t)], cur], ignore_index=True)
 
 
 def fp_redraft():
@@ -255,11 +325,12 @@ def add_groups(x: pd.DataFrame, seasons: pd.DataFrame) -> pd.DataFrame:
         g["offseason_team_change"] = np.where(x.row_type == "rookie", "rookie",
                                               np.where(x.tm == "FA", "free agent (unsigned)",
                                                        np.where(changed, "new team", "same team")))
-    if "sd" in x and x.sd.notna().any():
-        # expert disagreement relative to players ranked nearby (SD grows with rank)
-        resid_sd = np.log(x.sd.clip(lower=0.3)) - np.poly1d(
-            np.polyfit(np.log(x.mkt_rank), np.log(x.sd.clip(lower=0.3)), 2))(np.log(x.mkt_rank))
-        g["expert_disagreement"] = pd.qcut(resid_sd, 3, labels=["low", "mid", "high"]).astype(str)
+    if "sd" in x and x.sd.notna().sum() >= 100:
+        # expert disagreement relative to players ranked nearby (SD grows with rank); rows without SD -> NaN group
+        ok = x.sd.notna()
+        lsd, lr = np.log(x.sd[ok].clip(lower=0.3)), np.log(x.mkt_rank[ok])
+        resid_sd = lsd - np.poly1d(np.polyfit(lr, lsd, 2))(lr)
+        g["expert_disagreement"] = pd.qcut(resid_sd, 3, labels=["low", "mid", "high"]).astype(str).reindex(x.index)
     return x, g
 
 
@@ -350,7 +421,7 @@ REDRAFT = {"fp_redraft", "ffc_redraft"}
 
 
 def all_markets(panel) -> dict[str, pd.DataFrame]:
-    m = {"fp_dynasty": fp_dynasty(), "mfl_dynasty": mfl_dynasty(panel)}
+    m = {"fp_dynasty": fp_dynasty(panel), "mfl_dynasty": mfl_dynasty(panel)}
     m.update(dd_markets(panel))
     m.update({"fp_redraft": fp_redraft(), "ffc_redraft": ffc_redraft(panel)})
     return m

@@ -49,7 +49,7 @@ def main():
     fix = rk.mpos.isin(["QB", "RB", "WR", "TE"]) & (rk.mpos != rk.position)
     print("relabelled to draft-year position:", fix.sum())
     rk.loc[fix, "position"] = rk.loc[fix, "mpos"]
-    mk = {"mfl": mfl_rookies(), "fp_dynasty": mr.fp_dynasty()}
+    mk = {"mfl": mfl_rookies(), "fp_dynasty": mr.fp_dynasty(panel)}
     dd = mr.dd_markets(panel)
     for k in ["dd_ktc", "dd_fantasycalc", "dd_dynastyprocess"]:
         mk[k] = dd[k]
@@ -76,7 +76,7 @@ def main():
     r["nfl"] = np.select([r.draft_round_f == 1, r.draft_round_f == 2], ["NFL R1", "NFL R2"], "NFL R3+")
     r["agegrp"] = pd.cut(r.age, [0, 21.5, 22.5, 99], labels=["<=21", "22", "23+"]).astype(str)
     r["dyn"] = np.where(r.market == "mfl", "MFL 2011-25", "Dynasty 2020-25")
-    r.to_csv(sys.argv[1] if len(sys.argv) > 1 else "/dev/null", index=False)
+    r.to_csv(sys.argv[1] if len(sys.argv) > 1 else mr.OUT / "rookie_position_residuals.csv", index=False)
 
     def cell(g):
         cl = g.groupby("t").res.mean()
