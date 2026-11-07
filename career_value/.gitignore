@@ -1,0 +1,6 @@
+# downloaded third-party data (re-create with fetch_*.py / fetch_data.sh)
+raw/
+# derived data (build_dataset.py, market_residuals.py)
+data/
+outputs/**/market_rows/
+__pycache__/
