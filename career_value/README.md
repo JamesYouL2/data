@@ -13,7 +13,7 @@ What drives a fantasy player's rest-of-career value? Which groups of players bea
 
 ```
 ./fetch_data.sh                 # nflverse season stats 1999-2026 + player bio/draft table
-uv run fetch_markets.py         # MFL keeper ADP 2011-25, FFC PPR ADP 2013-25
+uv run fetch_markets.py         # MFL keeper ADP 2011-25, FFC PPR ADP 2013-25, DP values 2019-20 from git history
 uv run fetch_dynastydaddy.py    # Dynasty Daddy archive: May-15 snapshots 2021-26 + in-season Sep-Feb 2021-24 (KTC, FantasyCalc, DP, ...)
 uv run build_dataset.py         # data/panel.parquet
 uv run model.py                 # ROC model + primary-variable analysis  -> outputs/
@@ -39,7 +39,18 @@ Follow-up analyses for sections 3b and 7–12 are in `analysis/`. Run them from 
 | `injured.py` | 9 |
 | `inseason_fp.py`, `inseason_sources.py` | 10, 10a |
 | `contender_rb_te.py` | 11 |
-| `rookie_positions.py` | 12 |
+| `rookie_positions.py` | 12 (writes `outputs/rookie_position_residuals.csv`, used by 13 and 18) |
+| `out_of_sample.py` | 13 |
+| `te_premium.py` | 14 |
+| `sell_timing.py` | 15 |
+| `consolidation.py` | 16 |
+| `second_year.py` | 17 |
+| `opportunity.py` | 18 |
+| `long_horizon.py` | 19 (also `LEAGUE=sf`) |
+| `rb_long.py` | 20 (also `LEAGUE=sf`) |
+| `startup.py` | 21 (also `LEAGUE=sf`; writes `outputs/startup_sim.csv`) |
+
+`common.py` holds shared loaders. Sections 13 and 16 also run for superflex if `outputs/sf/` exists.
 
 ## 1. Primary variables for rest-of-career value
 
@@ -69,7 +80,7 @@ Greedy forward selection picks these in order: last-season VORP → age → posi
 
 | Market | Source | Snapshots (t) | Cohorts at h = 1 / 2 / 3 / 5 / 10 |
 |---|---|---|---|
-| fp_dynasty | FantasyPros dynasty ECR, mid-May (this repo) | 2019–2024 | 6 / 5 / 4 / 2 / 0 |
+| fp_dynasty | FantasyPros dynasty ECR, mid-May (this repo; t = 2018 from `files/archives/fantasypros`) | 2018–2024 | 7 / 6 / 5 / 3 / 0 |
 | mfl_dynasty | MFL keeper-league PPR ADP, veterans only | 2010–2024 | 15 / 14 / 13 / 11 / 6 |
 | dd_ktc | KeepTradeCut 1QB value, via the Dynasty Daddy archive (May 16) | 2020–2024 | 5 / 4 / 3 / 1 / 0 |
 | dd_fantasycalc | FantasyCalc 1QB value (Dynasty Daddy) | 2021–2024 | 4 / 3 / 2 / 0 / 0 |
@@ -78,7 +89,9 @@ Greedy forward selection picks these in order: last-season VORP → age → posi
 | fp_redraft | FantasyPros redraft ECR, preseason (this repo) | 2019–2024 | h = 1 only, 6 |
 | ffc_redraft | Fantasy Football Calculator 12-team PPR ADP, preseason | 2012–2024 | h = 1 only, 13 |
 
-The Dynasty Daddy archive (`/api/v1/player/all/prev/{days}`) starts in May 2021 for KTC. FantasyCalc and DP values start later, in 2022–2023. Players matched to gsis ids at 99.1%. **10-year validation is possible only for MFL ADP and the stats model. 5-year validation is possible for FP dynasty (2 cohorts), KTC (1) and MFL (11).**
+The Dynasty Daddy archive (`/api/v1/player/all/prev/{days}`) starts in May 2021 for KTC. FantasyCalc and DP values start later, in 2022–2023. Players matched to gsis ids at 99.1%. **10-year validation is possible only for MFL ADP and the stats model. 5-year validation is possible for FP dynasty (3 cohorts), KTC (1) and MFL (11).**
+
+FP dynasty snapshots are the first scrape from May 10 to Aug 31; a year without one is skipped rather than filled with an in-season scrape. FP's superflex ECR starts in October 2020, so for `LEAGUE=sf` the t = 2018–19 cohorts use the FP 2QB ECR that DynastyProcess's `values-players.csv` carried (this repo's git history, May 27, 2019 and May 15, 2020). Before this rule, superflex t = 2019 used an Oct 16, 2020 scrape, five weeks into the season it was predicting.
 
 ### 2a. Ranking accuracy by horizon (`validate_horizons.py`)
 
@@ -540,10 +553,389 @@ Each class's rookies are ranked by market price and mapped to rookie-draft slots
 - **Superflex:** the MFL order can't be used, since 1QB ADP prices QBs too low. In the dynasty superflex markets, rookie QBs are about fair overall (+1 / +23 / −35). QBs in 1st-round slots trail (−25 / −14 / −79; 4 classes). RB, WR and TE patterns match 1QB.
 - **Timing:** these are prices around the rookie draft. Rookies get cheaper during their first season (section 10), and picks trail for 1–2 years (section 6), so a contender can also wait and buy these players in year one.
 
+## 13. Do the edges hold out of sample? (`out_of_sample.py`)
+
+**Method: walk-forward.**
+- For each test cohort T, each market's price curve is refit using only cohorts whose outcomes were known by then (t ≤ T − h). Each rule's past average is computed the same way.
+- The rule is then scored on cohort T against that past-only curve. Pooled over test cohorts, this is what following the rule in real time would have returned.
+- Dynasty markets give 5 test cohorts at 1 year (2020–24) and 3 at 2 years, since FP dynasty now starts at t = 2018. MFL gives 13 at 1 year and 9 at 3 years.
+
+1QB, dynasty markets pooled, 1 year. Out-of-sample mean residual % (test cohorts positive / total):
+
+| Rule | In-sample | Out of sample | |
+|---|---|---|---|
+| RB, top-6 PPG last year | +88 | **+117 (4/5)** | held |
+| RB, 4+ targets per game | +59 | **+97 (4/5)** | held |
+| RB priced RB4–6 | +34 | **+123 (3/3)** | held |
+| RB 27.5+ and top-12 PPG | +43 | +86 (2/2) | held, few cohorts |
+| Age 30+ (all positions) | +30 | **+38 (4/5)**; superflex +49 (5/5) | held |
+| WR 30+ | +21 | +22 (3/5) | held, weak |
+| All TEs | −17 | −17 (1/5) | held |
+| TE under 25 | −36 | **−33 (0/5)** | held |
+| Rookies (May) | −28 | **−28 (1/5)** | held |
+| Age ≤23 | −30 | **−31 (1/5)** | held |
+| RB under 25, priced 6+ spots above PPG | −27 | −22 | held |
+| RB priced RB1–3 ("avoid") | +18 | +126 | **failed** (2024 Barkley, Henry, Gibbs) |
+| TE 29+ | +11 | +2 | **no edge** |
+| Injured (≤9 games), top-100 price | −18 | +1 at 1 yr, −52 at 2 yr | mixed |
+
+- **Group residuals persist in general.** Across every market group, a group's past residual predicts its next cohort's (weighted correlation +0.46 at 1 year). Groups that beat their price by more than 10% went on to +24.
+  - In MFL the correlation grows with horizon: +0.24 at 1 year, +0.38 / +0.49 / +0.55 at 2 / 3 / 5 years.
+  - Superflex correlations are higher (+0.56 dynasty, +0.73 to +0.78 MFL).
+- **MFL keeper ADP gives the opposite answer for age.** The out-of-sample signs flip:
+  - Age 30+: −15 / −24 / −29 / −39 at 1 / 2 / 3 / 5 years (0/9 cohorts at 3 years).
+  - Age ≤23: +16 / +33 / **+39 (9/9)** / **+57 (5/5)**.
+  - RB 27.5+ and top-12 PPG: −88 at 1 year; WR 30+: −35 at 3 years (0/9).
+- **This is a market difference, not an era difference.** On the same 2019–24 cohorts:
+  - MFL has old top-12 RBs at −67 (1 year), while the dynasty markets have them at +45.
+  - MFL has age ≤23 at +4 / +28 / +31 at 1 / 2 / 3 years, while the dynasty markets have −32 / −14 / −5.
+  - Startup ADP prices old producers above the trade-value markets, and the outcomes fall between them. "Buy old, sell young" works against KTC/FC/DP/FP prices. It does not work against a startup ADP price.
+- **Rookies (MFL rookie order, 3 years, by class):** WR NFL R1 +87 out of sample (5/8 classes; +225 at 5 years, 3/4). All TEs −37 (1/9). TEs in rookie R1–R2 slots −63 (2/7). RB NFL R2 +1 (−35 at 5 years).
+  - The dynasty rookie order (2–4 test classes) is too short to judge.
+
+**Takeaway.** The core within-market playbook survived out of sample:
+- Buy proven RB producers and 30+ players for 1–2 years.
+- Sell May rookies, under-24s and young TEs.
+- Take WRs with NFL first-round capital.
+
+The "avoid RB1–3" rule did not survive, so drop it. Use these edges only against dynasty trade values (KTC, FC, DP, FP), not startup ADP.
+
+## 14. Does TE premium change the TE answer? (`te_premium.py`)
+
+**Method.**
+- TE seasons are rescored as PPR + 0.5 per reception, with replacement reset to TE13 under that scoring. Other positions are unchanged, and each market's price curve is refit.
+- Prices are the standard 1QB prices: Dynasty Daddy stores no TEP values.
+- TE premium adds about 40 points a season to a TE1–6 and 30 to a TE7–12, against about 9 for replacement.
+
+| Group (dynasty markets, 2019–24) | PPR 1 / 2 / 3 yr | TEP 1 / 2 / 3 yr |
+|---|---|---|
+| All TEs | −18 / −18 / −14 | **−8 / −7 / −3** (still 0–1 positive cohorts of 4–6) |
+| Priced TE1–3 | −44 / −46 / −70 | −13 / −17 / −44 |
+| Priced TE4–12 | −29 / −27 / −29 | −17 / −16 / −18 |
+| Priced TE13+ | −7 / −6 / +6 | −2 / 0 / +14 |
+| Under 25 | −37 / −29 / −20 | −29 / −21 / −12 |
+| 29+ | +9 / +21 / +11 | **+24 / +38 / +29** (5/6, 5/5, 4/4 cohorts) |
+| Top-6 PPG last year | −5 / −18 / −16 | +16 / 0 / +5 |
+
+- **MFL (2010–24) under TEP:** TEs turn slightly positive, +5 to +9 at every horizon (9–12 of 13–15 cohorts). Priced TE1–3 is +22 to +47.
+- **Break-even TE price** (KTC/FC/DP raw values: scale every TE's value, re-rank, and refit):
+  - In standard PPR, TE values would have to be about **20% lower** to break even (TE residual −7 to +5 at −20%).
+  - In TEP the break-even is about **10% lower**. Priced TE1–12 need 10–20% lower.
+
+**Takeaway.**
+- TE premium halves the TE overpricing, but standard trade values are still slightly too high for TEs even in TEP leagues.
+- If your league's calculator adds a TEP bump on top (as KTC's TEP setting does), TEs are more overpriced still.
+- The groups that become buys in TEP are established producers: 29+ TEs and last year's top-6 by PPG.
+- Young TEs remain overpriced.
+
+## 15. The rebuilder's side: when to sell (`sell_timing.py`)
+
+**Price retention.** This is the share of a top-100 player's trade value left 1 and 2 years later.
+- Dynasty Daddy KTC/FC/DP values are taken as a share of each date's top-150 total.
+- MFL ADP is mapped to price-implied value.
+- A player who drops out of the market counts as 0.
+
+| | KTC/FC/DP 1 yr / 2 yr (2020–24) | MFL 1 yr / 2 yr (2010–24) |
+|---|---|---|
+| RB ≤23 | 0.92 / 0.82 | 0.88 / 0.74 |
+| RB 24–25 | 0.80 / 0.62 | 0.81–0.93 / 0.74 |
+| RB 26 | 0.72 / 0.57 | 0.82 / 0.59 |
+| RB 27 | 0.83 / 0.58 | **0.65 / 0.40** |
+| RB 28 | **0.66 / 0.44** | 0.63 / 0.47 |
+| RB 29+ | 0.75 / 0.69 | **0.55 / 0.24** (median player 0.36 / 0.00) |
+| WR ≤25 | 0.95–0.98 / 0.84–0.92 | 0.92–1.13 / 0.92–1.00 |
+| WR 26–27 | 0.83 / 0.60 | 0.88 / 0.76 |
+| WR 28–29 | 0.75 / 0.55 | 0.80 / 0.54 |
+| WR 30–31 | 0.70 / 0.42 | **0.65 / 0.39** |
+| WR 32+ | 0.61 / 0.46 | 0.51 / 0.25 |
+| TE 24–27 | 0.85–0.95 / 0.70–0.74 | 0.85–0.99 / 0.74–0.96 |
+| TE 28–29 | 0.66 / 0.44 | 0.79 / 0.60 |
+| QB 26–28 | 0.96 / 0.88 | 0.90 / 0.73 |
+| QB 29–31 | 0.83 / 0.73 | 0.80 / 0.68 |
+
+**Within-season price path** (KTC/FC/DP, cycles 2021–24). Value share at each date relative to May, top-100 players at May:
+
+| | Sep 1 | Oct 18 | Nov 17 | Dec 22 | Feb 17 | next May |
+|---|---|---|---|---|---|---|
+| RB 26–28 | 1.00–1.03 | 0.88–0.97 | 0.92–0.96 | 0.82–0.94 | 0.72–0.85 | **0.64–0.77** |
+| WR 28–29 | 0.98 | 0.98 | 0.92 | 0.88 | 0.84 | 0.77 |
+| WR 30–31 | 0.99 | 1.05 | 1.01 | 0.92 | **0.76** | 0.70 |
+| TE 28–29 | 1.00 | 0.85 | 0.87 | 0.83 | 0.82 | 0.74 |
+| QB 29–31 | 0.97 | 0.84 | 0.77 | 0.80 | 0.75 | 0.73 |
+| WR rookies | 0.98 | 1.01 | 1.02 | 1.05 | **1.09** | 1.06 |
+| TE rookies | 1.01 | 1.11 | 1.19 | 1.24 | **1.26** | 1.25 |
+| RB rookies | 1.03 | 1.06 | **1.09** | 1.06 | 1.01 | 0.94 |
+
+**Is the market wrong about them?** Residual by age among top-100 players:
+- Dynasty markets: RBs at 27 and 29+ are underpriced (+129 / +161 at 1 year), and so are WRs at 28–31 (+43 / +75). RBs at 24 are overpriced (−38 to −68).
+- MFL ADP: the opposite again. RBs at 27+ are −45 to −90 at 3–5 years, and WRs at 30+ are −30 to −67.
+
+**Takeaway for a rebuilder.**
+- **Price is what a rebuilder cares about, and it falls fastest:**
+  - RBs: from 26–28. About 30% is gone in a year and over 40% in two. In MFL, a 27+ RB loses a third to half a year.
+  - WRs: from 28. About 25–30% a year, and over half in two years from 30.
+  - TEs: at 28–29.
+  - QBs hold until about 29.
+- **Sell before the season (May to Sep 1).** Aging veterans keep their May price through Sep 1 and then decline.
+  - For RBs and WRs the steepest part is after the season (Dec to May), when new rookies arrive and the player is a year older. A 30–31 WR goes from 0.92 in December to 0.70 the next May.
+  - For 29+ QBs and 28–29 TEs most of the drop comes in the first half of the season (Sep to Nov).
+  - Dynasty trade markets underprice these players, so selling an old RB or WR to a dynasty-value manager gets you a below-fair price for his production.
+  - Sell where buyers pay ADP-style prices (startup-minded or win-now managers), or keep him if you are only one year away from contending.
+- **Rookies rise through their first season.** WRs and TEs peak in February, at +9% and +26% over May. RBs peak in November.
+  - Rebuilders should buy rookies in May and sell disappointing ones only after February.
+
+## 16. Is consolidating 2-for-1 worth it? (`consolidation.py`)
+
+**Method.**
+- Using KTC/FC/DP raw values as a share of each cohort's top-150 total, fit a price curve (value on overall rank) and an outcome curve (h-year VORP on rank).
+- For a stud at rank R, find the rank whose value is half of his (a pair) or a third (a trio), and compare the stud's expected VORP with 2× or 3× theirs.
+- A ratio above 1 means the stud returns more VORP than an equal-raw-value package.
+
+1QB, mean of the three markets:
+
+| Stud rank | Pair rank | Stud / pair, 1 / 2 / 3 yr | Trio rank | Stud / trio, 1 / 2 / 3 yr |
+|---|---|---|---|---|
+| 1 | 29 | 1.14 / 1.29 / 1.30 | 50 | 1.52 / 1.67 / 1.89 |
+| 3 | 35 | 1.56 / 1.50 / 1.99 | 72 | 1.72 / 1.79 / 1.98 |
+| 6 | 53 | 1.41 / 1.50 / 1.88 | 93 | 2.24 / 2.26 / 2.43 |
+| 12 | 70 | 1.36 / 1.72 / 1.98 | 106 | 2.32 / 2.23 / 2.16 |
+| 24 | 88 | 1.53 / 1.53 / 1.69 | 136 | 2.00 / 1.93 / 2.32 |
+
+- **It depends on the calculator.** Stud / pair at 2 years:
+  - **KTC: 1.7–2.9.** FantasyCalc: 0.9–1.7, mostly 1.1–1.5. **DynastyProcess: 0.7–1.25** (pairs win from about rank 6 down).
+- **VORP per unit of raw value** shows the same thing. Players ranked 100–200 return only 0.4 (KTC) or 0.6 (FC) of the VORP per value of ranks 25–48. In DP they return 2.5–3.4×, because DP's value curve is much steeper.
+- **Superflex** shows the same pattern, slightly weaker: stud / pair 0.9–1.3 at 1 year and 1.1–1.7 at 3 years.
+
+**Takeaway.**
+- On KTC and FantasyCalc raw values, consolidating up is right. On KTC, two half-value players return only 35–60% of the stud's VORP, and on FantasyCalc 60–90%.
+  - KTC's and FC's trade calculators add a "value adjustment" to the side getting the best player. These results say that adjustment is justified and often still too small at KTC.
+  - So accept 2-for-1 deals for the stud even with the adjustment, and avoid taking the 2 side.
+- On DP values, the extra consolidation premium is already in the curve. Studs ranked 6–48 are no better than two players at half their value.
+- Before the VORP math, these results already favor the stud for two more reasons:
+  - The second player of a pair may sit on your bench, and VORP counts every above-replacement point.
+  - The 2 side also uses a roster spot.
+
+## 17. Second-year players (`second_year.py`)
+
+**Method.**
+- Veterans one season into their career are split by rookie-year production: "hit" (PPG top-24 RB/WR, top-12 TE/QB, with 6+ games), "quiet" (6+ games, below that) or "barely played".
+- They are compared with players entering year 3 and year 4+ with the same production split.
+
+| | Dynasty markets, 1 / 2 / 3 yr | MFL, 1 / 2 / 3 / 5 yr |
+|---|---|---|
+| WR year 2, quiet | −35 (0/6) / −2 / +2 | **+17 / +36 / +43 / +66 (11/11)** |
+| WR year 2, hit | −128 (n9) / +24 / +53 | **+46 / +155 / +171 / +231** (92% beat at 5 yr) |
+| WR year 3, quiet | −1 / +9 / 0 | +11 / +12 / +25 / +44 |
+| WR year 4+, quiet | +20 / +1 / −4 | +9 / +4 / +2 / −2 |
+| RB year 2, quiet | −1 / +1 / −4 | −8 / +4 / +7 / +9 |
+| RB year 2, hit | +22 / +32 / **−98** (median −112) | +23 / +10 / −14 / −1 (medians −60 to −94) |
+| TE year 2, quiet | −26 / −23 / +11 | +22 / +19 / +34 / +35 |
+| QB year 2, hit | small n | +18 / +44 / +67 / +76 |
+
+- **By NFL draft round (dynasty markets, quiet year-2 WRs):**
+  - NFL R1: −69 / −2 / −33.
+  - NFL R2: −34 / −35 / −8.
+  - **Day 3: +6 / +38 (5/5 cohorts) / +62.**
+- **MFL, quiet year-2 WRs by round:** NFL R1 +47 / +46 / +80 at 2 / 3 / 5 years, and the other rounds +25 to +59.
+- **Price move since the rookie snapshot** (dynasty markets): quiet WRs whose price fell 5+ spots are −29 / +13 / −21, against −37 / −16 / −3 for those whose price rose. There is no consistent difference, so the market isn't over-discounting the "quiet" label.
+- **Names** (dynasty markets, quiet year 2, 2 years):
+  - Best: Smith-Njigba '24, St. Brown '22, Chase Brown '24, Cook '23, Pittman '21.
+  - Worst: Javonte Williams '22, Akers '21, Dobbins '21, Watson '23, Bateman '22, Burks '23.
+
+**Takeaway.**
+- **In 2010–24 ADP, second-year WRs were the best-value group in the data.** That held for hits and quiet ones alike, at every horizon, and mostly in year 2 rather than year 3+.
+- **Today's dynasty markets price the year-2 WR leap.** Quiet year-2 WRs are fair or overpriced, especially NFL first-rounders, whom the market still pays for.
+  - The remaining edge is quiet Day-3 WRs, which are cheap: +38 at 2 years in 5/5 cohorts.
+- **Sell a year-2 RB after a hit rookie year** only at a 2–3 year horizon. The 1–2 year residual is positive, but by year 3 they trail by about 100% (median).
+- **Quiet year-2 RBs and TEs** are about fair.
+
+## 18. Landing spot and opportunity (`opportunity.py`)
+
+**Measures, per team and season:**
+- **Vacated:** the share of targets (WR/TE) or carries (RB) by players who are not on the team next season.
+- **Incoming:** volume that arriving veterans had elsewhere.
+- **Net:** vacated minus incoming.
+- **QB1 left:** the team's most-attempts QB is gone next season.
+- **Rookie competition:** R1–R2 rookies drafted at the same position.
+
+The player's next-season team is used for veterans and the draft team for rookies. Median vacated share: targets 29%, carries 24%. The QB1 leaves in 27% of team-seasons.
+
+**Lookahead caveat:** "left" is judged by who actually played for the team the next season. At a May snapshot nearly all departures are known, but a player lost to injury counts as having left.
+
+| Group | Dynasty 1 / 2 yr | MFL 1 / 3 yr |
+|---|---|---|
+| RB, team's QB1 left | **−18 / −14** | **−30 (2/15) / −16** |
+| RB, net vacated carries 15%+ | +36 / +25 | +10 / −2 |
+| RB, net vacated ≤0 | +18 / +11 | −17 / −21 |
+| TE, team's QB1 left | **−50 (0/6) / −41** | −11 / 0 |
+| WR, team's QB1 left | +19 / +11 | +25 / +25 |
+| WR, vacated <10% | −27 / −9 | −6 / +17 |
+| WR, vacated 25%+ | +11 / +10 | +16 / +13 |
+| QB moved teams | −18 / −13 | **−20 (2/15) / −16** |
+| Moved teams, 1 yr (dynasty) / 3 yr (MFL) | WR +30, RB +29 | **WR −10, RB −27** |
+
+- **Joint OLS** (residual on vacated, incoming, QB1 left, rookie competition, moved and price rank; SE clustered by player):
+  - **RB, incoming carries:** −0.9 per point (p = .01, dynasty) and −0.5 (p = .01, MFL). The market under-reacts to a veteran RB being added.
+  - **RB, QB1 left:** −57 (p < .01, dynasty) and −29 (p = .01, MFL).
+  - **QB moved teams:** −42 (p < .01) and −20 (p = .01).
+  - Moving teams at 3 years (MFL): WR −30 (p < .01), RB −23 (p = .02).
+  - **Vacated targets for WRs:** +0.75 to +0.87 per point (p = .07 to .18, dynasty), and about 0 in MFL. This is mostly priced.
+- **Rookies** (draft team):
+  - WRs landing where net vacated targets are ≤0 trail: **−35 / −36** (MFL, 3 / 5 years) and −41 / −37 (dynasty, 1 / 2 years). WRs with 15%+ net vacated are +27 / +39 in MFL.
+  - Incoming targets hurt rookie WRs: −1.0 to −1.9 per point (p = .03 to .14).
+  - RB rookies with 15%+ net vacated carries: +13 / +45 in the dynasty markets; MFL is about 0.
+  - QB rookies whose team's QB1 left: −8 / +32, against −24 / −20 when the QB1 stayed (dynasty markets).
+
+**Takeaway.**
+- **Fade RBs (and TEs) whose team loses its starting QB.** Also fade RBs whose team adds a veteran back. Both effects show up in both markets.
+- **Fade QBs who change teams.**
+- **WRs are the opposite of RBs on a QB change.** Their prices drop too far: +19 to +25 in both markets.
+- Raw vacated targets are mostly priced for veterans. **For rookie WRs, avoid crowded landing spots** (net vacated ≤0), which trail by 35–40% in both markets.
+- Veteran WRs or RBs who changed teams beat their price for 1–2 years in the dynasty markets but trailed at 3 years in MFL. Treat them as short-term buys.
+
+## 19. How far back, and what holds at 5 and 10 years? (`long_horizon.py`)
+
+**How far back the data goes.**
+- **Prices are the limit, not stats.** nflverse stats go back to 1999, but the oldest market is MFL keeper ADP, and its API has no keeper drafts before 2011 (cohort t = 2010).
+- **10-year outcomes:** cohorts 2010–15 only (6 cohorts, MFL only). These windows overlap heavily, and a walk-forward test is impossible because nothing can be trained before them.
+- **5-year outcomes:** MFL 2010–20 (11 cohorts); FP dynasty 2018–20 (3 cohorts).
+- **The dynasty markets** start in 2018 (FP, via the repo's weekly archive), 2020 (KTC), 2021 (FC) and 2022 (DP).
+  - **No older FP data:** the archive's dynasty files begin in November 2018, so t = 2018 is as far back as FP goes.
+  - **DP history is not a separate market:** DP values from 2019–22 in this repo's git history were computed from FP's ECR, so for 1QB they rank players the same way as FP (rank correlation 0.99 on May 2019). They are used only for superflex t = 2018–19; see section 2.
+- **MFL's sample shrinks from 2020.** It drops from 3,500–7,300 drafts a year to about 1,000, so MFL before and after 2020 is not quite the same market.
+
+**Translating MFL ADP into a dynasty-style price.**
+- **Target:** on the overlap cohorts 2018–24, the dynasty consensus is the mean log overall rank across the dynasty markets live that year. A player outside a market's top 200 counts as 250.
+- **Model:** a gradient-boosted model predicts it from log MFL rank, age, position, experience, last season's production and draft capital. MFL rank does most of the work; age is a distant second, then draft pick and experience.
+- **Validation:** trained on 2018–21 and tested on 2022–24.
+  - Rank correlation with the real dynasty price rises from 0.88–0.90 (raw MFL) to **0.94–0.95** (translated).
+  - The translation reproduces the dynasty **youth premium** almost exactly: age ≤23 at 1 year is −40 translated vs −44 real; TE under 25 is −43 vs −44.
+  - It captures only about **half of the dynasty discount on old players and elite RBs.** Age 30+ is +11 translated vs +21 real; RB top-6 PPG +26 vs +97; RB 27.5+ & top-12 −28 vs +37.
+  - **So the translated results below are trustworthy for young players, and too pessimistic for old players and elite RBs.**
+
+**Residual % for cohorts 2010–17 (before the overlap), against the translated price** (cohorts positive / total; raw MFL in brackets at 10 years):
+
+| Group | 1 yr | 3 yr | 5 yr | 10 yr (2010–15) |
+|---|---|---|---|---|
+| Age ≤23 (all) | −4 (3/8) | +7 | +29 (4/8) | **+42 (5/6)** [raw +72] |
+| Age 30+ (all) | +15 (5/8) | +3 | −4 | 0 (4/6) [raw −29] |
+| WR 30+ | +27 (5/8) | +9 | −5 | −5 [raw −33] |
+| RB top-6 PPG | +3 | −7 | −34 (2/8) | **−47 (2/6)** |
+| RB 27.5+ & top-12 PPG | +25 (5/8) | −17 | −46 | −49 [raw −118] |
+| RB priced 1–3 | −37 | −46 | **−86 (1/8)** | **−104 (0/6)** |
+| RB 4+ targets/g | +33 (6/8) | +24 | +6 | −4 |
+| TE under 25 | −29 (2/8) | −15 | −5 | −7 [raw +26] |
+| TE 29+ | +27 (5/8) | +19 (6/8) | +7 | +7 (4/6) |
+| Injured (≤9 games), top-100 price | −38 | −22 | **−29 (1/8)** | **−34 (0/6)** |
+
+**Position by age, translated price, 1QB / superflex** (`LEAGUE=sf uv run analysis/long_horizon.py`; cohorts positive / total; FP's own 5-year residual for 2018–20 in the last column):
+
+| Group | 5 yr (2010–17) | 10 yr (2010–15) | FP direct, 5 yr |
+|---|---|---|---|
+| QB ≤24 | −21 / −16 | −30 / −4 | +74 / +57 |
+| QB 25–27 | −34 / +3 | −11 / **+56 (5/6)** | +33 / +11 |
+| QB 28–31 | −14 / **+44 (7/8)** | +4 / **+91 (6/6)** | −18 / +6 |
+| QB 32+ | −4 / **+65 (8/8)** | +11 / **+83 (6/6)** | +23 / +18 |
+| WR ≤24 (veterans) | **+44 (8/8) / +31 (8/8)** | **+74 (6/6) / +48 (6/6)** | −8 / −4 |
+| WR 25–27 | +11 / +9 | −4 / −12 | +6 / +1 |
+| WR 30+ | −5 / −7 | −5 / −9 | **−42 / −36** |
+| RB ≤24 (veterans) | +1 / −19 | −23 / **−37 (0/6)** | −18 / −25 |
+| RB 28+ | −14 / −20 | −14 / −24 (0/6) | −33 / −21 |
+| RB priced 1–3 | −86 / −98 | −104 / −150 | −41 / −76 |
+| TE (all) | −4 / −13 (0/8) | −4 / −15 (0/6) | −8 / −5 |
+| TE 25–28 | −11 / −17 | −11 / −21 (0/6) | −27 / −21 |
+| TE 29+ | +7 / −4 | +7 / −4 | +44 / +33 (n = 14–15) |
+
+- **Superflex validation:** the translation reaches 0.95 rank correlation with superflex dynasty prices (raw MFL 0.84–0.85, since MFL is mostly 1QB). It matches the real superflex residuals for QBs 28+ (+45 / +58 translated vs +39 / +60 real at 1 year), but overstates QBs 25–27 (+28 vs 0). Treat the 25–27 band as optimistic.
+- **Superflex QB value assumes nearly every team starts two QBs** (replacement QB26; section 5). In 1QB, no QB group beats its price over 5–10 years.
+
+**Direct check: FP dynasty's own 5-year residuals** (cohorts 2018–20, the first time a real dynasty market can be scored at 5 years; MFL on the same cohorts for contrast):
+
+| Group | FP dynasty, 5 yr | MFL, same cohorts |
+|---|---|---|
+| Age ≤23 | **+15 (3/3)** | +41 (3/3) |
+| Rookies (May) | **+36 (3/3)** | (veterans only) |
+| Age 30+ | −6 (2/3) | −24 (0/3) |
+| WR 30+ | **−42 (0/3)** | −46 (0/3) |
+| TE 29+ (n = 14) | +44 (3/3) | +4 (3/3) |
+| TE under 25 | −10 (0/3) | +6 |
+| RB 4+ targets/g | −30 (0/3) | −12 (0/3) |
+| RB priced 1–3 (n = 9) | −41 | +65 |
+| Injured, top-100 price | −19 (0/3) | +40 |
+
+- **These three cohorts overlap almost completely** (seasons 2019–25), so they amount to one long period, not three tests. Their direction matches the translation: young players and rookies beat FP's price over 5 years, after trailing it by about 30% at 1 year (section 13). The 30+ discount is about right at 5 years, and 30+ WRs fall short of their price.
+- **MFL rookie order at 10 years** (classes 2011–16): this is too thin to use. Every group's median is negative, and the means are driven by a few hits. The only consistent signal is that the youngest rookies (≤21) beat their slot, +76 (5/6), while 23+ rookies trail, −11 (1/6).
+
+**Takeaway.**
+- **This confirms section 3's age-band bridge** with a player-level model and a direct 5-year FP check. Section 3 found age ≤23 at +32–40 and age 30+ at −7 to +2 over 10 years; here they are +42 and 0.
+- **Horizon decides the youth question.** The dynasty markets' youth and rookie premium loses at 1–3 years (section 13). Over 5–10 years it is justified: young players beat dynasty prices by +15 (FP, 5 years) to +29 (translated, 5 years) and +42 (translated, 10 years), and May rookies beat FP by +36 at 5 years. Rebuilders should hold young players; contenders should sell them.
+- **The edge on old players is a 1–2 year edge.** At 5–10 years the dynasty discount on 30+ players is about right; 30+ WRs fall short even of it, and MFL ADP overpriced old players by about 30%.
+- **Elite RBs are short-term assets.** Even at a dynasty-style discount, RBs priced top-3 return far less than their price over 5–10 years (−86, −104). Because the translation understates the real dynasty discount, the true long-run gap is smaller, but the sign stays negative. This fits section 11: buy them to win now, not to hold.
+- **Injured players priced top-100 trail at every horizon,** in the translation and in FP's own 5-year check. The discount for injury is never large enough.
+- **Old TEs are a mild long-run buy and young TEs a mild fade,** shrinking from about ±27–29 at 1 year to about ±7 at 10.
+- **Can MFL be regressed toward dynasty values? Yes.** The ranking part is easy (0.94 rank correlation), and the youth premium transfers well. What does not transfer is how hard dynasty traders discount age, so long-run conclusions about old players remain the least certain.
+
+## 20. Are any RBs good long-term buys? (`rb_long.py`)
+
+Translated MFL price (section 19) for cohorts 2010–17 (3 and 5 years) and 2010–15 (10 years), with FP dynasty's own 5-year residuals (2018–20) as a check. Residual % against the price, mean (cohorts positive / total):
+
+| RB group | 1QB 5 yr | 1QB 10 yr | SF 10 yr | FP 5 yr (1QB) |
+|---|---|---|---|---|
+| All veteran RBs | −5 (3/8) | −16 (1/6) | −31 (0/6) | −19 (0/3) |
+| Priced RB25+ | +2 (5/8) | −5 (1/6) | −12 (1/6) | −11 (0/3) |
+| NFL R3+ / UDFA | −0 (5/8) | −4 (3/6) | −18 (0/6) | −13 (1/3) |
+| 4+ targets/g | +6 (3/8) | −4 (1/6) | −40 (1/6) | −30 (0/3) |
+| Priced 6+ spots below last year's PPG rank | −10 (2/8) | −10 (2/6) | −20 (1/6) | +8 (3/3) |
+| ≤24, NFL R1 | +3 (3/8) | −35 (3/6) | −62 (2/6) | −24 (0/3) |
+| ≤24, not yet a starter (PPG RB13–36) | −46 (2/8) | −66 (1/6) | −70 (1/6) | −18 (2/3) |
+| NFL R2 | −26 (2/8) | −46 (1/6) | −66 (1/6) | −17 (1/3) |
+| Priced RB1–3 | −86 (1/8) | −104 (0/6) | −150 (0/6) | −41 (1/3) |
+
+**Takeaway.**
+- **No RB group is a good long-term buy.** At 10 years every group trails its price in superflex, and the best 1QB groups only break even.
+- **Long-run RB value rides on a few hits.** Medians are −15 to −90 in nearly every group; Ingram, McCoy, Bell and Murray carry the means. Only 14% of young non-starters beat their 10-year price.
+- **Cheap RBs are fairly priced; expensive and high-draft-capital RBs are not.** The one hint of a buy is production-backed RBs priced below last year's output (+8 overall, +20 at ≤25, 3/3 in FP), but the translation disagrees (−10, −20) and the FP medians are negative.
+- Use RBs as 1–2 year assets (sections 11 and 13) and sell before 27–28.
+
+## 21. Startup drafts: all in, punt, or something else? (`startup.py`)
+
+A simulation on the real MFL startup boards (keeper ADP, veterans only, top 200) for drafts after seasons 2010–20, 25 drafts each. 12-team snake, 16 rounds. Eleven teams draft by ADP with log-normal noise (sd 0.2 on rank). The focal team, in a rotating slot, follows a strategy. Every team must fill QB 1 (SF 2), RB 3, WR 4 and TE 1 by the last round. Each season after the draft scores the best lineup from real season PPR totals (QB, 2 RB, 3 WR, TE, FLEX; SF adds a QB/RB/WR/TE slot). A "title" is the top score of the 12 teams. Because the other teams draft with noise, the ADP control team wins about 20% of seasons rather than 8.3%; compare strategies with it, not with chance.
+
+Expected titles per startup, years 1–3 / years 1–5:
+
+| Strategy | 1QB | SF |
+|---|---|---|
+| Pure ADP | 0.51 / 0.85 | 0.56 / 0.90 |
+| Win-now: best last-season PPG among the next 8 | 0.16 / 0.21 | 0.24 / 0.33 |
+| Oldest among the next 8 | 0.04 / 0.05 | 0.09 / 0.11 |
+| Youngest among the next 8 | 0.65 / 1.45 | 0.59 / 1.34 |
+| Youngest, skipping RBs and TEs until forced | 0.39 / 1.04 | 0.45 / 1.24 |
+| Adjusted rank: age ×1.06/yr, RB ×1.1 | **0.83 / 1.72** | 0.85 / 1.65 |
+| Same, plus QB ×0.86 | 0.78 / 1.57 | **0.94 / 1.85** |
+
+The adjusted rank is ADP rank × 1.06 per year older than 26 (÷ 1.06 per year younger) × the position factors; the team takes the lowest adjusted rank on the board. From a grid search (`STRATS='adj:y=..,rb=..,te=..,qb=..,wr=..'`, log-scale factors):
+- **Age** ×1.03–1.10 per year and **RB** ×1.1–1.2 all land close to the best. ×1.5 on RBs hurts years 1–3, and skipping RBs outright is worse still.
+- **TE** and **WR** factors are neutral to negative. The age factor already captures the young-WR edge.
+- **QB:** ×0.82–0.9 adds about 0.13 titles in years 1–3 in SF at every noise level, and is better than no QB factor in 8 of 11 drafts. In 1QB it is neutral to negative, and fading QBs hurts in both formats.
+- **The best setting is robust:** it beats ADP at noise 0.1, 0.2 and 0.3, and for years 1–3 in 9 of 11 drafts in 1QB (SF: 8 better, 2 tied, 1 worse). Year 1 is unchanged (about 0.20 titles), so it costs nothing now.
+
+**Takeaway.**
+- **Neither all in nor punt.** Draft close to ADP, lean young, and tax RBs a little. In superflex, move QBs up.
+- **Win-now reaches lose even in year 1.** Last season's production is already priced and regresses, and every reach gives up ADP value.
+- **This is consistent with section 19:** startup ADP overprices old players relative to trade markets. Contend by trading for veterans after the startup.
+
+**Limits.**
+- No trades, waivers or rookie drafts after the startup, so rival rosters only age. That inflates youth from about year 4 on; years 1–3 are the fair comparison.
+- Rookies are not in the pool.
+- "Title" means the top regular-season score.
+- The factors were chosen on the same drafts.
+- 2010–20 startup ADP priced youth and SF QBs less than current startups do, so the edges are probably smaller now.
+
 ## Caveats
 
 - **Position-level residuals depend on league format.** The QB results flip sign between FP (1QB) and MFL, whose keeper pool includes superflex leagues. Within-position groupings are more trustworthy.
 - **Multiple comparisons.** Many groupings were tested, so prefer patterns that hold across markets and years over single starred cells.
+- **Sections 1–12 and 14–18 were computed before FP dynasty gained its t = 2018 cohort** (and before the superflex t = 2019 fix in section 2). Rerunning `market_residuals.py` with them moved FP's group residuals by a median 2–3 points, at most 15, and left every other market unchanged. Those sections still describe FP from 2019 onward; sections 13 and 19 use the extended data.
 - **Few cohorts in the dynasty value markets.** KTC, FantasyCalc and DP cover 2020–2024, so they overlap heavily. A single season (such as 30+ RBs Henry and Barkley in 2024) can drive the h=1 cells. Multi-year windows also overlap across cohorts.
 - **Dynasty Daddy snapshots are a single date (May 16)**, after the NFL draft. Values before each source went live are placeholders and are dropped. 1QB runs use `*_trade_value`; `LEAGUE=sf` runs use `*_sf_trade_value`.
 - **Current position.** The panel labels every player by his current position, and VORP for all his seasons uses that position's replacement level. A few converts (Waller, Logan Thomas, Cordarrelle Patterson) are mis-scored in early seasons. Section 12 groups rookies by draft-year position.
