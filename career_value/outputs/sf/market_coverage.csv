@@ -1,8 +1,8 @@
 market,horizon,snapshots,cohorts,rows
-fp_dynasty,1,2019-2024,6,1200
-fp_dynasty,2,2019-2023,5,1000
-fp_dynasty,3,2019-2022,4,800
-fp_dynasty,5,2019-2020,2,400
+fp_dynasty,1,2018-2024,7,1400
+fp_dynasty,2,2018-2023,6,1200
+fp_dynasty,3,2018-2022,5,1000
+fp_dynasty,5,2018-2020,3,600
 mfl_dynasty,1,2010-2024,15,3000
 mfl_dynasty,2,2010-2023,14,2800
 mfl_dynasty,3,2010-2022,13,2600
