@@ -49,6 +49,7 @@ Follow-up analyses for sections 3b and 7–12 are in `analysis/`. Run them from 
 | `long_horizon.py` | 19 (also `LEAGUE=sf`) |
 | `rb_long.py` | 20 (also `LEAGUE=sf`) |
 | `startup.py` | 21 (also `LEAGUE=sf`; writes `outputs/startup_sim.csv`) |
+| `startup_fp.py` | 22 (also `LEAGUE=sf`; writes `outputs/startup_fp_sim.csv`) |
 
 `common.py` holds shared loaders. Sections 13 and 16 also run for superflex if `outputs/sf/` exists.
 
@@ -911,16 +912,34 @@ Expected titles per startup, years 1–3 / years 1–5:
 | Youngest among the next 8 | 0.65 / 1.45 | 0.59 / 1.34 |
 | Youngest, skipping RBs and TEs until forced | 0.39 / 1.04 | 0.45 / 1.24 |
 | Adjusted rank: age ×1.06/yr, RB ×1.1 | **0.83 / 1.72** | 0.85 / 1.65 |
-| Same, plus QB ×0.86 | 0.78 / 1.57 | **0.94 / 1.85** |
+| Same, plus QB ×0.86 | 0.78 / 1.57 | 0.94 / 1.85 |
+| Age ×1.06, RB ×1.1, injured ×1.16 | **0.91 / 1.88** | 0.91 / 1.80 |
+| Same, plus QB ×0.86 | 0.93 / 1.79 | **1.01 / 1.95** |
+| Age ×1.03, RB ×1.1, injured ×1.16 (plus QB ×0.86 in SF) | 0.80 / 1.51 | 0.89 / 1.66 |
 
 The adjusted rank is ADP rank × 1.06 per year older than 26 (÷ 1.06 per year younger) × the position factors; the team takes the lowest adjusted rank on the board. From a grid search (`STRATS='adj:y=..,rb=..,te=..,qb=..,wr=..'`, log-scale factors):
 - **Age** ×1.03–1.10 per year and **RB** ×1.1–1.2 all land close to the best. ×1.5 on RBs hurts years 1–3, and skipping RBs outright is worse still.
 - **TE** and **WR** factors are neutral to negative. The age factor already captures the young-WR edge.
 - **QB:** ×0.82–0.9 adds about 0.13 titles in years 1–3 in SF at every noise level, and is better than no QB factor in 8 of 11 drafts. In 1QB it is neutral to negative, and fading QBs hurts in both formats.
 - **The best setting is robust:** it beats ADP at noise 0.1, 0.2 and 0.3, and for years 1–3 in 9 of 11 drafts in 1QB (SF: 8 better, 2 tied, 1 worse). Year 1 is unchanged (about 0.20 titles), so it costs nothing now.
+- **Injury** (missed 8+ games last season, `inj=0.15`, rank ×1.16) helps in both formats at noise 0.1, 0.2 and 0.3; anything from ×1.1 to ×1.6 does about as well. Other flags tested were neutral (priced above production, NFL round, receiving RB, rushing QB, age 30+, new team) or hurt (priced below production, last season's top 12). A year-2 bump is weak and mostly repeats the age factor.
+
+**Over two seasons only** (expected titles in year 1 / years 1–2 / years 1–3, noise 0.2):
+
+| Lean | 1QB | SF |
+|---|---|---|
+| Pure ADP | 0.20 / 0.37 / 0.51 | 0.20 / 0.39 / 0.56 |
+| Age ×1.06 only | 0.19 / 0.45 / 0.76 | 0.18 / 0.40 / 0.68 |
+| RB ×1.1 only | 0.20 / 0.37 / 0.53 | 0.23 / 0.44 / 0.65 |
+| Injured ×1.16 only | 0.20 / 0.39 / 0.56 | 0.22 / 0.40 / 0.61 |
+| QB ×0.86 only | — | 0.22 / 0.42 / 0.61 |
+| All, age ×1.06 | 0.23 / 0.55 / 0.91 | 0.26 / 0.60 / 1.01 |
+| All, age ×1.03 | 0.23 / 0.49 / 0.80 | 0.29 / 0.57 / 0.89 |
+
+Each factor alone is small over two years; together they clearly beat ADP and never lose year 1. For a 2-year window use age ×1.03, for 3–5 years ×1.06.
 
 **Takeaway.**
-- **Neither all in nor punt.** Draft close to ADP, lean young, and tax RBs a little. In superflex, move QBs up.
+- **Neither all in nor punt.** Draft close to ADP, lean young, tax RBs and last year's injured players a little. In superflex, move QBs up.
 - **Win-now reaches lose even in year 1.** Last season's production is already priced and regresses, and every reach gives up ADP value.
 - **This is consistent with section 19:** startup ADP overprices old players relative to trade markets. Contend by trading for veterans after the startup.
 
@@ -930,6 +949,39 @@ The adjusted rank is ADP rank × 1.06 per year older than 26 (÷ 1.06 per year y
 - "Title" means the top regular-season score.
 - The factors were chosen on the same drafts.
 - 2010–20 startup ADP priced youth and SF QBs less than current startups do, so the edges are probably smaller now.
+
+## 22. Does the startup lean add anything on top of FP dynasty ECR? (`startup_fp.py`)
+
+The same simulation on drafts after seasons 2018–24, where FP dynasty ECR exists (60 drafts each). The pool is the veterans in MFL's or FP's top 200, each board re-ranked within it. Two kinds of room: the other eleven teams draft by noisy MFL ADP, or by noisy FP ECR. The focal team uses ADP, FP, or ADP blended with 10% or 20% FP (B10, B20: average of log ranks), each raw or with the section 21 lean (age ×1.03 or ×1.06, RB ×1.1, injured ×1.16, SF QB ×0.86). Only drafts with all seasons played count: 6 drafts for years 1–2, 5 for years 1–3.
+
+**FP already applies the lean.** Relative to ADP, FP ranks a player ×1.07 lower per year of age (SF ×1.08) and RBs ×1.45 lower (SF ×1.42). In superflex it ranks QBs ×0.29, far higher than ADP. Injured players it ranks ×0.93 (slightly higher), so that is the one piece of the lean FP does not have.
+
+Expected titles in years 1–3, noise 0.2 (noise 0.35 in brackets):
+
+| Board | 1QB, ADP room | 1QB, FP room | SF, ADP room | SF, FP room |
+|---|---|---|---|---|
+| ADP raw | 0.61 (0.94) | 0.57 (0.90) | 0.65 (1.02) | 0.40 (0.66) |
+| ADP + lean | 0.87–0.89 (1.24–1.27) | 0.77–0.86 (1.06–1.09) | **1.05–1.11 (1.41–1.44)** | 0.42–0.48 (0.66–0.68) |
+| B10 raw | 0.74 (1.05) | 0.59 (0.91) | 0.83 (1.25) | 0.42 (0.67) |
+| B20 raw | 0.82 (1.16) | 0.64 (1.00) | 0.76 (1.22) | 0.43 (0.80) |
+| B10 + lean | **0.92–0.96 (1.30–1.31)** | **0.79–0.81 (1.10–1.15)** | 0.87–0.97 (1.41–1.44) | 0.49–0.52 (0.71–0.72) |
+| B20 + lean | 0.91–0.95 (1.20–1.25) | 0.76–0.77 (1.04–1.18) | 0.81–0.83 (1.25–1.27) | 0.49–0.55 (0.75–0.79) |
+| FP raw | 0.27 (0.57) | 0.60 (0.98) | 0.41 (0.61) | **0.66 (1.05)** |
+| FP + lean | 0.27–0.33 (0.50–0.56) | 0.45–0.54 (0.80–0.94) | 0.34–0.35 (0.60–0.63) | 0.51–0.54 (0.83–0.93) |
+
+Single pieces on the FP board in an FP room (years 1–3, noise 0.2 / 0.35): youth ×1.03 hurts in every setting (1QB 0.52 / 0.89 vs 0.60 / 0.98 raw). RB ×1.1 and SF QB moves are neutral to negative. Injury ×1.16 is the only piece positive in all four settings, by +0.03 to +0.06. Leaning slightly *older* than FP helps year 1 and ties over years 1–3.
+
+**Takeaway.**
+- **Don't lean on top of FP ECR.** It already contains the youth and RB adjustments, more strongly than the lean. Adding them counts the same thing twice. At most, rank last year's injured players a little lower.
+- **Start from the board your room drafts from.** A board far from the room's means reaching for players nobody else wants yet while the room takes the ones it likes: FP raw in an ADP room is the worst row (0.27 in 1QB).
+- **Real startup rooms draft near ADP** (ADP is what they draft). There, ADP plus the lean is the rule. In 1QB a 10% FP blend plus the lean is best in every setting, but only by about +0.03 to +0.07 titles, within the noise. In superflex, don't blend.
+- **B10 or B20 raw** (a blend without the lean) beats raw ADP and gets part of the lean's gain, because FP's ranks lean young. It still trails ADP plus the lean over years 1–3 in an ADP room, by 0.05–0.2 titles in 1QB and 0.15–0.35 in superflex. It is the simpler option, not the better one.
+- **In a room drafting off FP or another dynasty consensus:** take that board raw in superflex. In 1QB, ADP plus the lean did better (0.77–0.86 vs 0.60), but most of that gap is the 2018 draft, whose FP ranks come from archives. Without 2018 it is a tie.
+
+**Limits.**
+- 5–6 drafts: treat differences under about 0.05 titles as noise.
+- Veterans only, as in section 21, so FP's rookie ranks are not tested.
+- MFL's superflex ADP may be a weak superflex board, which flatters FP's QB pricing in the SF columns.
 
 ## Caveats
 

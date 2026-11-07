@@ -11,7 +11,8 @@ Simulation on real MFL startup boards (keeper ADP, veterans only, top 200) for d
   fadeRB / young+fadeTE / preferRB ... : position skips or preferences inside the window (STRATS, ';'-separated)
   adj:y=0.06,rb=0.1,te=0 : adjusted value, no window -- log ADP rank + y*(age-26) + rb*[RB] + te*[TE] (+qb, wr);
                the lowest adjusted rank on the board is taken. Best region found: y 0.03-0.10, rb 0.1-0.2, te 0, wr 0;
-               qb 0 in 1QB, qb -0.1 to -0.2 in SF (QBs moved up the board).
+               qb 0 in 1QB, qb -0.1 to -0.2 in SF (QBs moved up the board). Flags from flags() add terms the same
+               way: inj=0.15 (missed 8+ games last year, rank x1.16) helps; the others tested are neutral or hurt.
 Every team fills QB 1 (SF 2), RB 3, WR 4, TE 1 by the last round. K (window) and NOISE are env vars.
 Roster caps for every team: QB 3 (SF 4), TE 3, RB 7, WR 8. No trades, waivers or rookie drafts afterwards.
 Score per season t+k: best possible lineup from season PPR totals, 1QB = QB RB RB WR WR WR TE FLEX, SF adds
@@ -36,7 +37,23 @@ LAST = 2025
 
 NEED = {"QB": 2 if SF else 1, "RB": 3, "WR": 4, "TE": 1}   # every team fills these by the last round
 STRATS = os.environ.get("STRATS", "ADP;win-now;oldest;youngest;young+fadeRB+fadeTE;"
-                        "adj:y=0.06,rb=0.1;adj:y=0.06,rb=0.1,qb=-0.15").split(";")
+                        "adj:y=0.06,rb=0.1;adj:y=0.06,rb=0.1,qb=-0.15;"
+                        "adj:y=0.06,rb=0.1,inj=0.15;adj:y=0.06,rb=0.1,inj=0.15,qb=-0.15;"
+                        "adj:y=0.03,rb=0.1,inj=0.15;adj:y=0.03,rb=0.1,inj=0.15,qb=-0.15").split(";")
+
+
+def flags(x):
+    """player flags usable as extra adjusted-rank terms (adj:...,flag=factor; negative = move up the board)"""
+    p, a, rnd = x.position.to_numpy(), x.age.to_numpy(), x.draft_round_f.to_numpy()
+    pr, pp = x.mkt_pos_rank.to_numpy(), x.ppg_pos_rank.fillna(99).to_numpy()
+    return {"cheap": pr >= pp + 6,                        # priced 6+ spots below last year's PPG rank
+            "hyped": pr <= pp - 6,                        # priced 6+ spots above it
+            "inj": x.games.fillna(0).to_numpy() <= 9,     # missed 8+ games last year
+            "r1": rnd == 1, "day3": ~np.isin(rnd, [1, 2]),
+            "rbrec": (p == "RB") & (x.targets_pg.fillna(0).to_numpy() >= 4),
+            "qbrush": (p == "QB") & (x.rush_yds_pg.fillna(0).to_numpy() >= 25),
+            "y2": x.exp.to_numpy() == 1, "newteam": x.changed_team.fillna(False).to_numpy().astype(bool),
+            "old30": a >= 30, "top12": pp <= 12}
 
 
 def score(x, strat):
@@ -50,6 +67,8 @@ def score(x, strat):
         lr = np.log(x.mkt_rank.to_numpy()) + float(kv.get("y", 0)) * (a - 26)
         for q in ("RB", "TE", "QB", "WR"):
             lr = lr + float(kv.get(q.lower(), 0)) * (p == q)
+        for f, m in flags(x).items():
+            lr = lr + float(kv.get(f, 0)) * m
         return -lr
     if "+" in strat or strat.startswith(("fade", "prefer")):
         parts = strat.split("+")
@@ -98,10 +117,11 @@ def lineup(pts, pos):
     return tot
 
 
-def draft(x, strat, slot, rng):
+def draft(x, strat, slot, rng, opp=None):
+    """opp: the other teams' base rank (default: the same board the focal team starts from, x.mkt_rank)"""
     n = len(x)
     rank = x.mkt_rank.to_numpy()
-    board = rank * np.exp(rng.normal(0, NOISE, n))
+    board = (rank if opp is None else opp) * np.exp(rng.normal(0, NOISE, n))
     sc = score(x, strat)
     st_adj = strat.startswith("adj:")
     pos = x.position.to_numpy()
@@ -168,8 +188,10 @@ def main():
     w = r.assign(win=pd.cut(r.k, [0, 1, 3, 5, 10], labels=["yr1", "yr2-3", "yr4-5", "yr6-10"]))
     print("\n-- titles per draft (expected, sum of P(top) over seasons); chance = 0.083/season")
     tt = w.groupby(["strat", "win", "t", "rep"], observed=True).title.sum().groupby(["strat", "win"], observed=True).mean().unstack()
+    tt["yr1-2"] = r[r.k <= 2].groupby("strat").title.mean() * 2
     tt["yr1-3"] = tt[["yr1", "yr2-3"]].sum(axis=1)
     tt["yr1-5"] = tt[["yr1", "yr2-3", "yr4-5"]].sum(axis=1)
+    tt["top4 yr1-2 %"] = r[r.k <= 2].groupby("strat").top4.mean() * 100
     tt["top4 yr1-3 %"] = r[r.k <= 3].groupby("strat").top4.mean() * 100
     tt["top4 yr1-5 %"] = r[r.k <= 5].groupby("strat").top4.mean() * 100
     print(tt.reindex(strats).round(2).to_string())
