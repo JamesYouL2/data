@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dynasty buy / sell for your Sleeper league</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>Dynasty buy / sell</h1>
+  <p class="sub">Paste a Sleeper league ID, pick your team, and get a buy, hold, sell or cut call for every player,
+    depending on whether you're rebuilding or contending. The calls come from backtests of FantasyPros dynasty rankings
+    against what players went on to score.</p>
+</header>
+
+<main>
+  <form id="load">
+    <label for="league">Sleeper league ID or username</label>
+    <div class="row">
+      <input id="league" name="league" autocomplete="off" spellcheck="false" placeholder="e.g. 1180090335766110208">
+      <button type="submit">Load</button>
+    </div>
+    <p class="hint">The league ID is the long number in the league's URL on sleeper.com (or in the app under League settings).
+      Enter a username to choose from that user's leagues.</p>
+  </form>
+
+  <div id="leagues" hidden>
+    <label for="leaguePick">Leagues</label>
+    <select id="leaguePick"></select>
+  </div>
+
+  <p id="status" role="status"></p>
+
+  <section id="controls" hidden>
+    <h2 id="leagueName"></h2>
+    <div class="ctl">
+      <div>
+        <label for="team">Team</label>
+        <select id="team"></select>
+      </div>
+      <div>
+        <span class="lbl">You are</span>
+        <div class="seg" id="mode">
+          <button type="button" data-v="r">Rebuilding</button>
+          <button type="button" data-v="c">Contending</button>
+        </div>
+        <p class="hint" id="modeHint"></p>
+      </div>
+      <div>
+        <span class="lbl">Format</span>
+        <div class="seg" id="fmt">
+          <button type="button" data-v="1qb">1QB</button>
+          <button type="button" data-v="sf">Superflex</button>
+        </div>
+        <p class="hint" id="fmtHint"></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="out" hidden>
+    <div id="summary"></div>
+    <h2>Your roster</h2>
+    <div id="roster"></div>
+    <h2>Buy targets on other teams</h2>
+    <p class="hint">Players the backtests say to buy for your situation, cheapest first.</p>
+    <div id="targets"></div>
+    <h2>Free agents worth a roster spot</h2>
+    <p class="hint">Unrostered players with a buy, hold or lottery call.</p>
+    <div id="fa"></div>
+  </section>
+
+  <details id="legend">
+    <summary>What the calls mean</summary>
+    <dl>
+      <dt><span class="b buy">Buy</span></dt><dd>Historically returned more than its price. Trade for it.</dd>
+      <dt><span class="b buy">Buy with a 3rd / 4th</span></dt><dd>Priced around a 3rd- or 4th-round rookie pick (ranks 151-239 and 240-300) and returned more than that pick did.</dd>
+      <dt><span class="b hold">Hold</span></dt><dd>Price and production roughly agree. Keep it unless an offer beats the price.</dd>
+      <dt><span class="b hold">Hold to February</span></dt><dd>Rookies whose price tends to rise through the offseason.</dd>
+      <dt><span class="b use">Use, then sell</span></dt><dd>A contender's starter whose long-term value is fading: play him through your playoffs, then sell.</dd>
+      <dt><span class="b sell">Sell / Sell high now</span></dt><dd>Historically returned less than its price, or the price is about to fall. Move it while it's worth something.</dd>
+      <dt><span class="b sell">Sell for a 3rd / 4th</span></dt><dd>A 3rd- or 4th-round pick returned more than players like this.</dd>
+      <dt><span class="b lotto">Lottery ticket</span></dt><dd>Cheap, mostly returns nothing, occasionally hits. Keep if you have the roster spot.</dd>
+      <dt><span class="b cut">Cut</span></dt><dd>Players like this returned close to nothing. Free the roster spot.</dd>
+    </dl>
+  </details>
+</main>
+
+<footer id="foot"></footer>
+
+<script src="data/players.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
