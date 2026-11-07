@@ -270,3 +270,96 @@ def classify(x, f, ctx):
         return (f"Young TE, {cap}", (BUY4, w), (BUY4, w))
     w = "Young TEs ranked 240+ (early-capital ones especially) rarely come back."
     return (f"Young TE, {cap}", (CUT, w), con_prod(CUT, w))
+
+
+# ---------- market, injury and rest-of-season notes (not backtested) ----------
+OUT_STATUSES = ("IR", "PUP", "Out", "Sus", "DNR", "NA")
+STASH, BUYLOW, SELLHEALTHY = "Stash", "Buy low (injured)", "Sell when healthy"
+
+
+def gap(r, m):
+    """'more' if the trade market prices the player well above FantasyPros, 'less' if well below, else None."""
+    if r is None or m is None or (isinstance(r, float) and math.isnan(r)) or (isinstance(m, float) and math.isnan(m)):
+        return None
+    if min(r, m) > 300:
+        return None
+    t = max(12, 0.25 * r)
+    return "more" if m <= r - t else "less" if m >= r + t else None
+
+
+def situational(x, f, call):
+    """Adjust a backtested call for the trade market (FantasyCalc), injuries (Sleeper) and rest-of-season value.
+
+    Returns (group, reb action, reb why, con action, con why, reb note, con note). The notes say what moved and why;
+    none of these adjustments come from the backtests."""
+    g, (ra, rw), (ca, cw) = call
+    r, m = getattr(x, f"r_{f}"), getattr(x, f"mr_{f}")
+    rv = getattr(x, f"rv_{f}")
+    inj = x.inj if isinstance(x.inj, str) else None
+    out = inj in OUT_STATUSES
+    # out for the season: injured and dropped from the FantasyPros rest-of-season ranks (x.gone, set by the build);
+    # without FP ranks, a FantasyCalc rest-of-season value of zero
+    gone = getattr(x, "gone", None)
+    if gone is None or (isinstance(gone, float) and math.isnan(gone)):
+        gone = rv is not None and not (isinstance(rv, float) and math.isnan(rv)) and rv == 0
+    season_over = out and bool(gone)
+    gp = gap(r, m)
+    where = f"FP #{f0(r)}, market #{f0(m)}"
+    rn = cn = ""
+    if season_over:
+        what = f"{x.position} on {inj}" + (f" ({x.inj_part})" if isinstance(x.inj_part, str) else "") + " and off the rest-of-season rankings"
+        if ra in (HOLD, HOLDF, BUY, BUY3, BUY4) and gp == "less":
+            ra, rn = BUYLOW, (f"{what}. The market has marked him down ({where}). Contenders who need help now will sell: "
+                              "buy if the injury isn't career-threatening.")
+        elif ra.startswith("Sell") or ra == SELLH:
+            ra, rn = SELLHEALTHY, f"{what}. Selling now takes an injury discount ({where}); sell once he's playing again."
+        else:
+            rn = f"{what} ({where})."
+        if ca in (HOLD, HOLDF, BUY, BUY3, BUY4):
+            ca, cn = STASH, (f"{what}: no help to a title run this year. Keep him for next year if you have the IR slot; "
+                             f"trading him now sells at an injury discount ({where}).")
+        elif ca == USE:
+            ca, cn = SELL, f"{what}, so there's nothing left to use. The long-term call is to sell."
+        else:
+            cn = f"{what} ({where})."
+        return (g, ra, rw, ca, cw, rn, cn)
+    # contenders: rest-of-season role. FP's ROS positional rank decides whether he starts for you the rest of this year.
+    rp = getattr(x, "ros_p", None)
+    rp = None if rp is None or (isinstance(rp, float) and math.isnan(rp)) else rp
+    line = START[f][x.position]
+    ros_note = ""
+    if not out and rp is not None and rp <= line and ca in (SELL, SELL3, SELL4, SELLH, CUT, LOTTO):
+        ros_note = f"FantasyPros ranks him {x.position}{f0(rp)} for the rest of the season: start him through your playoffs, then: {ca.lower()}."
+        ca = USE
+    elif not out and ca == USE and (rp is None and getattr(x, "gone", False) is True or rp is not None and rp > 2 * line):
+        ros_note = ("FantasyPros no longer ranks him for the rest of the season" if rp is None else
+                    f"FantasyPros ranks him only {x.position}{f0(rp)} for the rest of the season") + ": not a starter, so sell now."
+        ca = SELL
+    if gp == "more":
+        def more(act):
+            if act.startswith("Sell") or act in (CUT, USE, LOTTO):
+                return f"The trade market pays more than the rankings ({where}): sell at the market price."
+            if act.startswith("Hold"):
+                return f"The trade market pays more than the rankings ({where}): sell if someone offers that."
+            return f"The trade market prices him above the rankings ({where}): buying at market price costs more."
+        rn, cn = more(ra), more(ca)
+    elif gp == "less":
+        def less(act):
+            if act.startswith("Buy"):
+                return f"The trade market is cheaper than the rankings ({where}): buy at the market price."
+            if act.startswith("Hold"):
+                return (f"The trade market is cheaper than the rankings ({where}): selling gets less than the rankings "
+                        "suggest, and adding more costs less.")
+            if act.startswith("Sell") or act == USE:
+                return f"The trade market has already marked him down ({where}): you'll get less than the rankings suggest."
+            return f"Market #{f0(m)}, FP #{f0(r)}."
+        rn, cn = less(ra), less(ca)
+    if ros_note:
+        cn = (ros_note + " " + cn).strip()
+    if out and not season_over:
+        ros = getattr(x, "ros_r", None)
+        tag = (f"Currently {inj}" + (f" ({x.inj_part})" if isinstance(x.inj_part, str) else "")
+               + (f"; FP rest-of-season #{f0(ros)}" if ros is not None and not math.isnan(ros) else "")
+               + (", so little help this season" if ros is not None and not math.isnan(ros) and ros > 150 else "") + ".")
+        rn, cn = (tag + " " + rn).strip(), (tag + " " + cn).strip()
+    return (g, ra, rw, ca, cw, rn, cn)

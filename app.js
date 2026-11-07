@@ -8,7 +8,7 @@ const state = { league: null, users: {}, rosters: [], roster: null, mode: null, 
 
 // ---------- helpers ----------
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const kind = (act) => !act ? "none" : act.startsWith("Buy") ? "buy" : act.startsWith("Hold") ? "hold" : act.startsWith("Use") ? "use"
+const kind = (act) => !act ? "none" : act.startsWith("Buy") ? "buy" : act.startsWith("Hold") || act === "Stash" ? "hold" : act.startsWith("Use") ? "use"
   : act.startsWith("Sell") ? "sell" : act.startsWith("Lottery") ? "lotto" : act === "Cut" ? "cut" : "none";
 const ORDER = ["buy", "hold", "use", "sell", "lotto", "cut", "none"];
 const SECTION = { buy: "Buy more of", hold: "Hold", use: "Use, then sell", sell: "Sell", lotto: "Lottery tickets", cut: "Cut", none: "No call" };
@@ -29,8 +29,29 @@ function call(sid, fmt, mode) {
   const p = D.players[sid];
   if (!p) return null;
   const r = D.rules[fmt === "sf" ? p.c2 : p.c1];
-  const [grp, ra, rw, ca, cw] = r;
-  return mode === "c" ? { grp, act: ca, why: cw, other: ra, otherLbl: "Rebuilding" } : { grp, act: ra, why: rw, other: ca, otherLbl: "Contending" };
+  const [grp, ra, rw, ca, cw, rn, cn] = r;
+  return mode === "c" ? { grp, act: ca, why: cw, note: cn, other: ra, otherLbl: "Rebuilding" }
+    : { grp, act: ra, why: rw, note: rn, other: ca, otherLbl: "Contending" };
+}
+
+// ---------- trade market (FantasyCalc), injuries, rest of season ----------
+const OUT = new Set(["IR", "PUP", "Out", "Sus", "DNR", "NA"]);
+const mkt = (p, fmt) => (fmt === "sf" ? p.m2 : p.m1) || null;          // [market rank, value, ROS value, ROS rank, 30-day trend]
+const healthy = (p) => !OUT.has(p.inj);
+function pickLabel(v, fmt) {
+  const pk = D.meta.picks?.[fmt];
+  if (!pk || !pk.length || v == null) return "";
+  if (v > pk[0][1] * 1.25) return "more than an early 1st";
+  if (v < pk[pk.length - 1][1] * 0.6) return "less than a late 4th";
+  let best = pk[0];
+  for (const x of pk) if (Math.abs(x[1] - v) < Math.abs(best[1] - v)) best = x;
+  return `≈ ${D.meta.picks[fmt + "_year"]} ${best[0]}`;
+}
+function trend(m) {
+  if (!m || !m[4] || m[1] - m[4] <= 0) return "";
+  const pct = m[4] / (m[1] - m[4]);
+  if (Math.abs(pct) < 0.1) return "";
+  return ` <span class="${pct > 0 ? "up" : "dn"}" title="market value ${pct > 0 ? "up" : "down"} ${Math.round(Math.abs(pct) * 100)}% in 30 days">${pct > 0 ? "▲" : "▼"}</span>`;
 }
 
 function price(p, fmt) { return fmt === "sf" ? p.r2 : p.r1; }
@@ -143,28 +164,37 @@ function playerCells(sid, fmt) {
   const p = D.players[sid];
   if (!p) {
     const n = D.names[sid];
-    if (n) return { name: esc(n[0]), meta: `${esc(n[1])}${n[2] ? " · " + esc(n[2]) : ""}`, price: "–", prod: "–" };
-    if (/^[A-Z]{2,3}$/.test(sid)) return { name: `${esc(sid)} defense`, meta: "DEF", price: "–", prod: "–" };
-    return { name: `Player ${esc(sid)}`, meta: "not in the rankings", price: "–", prod: "–" };
+    if (n) return { name: esc(n[0]), meta: `${esc(n[1])}${n[2] ? " · " + esc(n[2]) : ""}`, price: "–", prod: "–", tags: [] };
+    if (/^[A-Z]{2,3}$/.test(sid)) return { name: `${esc(sid)} defense`, meta: "DEF", price: "–", prod: "–", tags: [] };
+    return { name: `Player ${esc(sid)}`, meta: "not in the rankings", price: "–", prod: "–", tags: [] };
   }
   const meta = [p.p, p.t, p.a != null ? `${Math.floor(p.a)} next Sept` : null,
     p.dy === D.meta.rookie ? "rookie" : null, p.rd ? `NFL R${p.rd}` : p.dy ? "UDFA" : null].filter(Boolean).map(esc).join(" · ");
   const pr = price(p, fmt);
-  const prc = pr ? `#${pr} <span class="meta">${esc(p.p)}${posPrice(p, fmt)}</span>` : `<span class="meta">unranked</span>`;
-  const prod = p.ppg != null ? `${p.ppg.toFixed(1)} <span class="meta">${p.prk ? esc(p.p) + p.prk : ""} · ${p.g}g</span>` : `<span class="meta">${p.prkl ? `${D.meta.last}: ${esc(p.p)}${p.prkl}` : "–"}</span>`;
-  return { name: esc(p.n), meta, price: prc, prod };
+  const m = mkt(p, fmt);
+  const prc = (pr ? `FP #${pr} <span class="meta">${esc(p.p)}${posPrice(p, fmt)}</span>` : `<span class="meta">FP unranked</span>`) +
+    (m ? `<div class="meta">market #${m[0]}${trend(m)}<br>${esc(pickLabel(m[1], fmt))}</div>` : D.meta.market ? `<div class="meta">no market value</div>` : "");
+  let prod = p.ppg != null ? `${p.ppg.toFixed(1)} <span class="meta">${p.prk ? esc(p.p) + p.prk : ""} · ${p.g}g</span>` : `<span class="meta">${p.prkl ? `${D.meta.last}: ${esc(p.p)}${p.prkl}` : "–"}</span>`;
+  const now = [];
+  if (p.ros) now.push(`ROS ${esc(p.p)}${p.ros[1]} (#${p.ros[0]})`);
+  else if (D.meta.ros && (p.r1 || p.g)) now.push("not in ROS ranks");
+  if (p.wk) now.push(`next: ${esc(p.p)}${p.wk[0]}${p.wk[1] ? " " + esc(p.wk[1]) : ""}${p.wk[2] != null ? `, ${p.wk[2]} pts` : ""}`);
+  if (now.length) prod += `<div class="meta">${now.join("<br>")}</div>`;
+  const tags = p.inj ? [{ t: p.inj + (p.ib ? " · " + p.ib : ""), cls: OUT.has(p.inj) ? "inj" : "q" }] : [];
+  return { name: esc(p.n), meta, price: prc, prod, tags };
 }
 
 function table(rows, opts = {}) {
   if (!rows.length) return `<p class="hint">None.</p>`;
-  const head = `<tr><th>Player</th>${opts.owner ? "<th>Team</th>" : ""}<th>Price (FP rank)</th><th>${D.meta.season} PPR/game</th><th>Call</th><th>Why</th></tr>`;
-  const body = rows.map(({ sid, c, owner, tags }) => {
+  const head = `<tr><th>Player</th>${opts.owner ? "<th>Team</th>" : ""}<th>Price</th><th>${D.meta.season} PPR/game · now</th><th>Call</th><th>Why</th></tr>`;
+  const body = rows.map(({ sid, c, owner, ownerHint, tags }) => {
     const x = playerCells(sid, state.fmt);
     const other = c && c.other !== c.act ? `<div class="other">${c.otherLbl}: ${esc(c.other)}</div>` : "";
-    return `<tr><td><span class="nm">${x.name}</span>${(tags || []).map((t) => `<span class="tag">${esc(t)}</span>`).join("")}<div class="meta">${x.meta}</div></td>` +
-      (opts.owner ? `<td class="meta">${esc(owner)}</td>` : "") +
+    const tg = [...x.tags, ...(tags || []).map((t) => ({ t }))].map((t) => `<span class="tag ${t.cls || ""}">${esc(t.t)}</span>`).join("");
+    return `<tr><td><span class="nm">${x.name}</span>${tg}<div class="meta">${x.meta}</div></td>` +
+      (opts.owner ? `<td class="meta">${esc(owner)}${ownerHint ? `<div>${esc(ownerHint)}</div>` : ""}</td>` : "") +
       `<td class="num">${x.price}</td><td class="num">${x.prod}</td><td>${badge(c?.act)}${other}</td>` +
-      `<td class="why">${c ? `<span class="grp">${esc(c.grp)}</span>${esc(c.why)}` : ""}</td></tr>`;
+      `<td class="why">${c ? `<span class="grp">${esc(c.grp)}</span>${esc(c.why)}${c.note ? `<div class="note">${esc(c.note)}</div>` : ""}` : ""}</td></tr>`;
   }).join("");
   return `<div class="scroll"><table class="tbl">${head}${body}</table></div>`;
 }
@@ -208,6 +238,33 @@ function render() {
   targets.sort(byPrice);
   $("targets").innerHTML = table(targets, { owner: true });
 
+  // this season: contenders add production that's cheap in dynasty terms; rebuilders sell it to them.
+  // Uses the FantasyCalc rest-of-season value against its dynasty value, both in this format.
+  const nowRows = [], buyers = state.rosters.filter((r) => r.roster_id !== roster.roster_id && state.suggested[r.roster_id]?.mode === "c");
+  const lean = (sid) => { const p = D.players[sid], m = p && mkt(p, fmt); return m && m[3] && m[3] <= 100 && healthy(p) ? m : null; };
+  if (mode === "c") {
+    $("nowTitle").textContent = "Win-now targets";
+    $("nowHint").textContent = "Healthy players on other teams whose rest-of-season value is high for their dynasty price: production you can add cheaply. Rebuilding owners are the likeliest sellers.";
+    for (const r of state.rosters) {
+      if (r.roster_id === roster.roster_id) continue;
+      const sg = state.suggested[r.roster_id];
+      for (const sid of rosterPlayers(r)) {
+        const m = lean(sid);
+        if (m && m[2] >= 1.1 * m[1]) nowRows.push({ sid, c: call(sid, fmt, mode), owner: teamName(r), ownerHint: sg?.mode === "r" ? "likely rebuilding" : "", k: m[2] / m[1] });
+      }
+    }
+  } else {
+    $("nowTitle").textContent = "Sell to contenders";
+    $("nowHint").textContent = `Your healthy players whose rest-of-season value is well above their dynasty price: worth more to a team chasing a title this year. ` +
+      (buyers.length ? `Likely buyers (top half by ${state.suggested[roster.roster_id]?.by}): ${buyers.map(teamName).join(", ")}.` : "");
+    for (const sid of rosterPlayers(roster)) {
+      const m = lean(sid);
+      if (m && m[2] >= 1.25 * m[1]) nowRows.push({ sid, c: call(sid, fmt, mode), k: m[2] - m[1] });
+    }
+  }
+  nowRows.sort((a, b) => b.k - a.k);
+  $("now").innerHTML = D.meta.market ? table(nowRows.slice(0, 15), { owner: mode === "c" }) : `<p class="hint">No trade-market data in this build.</p>`;
+
   // free agents
   const fa = [];
   for (const sid of Object.keys(D.players)) {
@@ -239,6 +296,10 @@ $("foot").innerHTML = `Prices: FantasyPros dynasty rankings via <a href="https:/
   `Production: <a href="https://github.com/nflverse/nflverse-data">nflverse</a> ${m.season} stats through ${m.games} games. Rebuilt daily, last ${esc(m.built)}. ` +
   `Ages are as of September ${m.next}. Price bands: 151-239 is a 3rd-round rookie pick, 240-300 a 4th. ` +
   `The calls come from backtests of 2018-2025 rankings against later VORP; players 30+ use 1999-${m.last} history. ` +
+  (m.market ? `Trade market: <a href="https://fantasycalc.com">FantasyCalc</a> dynasty values (12 teams, PPR), with "≈ pick" labels from its ${m.picks?.sf_year ?? ""} pick values. ` : "") +
+  (m.ros ? `Rest of season (ROS) and next game: FantasyPros ROS PPR and weekly rankings via DynastyProcess, ${esc(m.fp_date)}; the ROS overall rank is 1QB. ` : "") +
+  `Injuries: <a href="https://sleeper.com">Sleeper</a>. ` +
+  `The market, injury and rest-of-season adjustments (the notes under each call, and the Stash, Buy low and Sell when healthy calls) are judgment calls, not backtested. ` +
   `<a href="https://github.com/JamesYouL2/dynasty-buy-sell">Source and method</a>.`;
 
 (function init() {

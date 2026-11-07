@@ -70,3 +70,8 @@ footer a { color: inherit; }
   select { min-width: 0; width: 100%; }
   .ctl > div { width: 100%; }
 }
+.tbl .note { margin-top: 6px; padding-left: 8px; border-left: 2px solid var(--line); }
+.tag.inj { color: var(--cut); border-color: var(--cut); }
+.tag.q { color: var(--sell); border-color: var(--sell); }
+.up { color: var(--buy); font-size: 10px; }
+.dn { color: var(--cut); font-size: 10px; }
