@@ -1,0 +1,12 @@
+group,next_vorp,roc5_vorp,roc_vorp_disc
+age,0.063,0.3042,0.2853
+current_season_production,0.2824,0.2358,0.2126
+draft_capital,0.015,0.0547,0.0554
+experience,0.0209,0.0355,0.0308
+position,0.0003,0.0069,0.018
+efficiency_epa,0.0135,0.0293,0.0162
+size,0.0144,0.0153,0.0103
+team_change,-0.0026,0.0002,-0.0001
+usage_volume,0.0354,-0.017,-0.0216
+prior_season_production,0.0236,-0.0448,-0.0354
+career_production,0.1139,0.0046,-0.0396

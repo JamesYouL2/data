@@ -1,0 +1,12 @@
+group,perm_r2_drop,perm_sd
+age,0.3586,0.0379
+current_season_production,0.1543,0.0203
+experience,0.0643,0.0182
+size,0.0295,0.0226
+draft_capital,0.0149,0.0253
+efficiency_epa,-0.0004,0.0106
+team_change,-0.0021,0.0016
+position,-0.0032,0.0143
+usage_volume,-0.0192,0.03
+prior_season_production,-0.0234,0.0168
+career_production,-0.0548,0.0077
