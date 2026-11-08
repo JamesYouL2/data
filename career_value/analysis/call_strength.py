@@ -15,9 +15,11 @@ Lenses (sum over a group of players, divided):
     prod1 = VORP t+1 / same at price   cohorts 2018-23   this season's production; Contending's buys
 Sells keep the rebuilder lens in every mode: when each mode sells was settled by the middle_mode.py league sim; this
 only says how hard. beat = share of players above their benchmark; solo = keep without the group's best player
-(cheap players' means often rest on one hit). A group with fewer than MIN_N players is pooled: position x age class
-(rookie, 25 or younger, 26-29, 30+), then the age class across positions; past that, the site says there are too few
-players to tell (weak buy, light sell). The pools are stored too, for groups the sample never saw. Writes pages/build/strength.json and outputs/[sf/]call_strength.csv.
+(cheap players' means often rest on one hit). Cells are call group x price (FP rank 1-50, 51-100, 101-200, 201+). A
+cell with fewer than MIN_N players is pooled: position x age class (rookie, 25 or younger, 26-29, 30+) at the same
+price, then position x age class at any price, then the age class across RB / WR / TE (QBs beat their price as a group,
+so they are not pooled with the rest); past that, the site says there are too few players to tell (weak buy, light sell). The pools are stored too, for cells the sample never saw. Writes
+pages/build/strength.json and outputs/[sf/]call_strength.csv.
 LEAGUE=sf for superflex.
 """
 import json
@@ -103,8 +105,9 @@ def calls(x):
         ctx = {"ROOKIE": t + 1, "LOOK": look}
         for i, row in zip(g.index, f.itertuples(index=False)):
             grp, (ra, _), (ca, _), (ma, _) = R.classify(row, F, ctx, split=False)
-            out.append((i, grp, ra, ca, ma, R.band(getattr(row, f"r_{F}")), R.age_class(row, ctx)))
-    c = pd.DataFrame(out, columns=["i", "grp", "reb", "con", "mid", "band", "acls"]).set_index("i")
+            r = getattr(row, f"r_{F}")
+            out.append((i, grp, ra, ca, ma, R.band(r), R.price_bucket(r), R.age_class(row, ctx)))
+    c = pd.DataFrame(out, columns=["i", "grp", "reb", "con", "mid", "band", "pb", "acls"]).set_index("i")
     return x.join(c)
 
 
@@ -118,26 +121,32 @@ def stat(q, lens):
 
 
 def score(b, lens):
-    """b: the rows with one kind of call in one mode -> {key: [keep, beat, n, used, solo]} for every group and pool,
-    and a table of the groups"""
+    """b: the rows with one kind of call in one mode -> {key: [keep, beat, n, key used, solo]} for every cell
+    ("group | price") and pool with MIN_N players, and a table of the cells"""
     pools = {}
-    for a, q in b.groupby("acls"):
+    for a, q in b[b.position != "QB"].groupby("acls"):    # QBs age apart: no cross-position pool
         pools[f"all {a}"] = q
     for (p, a), q in b.groupby(["position", "acls"]):
         pools[f"all {p} {a}"] = q
+    for (p, a, pb), q in b.groupby(["position", "acls", "pb"]):
+        pools[f"all {p} {a} | {pb}"] = q
     out, tab = {}, []
     for key, q in pools.items():
         if len(q) >= MIN_N:
             s = stat(q, lens)
             out[key] = [round(s["keep"], 2), round(s["beat"], 2), s["n"], key, round(s["solo"], 2)]
-    for g, q in b.groupby("grp"):
-        p, a = q.position.iloc[0], q.acls.mode().iloc[0]
-        used = next((k for k in (g, f"all {p} {a}", f"all {a}") if (k == g and len(q) >= MIN_N) or (k != g and k in out)), None)
+    for (g, pb), q in b.groupby(["grp", "pb"]):
+        p, a, cell = q.position.iloc[0], q.acls.mode().iloc[0], f"{g} | {pb}"
+        if len(q) >= MIN_N:
+            used = cell
+        else:
+            used = next((k for k in (f"all {p} {a} | {pb}", f"all {p} {a}", f"all {a}" if p != "QB" else "") if k in out), None)
         s = stat(q, lens)
-        if used == g:
-            out[g] = [round(s["keep"], 2), round(s["beat"], 2), s["n"], g, round(s["solo"], 2)]
+        if used == cell:
+            out[cell] = [round(s["keep"], 2), round(s["beat"], 2), s["n"], cell, round(s["solo"], 2)]
         e = out.get(used, [np.nan, np.nan, 0, None, np.nan])
-        tab.append({"grp": g, "calls": "/".join(sorted(q.iloc[:, 0].unique())), **{f"own_{k}": v for k, v in s.items()},
+        tab.append({"grp": g, "price": pb, "calls": "/".join(sorted(q.iloc[:, 0].unique())),
+                    **{f"own_{k}": v for k, v in s.items()},
                     "used": used or "(too few)", "keep": e[0], "beat": e[1], "n_used": e[2], "solo": e[4]})
     return out, pd.DataFrame(tab)
 
@@ -152,7 +161,7 @@ def label(tab, side):
 def main():
     H = horizons()
     H[1] = calls(H[1])
-    H[3] = H[3].join(H[1].set_index(["gsis_id", "t"])[["grp", "reb", "con", "mid", "band", "acls"]], on=["gsis_id", "t"])
+    H[3] = H[3].join(H[1].set_index(["gsis_id", "t"])[["grp", "reb", "con", "mid", "band", "pb", "acls"]], on=["gsis_id", "t"])
     js = json.loads(JSON.read_text()) if JSON.exists() else {}
     js[F] = {"buy": {}, "sell": {}}
     tabs = []

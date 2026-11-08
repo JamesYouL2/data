@@ -13,15 +13,17 @@ which is what the default mode keys on. LEAGUE=sf for superflex.
 
 Findings (2026-11, FP top 340; the first pass at top 200 led to the two Holds below):
 - QBs as a whole beat their FP price at every horizon (keep3 1.39 1QB, 1.18 SF; non-QBs 0.96 / 0.94).
-- Most QB sells rest on a few hits; 26-35% of sold QBs beat their price. Kept as light sells. At top 340, two 1QB
-  groups look even less like sells: "QB 26-29" (keep3 1.78) and "QB 36+" (1.43; Brady 2018-20 carries it). Both
-  stay light sells: call_strength.py marks them "close call".
-- Two failed in both the mean and the share, and are Hold in every mode: SF "Young QB priced as a QB1" (keep3 1.18,
+- Most QB sells rest on a few hits; 26-35% of sold QBs beat their price. At top 340, three sells beat their price
+  even without the best player and are now Hold: 1QB "QB 26-29" priced 101-239 (keep3 1.78, 1.44 without the best),
+  1QB "QB 36+" (1.43, 1.13; Brady 2018-20 carries much of it) and SF "QB 30+, backup" (1.45, 1.09). SF "QB 36+"
+  (1.05) stays a light sell.
+- The first pass (top 200) found two failed in both the mean and the share, now Hold in every mode: SF "Young QB priced as a QB1" (keep3 1.18,
   keep5 1.40) and "QB 30+, mid-tier" (keep3 1.23 1QB / 1.18 SF, only ~5 distinct QBs).
 - Contender / default "Use, then sell" on QBs: prod1 1.65 (1QB) / 1.43 (SF) backs the use; keep5 0.03 / 0.86 backs
   the sell.
 - Buys by each mode's lens (call_strength.py): SF "QB 26-29, 3rd-round price" prod1 2.47, keep1 1.30, keep3 0.51:
-  strong for a contender, weak for Default, Hold for a rebuilder. "QB 30+, long-term" prod1 1.12 / 1.27, keep1
+  strong for a contender, weak for Default, Hold for a rebuilder; split by price (call_strength.py), it is
+  all in FP 101-200 (contender 3.61, Default 1.81): at 201-239 it is Hold in every mode. "QB 30+, long-term" prod1 1.12 / 1.27, keep1
   0.87 / 0.98: Hold in 1QB Default, weak elsewhere. SF rookie QB1 Sell: no rookies in the sample.
 """
 import pathlib
