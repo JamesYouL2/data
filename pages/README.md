@@ -1,6 +1,6 @@
 # Dynasty buy / sell
 
-**Site:** https://jamesyoul2.github.io/dynasty-buy-sell/
+**Site:** https://jamesyoul2.github.io/data/
 
 Enter a Sleeper league ID (or a username), pick a team, and get a buy, hold, sell or cut call for every player on the
 roster. The call depends on whether you are rebuilding or contending. The page also lists buy targets on other teams
@@ -12,7 +12,7 @@ Everything runs in the browser. The page reads your league straight from the pub
 ## Where the calls come from
 
 The rules in [build/rules.py](build/rules.py) come from the
-[career_value backtests](https://github.com/JamesYouL2/data/tree/career-value/career_value), which are built on the
+[career_value backtests](../career_value), which are built on the
 [DynastyProcess data repo](https://github.com/dynastyprocess/data). The backtests compare FantasyPros dynasty rankings
 (2018 onward) with the value above replacement (VORP) each player went on to score. A player's call depends on:
 
@@ -48,7 +48,7 @@ calls, and each one shows as a note under the call:
 
 ## Daily data
 
-[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) runs every day at 11:17 UTC. It downloads the inputs,
+[`.github/workflows/pages.yml`](../.github/workflows/pages.yml) (at the repo root) runs every day at 11:17 UTC. It downloads the inputs,
 rebuilds `data/players.js`, and deploys the site to GitHub Pages:
 
 | Input | Source | Updated |
@@ -68,6 +68,8 @@ the workflow from the Actions tab.
 
 ## Running it locally
 
+From this `pages/` folder:
+
 ```sh
 bash build/fetch.sh raw
 python -I build/build_data.py raw data/players.js     # needs pandas and pyarrow
@@ -77,5 +79,5 @@ python -m http.server                                  # then open http://localh
 `build/old_lookup.json` changes once a season. To regenerate it from the career_value dataset:
 
 ```sh
-python -I tools/make_lookup.py ~/data/career_value/data/player_seasons.parquet ~/data/career_value/raw/players/players.parquet
+python -I tools/make_lookup.py ../career_value/data/player_seasons.parquet ../career_value/raw/players/players.parquet
 ```
