@@ -9,7 +9,7 @@ players; 0 once he drops out of the top 200). A fair-price trade gets, on averag
 the same price returns, so the benchmark is
     fair = expected hold at his FP rank at t (isotonic fit of hold on log rank, all players).
 keep = sum(hold) / sum(fair) for a group of players with the same call. keep < 1 backs the sell; how far below 1
-says how hard. Small groups: n players, and the share of cohorts whose own keep is below 1.
+says how hard. beat = share of players with hold > fair (a few big hits can lift keep above 1). Small groups: n players, and the share of cohorts whose own keep is below 1.
 LEAGUE=sf for superflex.
 """
 import json
@@ -84,7 +84,8 @@ def calls(x):
 
 def keep(q):
     coh = q.groupby("t")[["hold", "fair"]].sum()
-    return pd.Series({"n": len(q), "keep": q.hold.sum() / q.fair.sum(), "coh_below": (coh.hold < coh.fair).mean(),
+    return pd.Series({"n": len(q), "keep": q.hold.sum() / q.fair.sum(), "beat": (q.hold > q.fair).mean(),
+                      "coh_below": (coh.hold < coh.fair).mean(),
                       "cohorts": len(coh), "vorp3": q[f"vorp{H}"].mean(), "val_h": q.val_h.mean(),
                       "fair": q.fair.mean(), "rank": q.mkt_rank.median()})
 
