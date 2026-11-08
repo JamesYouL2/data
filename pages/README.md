@@ -27,7 +27,10 @@ Plain sells come in two strengths, from
 call (FP top 200, 2018-21), it adds three years of VORP to what they were worth three years on and compares that with
 the average player at the same price, which is what a fair trade gets you on average. **Sell: heavy** groups returned
 under 65% of that: take any reasonable offer. **Sell: light** groups returned 65% or more: sell at the market price, and
-hold if no one pays it. Most QB sells came out at or above 100% by this measure, so they are light.
+hold if no one pays it. Each note also gives the share of players who beat their price: a few QB groups average over
+100% only because of one or two big hits (Tom Brady's 40s), while most of their players returned less, so they stay
+light sells. [qb_sells.py](../career_value/analysis/qb_sells.py) checks every QB call this way, at 1, 3 and 5 years, for
+each mode and format. Two QB sells failed and are now holds: young superflex QB1s and starting QBs 30+.
 
 Players aged 30+ are compared with how similar players produced over the next 3 and 5 seasons from 1999 on
 ([build/old_lookup.json](build/old_lookup.json)).

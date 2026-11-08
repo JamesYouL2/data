@@ -35,34 +35,37 @@ BUY, BUY3, BUY4, HOLD, HOLDF, LOTTO, SELLH, SELL, SELL3, SELL4, USE, CUT = (
 STASH, BUYLOW, SELLHEALTHY = "Stash", "Buy low (injured)", "Sell when healthy"
 HEAVY, LIGHT = "Sell: heavy", "Sell: light"
 
-# How hard a plain Sell sells (career_value/analysis/sell_strength.py, FP top 200, 2018-21): 3-year VORP plus value
-# three years on, as a share of the same for the average player at his price. Groups with 5+ players.
+# How hard a plain Sell sells (career_value/analysis/sell_strength.py, FP top 200, 2018-21): (keep, beat). keep = 3-year
+# VORP plus value three years on, as a share of the same for the average player at his price; beat = share of players
+# who did better than that. Groups with 5+ players.
 KEEP = {
-    "1qb": {"WR 30+, 2-year window": .33, "TE 30+, fading": .39, "RB 26-29": .40, "TE 26-29": .58,
-            "WR 30+, fading": .62, "Young RB": .69, "RB 30+, fading": .80, "WR 26-29, core": .82,
-            "RB 26-29, core": .82, "WR 26-29": .86, "QB 26-29": 1.19, "QB 30+, mid-tier": 1.26, "QB 36+, win-now": 1.58},
-    "sf": {"WR 30+, 2-year window": .30, "TE 30+, fading": .38, "RB 26-29": .38, "TE 26-29": .62,
-           "WR 26-29, core": .70, "WR 30+, fading": .76, "RB 26-29, core": .85, "Young RB": .87, "WR 26-29": 1.02,
-           "QB 36+, win-now": 1.08, "Young QB priced as a QB1": 1.17, "QB 30+, mid-tier": 1.23, "QB 30+, backup": 1.32,
-           "RB 30+, fading": 1.49},
+    "1qb": {"WR 30+, 2-year window": (.33, .27), "TE 30+, fading": (.39, 0), "RB 26-29": (.40, .12),
+            "TE 26-29": (.58, .13), "WR 30+, fading": (.62, .19), "Young RB": (.69, .23), "RB 30+, fading": (.80, .20),
+            "WR 26-29, core": (.82, .47), "RB 26-29, core": (.82, .33), "WR 26-29": (.86, .36),
+            "QB 26-29": (1.19, .30), "QB 36+, win-now": (1.58, .31)},
+    "sf": {"WR 30+, 2-year window": (.30, .14), "TE 30+, fading": (.38, .11), "RB 26-29": (.38, .06),
+           "TE 26-29": (.62, .17), "WR 26-29, core": (.70, .33), "WR 30+, fading": (.76, .33),
+           "RB 26-29, core": (.85, .44), "Young RB": (.87, .27), "WR 26-29": (1.02, .36), "QB 36+, win-now": (1.08, .26),
+           "QB 30+, backup": (1.32, .33), "RB 30+, fading": (1.49, .20)},
 }
 HEAVY_BELOW = 0.65
 
 
 def strength(f, g):
     """(Sell: heavy or Sell: light, why prefix) for a plain Sell in group g"""
-    k = KEEP[f].get(g)
-    if k is None:
+    if g not in KEEP[f]:
         return LIGHT, "Too few past players like this to say how hard to sell: sell at the market price. "
-    pct = f"{100 * k:.0f}%"
+    k, b = KEEP[f][g]
+    pct, beat = f"{100 * k:.0f}%", f"{100 * b:.0f}%"
     if k < HEAVY_BELOW:
         return HEAVY, (f"Players like this returned {pct} of what the average player at their price did (3-year VORP "
-                       "plus value three years on): take any reasonable offer, even below market. ")
+                       f"plus value three years on), and {beat} beat it: take any reasonable offer, even below market. ")
     if k < 1:
         return LIGHT, (f"Players like this returned {pct} of what the average player at their price did (3-year VORP "
-                       "plus value three years on): sell at the market price, hold if no one pays it. ")
-    return LIGHT, (f"By 3-year VORP plus value three years on, players like this did as well as the average player at "
-                   f"their price ({pct}): sell only at the market price. ")
+                       f"plus value three years on), and {beat} beat it: sell at the market price, hold if no one pays it. ")
+    return LIGHT, (f"Only {beat} of players like this beat the average player at their price (3-year VORP plus value "
+                   f"three years on), but the few hits were big enough to lift the group to {pct}: sell at the market "
+                   "price, hold if no one pays it. ")
 
 
 def kind(a):
@@ -154,11 +157,9 @@ def base_calls(x, f, ctx):
                 w = ("QBs age well: " + hist +
                      (f" Priced QB{pr:.0f} while producing like QB{prodr:.0f}." if cheap else ""))
                 return ("QB 30+, long-term", (BUY if cheap else HOLD, w), (BUY, w))
-            if t == "starter":
-                if sf:
-                    return ("QB 30+, mid-tier", (HOLD if bd in ("C", "D3", "D34", "D4", "U") else SELL, hist),
-                            (BUY if bd in ("D3", "D34", "D4", "U") else HOLD, hist))
-                return ("QB 30+, mid-tier", (SELL, hist), con_prod(SELL, hist))
+            if t == "starter":               # qb_sells.py: 2/3+ beat their price in 3 years, both formats
+                w = "Starting QBs 30+ beat their price: 67-78% returned more than the average player at their price. " + hist
+                return ("QB 30+, mid-tier", (HOLD, w), (BUY if sf and bd in ("D3", "D34", "D4", "U") else HOLD, w))
             return ("QB 30+, backup", (SELL if bd in ("A", "B", "C", "D3") else CUT, hist),
                     (HOLD if sf and bd != "U" else CUT, ("Bye-week / injury cover. " if sf else "") + hist))
         if v3 >= 40:
@@ -244,9 +245,10 @@ def base_calls(x, f, ctx):
         return ("TE 26-29, filler", (CUT, w), con_prod(CUT, w))
     # ---------------- young (25 or younger, not a rookie) ----------------
     if pos == "QB":
-        if sf and pd.notna(pr) and pr <= 6 and a < 25:
-            w = "Superflex QBs 24 or younger priced QB1-6 returned -63% / -48% / -20% of their price; 28+ QBs priced QB13-28 beat theirs."
-            return ("Young QB priced as a QB1", (SELL, w), (SELL, w + " Swap for an older, cheaper QB."))
+        if sf and pd.notna(pr) and pr <= 6 and a < 25:          # qb_sells.py: was Sell; 64% beat their price
+            w = ("Young superflex QB1s keep their price: counting what they're still worth three years on, 64% beat the "
+                 "average player at their price (Mahomes, Lamar, Herbert).")
+            return ("Young QB priced as a QB1", (HOLD, w), (HOLD, w))
         if bd in ("A", "B"):
             w = "Young QBs priced top 100 hold their value."
             return ("Young QB, core", (HOLD, w), (HOLD, w))
