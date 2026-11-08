@@ -220,6 +220,10 @@ def base_calls(x, f, ctx):
         w = ("Rookie WRs rise ~9% from now to February." if pos == "WR" else
              "Rookie TEs rise ~26% from now to February; TEs taken in rookie rounds 3-4 returned almost nothing after that." if pos == "TE"
              else "")
+        if sf and pos == "WR" and bd == "51-100":  # call_strength.py: keep3 1.62 / 1.31 without the best (n=12)
+            # league sim, superflex: Default value 3 years on +154-176 and 5-year titles +16-18 points, in both cohort halves
+            return (f"Rookie {pos}", (BUY, "Superflex rookie WRs priced 51-100 returned 1.6 times their price over 3 years. " + w),
+                    (HOLDF, w + " Sell after February if you need vets."))
         return (f"Rookie {pos}", (HOLDF, w), (HOLDF, w + " Sell after February if you need vets."))
     # ---------------- 30+ ----------------
     if a >= 30:
@@ -389,6 +393,10 @@ def base_calls(x, f, ctx):
         if bd == "101-200":
             w = ("Young NFL R1-3 WRs priced 101-200: 32-36 VORP over 3 yrs, about what the average player at their price returned." if early
                  else "Young Day-3/UDFA WRs priced 101-200: ~19 VORP over 3 yrs; 60-70% had a starter season, but few later ranked top 100.")
+            if early and not sf:                  # call_strength.py: 1QB prod1 1.58 / 1.41 without the best (n=57)
+                # league sim, 1QB: Contending and Default value 3 years on +65-93, year-1 titles +0.7-1.6 points; the
+                # value gain held in both cohort halves
+                return (G(f"Young WR, {cap}"), (HOLD, w), (BUY, w + " In 1QB they out-produced their price the next season."))
             return (G(f"Young WR, {cap}"), (HOLD, w), (HOLD, w))
         if early:
             if bd == "201-300":                   # rebucket.py: keep3 0.31 / 0.57 (0.10 / 0.20 without the best)
@@ -421,6 +429,23 @@ def base_calls(x, f, ctx):
     return (G(f"Young TE, {cap}"), (CUT, w), con_prod(CUT, w))
 
 
+LOTTO_PAST = 200   # FP rank. Past it, three in four players returned under a quarter of their price over 3 years
+
+
+def lotto_line(act, why, x, f, prod):
+    """One name for keeping a player, by price: Lottery ticket past LOTTO_PAST, Hold inside it. QBs (backups kept as
+    bye-week / injury cover) and players producing now stay Hold. The league sim treats both the same."""
+    if x.position == "QB":
+        return act, why
+    r = getattr(x, f"r_{f}")
+    deep = r is None or (isinstance(r, float) and math.isnan(r)) or r > LOTTO_PAST
+    if deep and act in (HOLD, HOLDF) and not prod:
+        return LOTTO, why
+    if not deep and act == LOTTO:
+        return HOLD, why
+    return act, why
+
+
 def classify(x, f, ctx, split=True):
     """-> (group, (reb action, why), (con action, why), (default action, why))
 
@@ -441,7 +466,8 @@ def classify(x, f, ctx, split=True):
             ca, cw = ra, f"Not a starter now ({now}; starters are {pos}1-{line}), so sell before his price falls. " + rw
     elif kr == "sell" and kc == "use" and not prod:
         ca, cw = ra, rw
-    kc = kind(ca)
+    (ra, rw), (ca, cw) = lotto_line(ra, rw, x, f, prod), lotto_line(ca, cw, x, f, prod)
+    kr, kc = kind(ra), kind(ca)
     if ra == ca:
         mid = (ra, cw if prod else rw)
     elif kr == "sell" and kc == "buy":
