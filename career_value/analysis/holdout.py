@@ -14,6 +14,14 @@ listed as too few. Calls come from rules.classify before the strength split, as 
 Caveat: this is a split-half check, not a clean holdout. The rules and the price-band calls were picked looking at all
 of 2018-23, so a call that passes here passed on data it had seen. A call that fails on the later half is still a
 warning: what made it work early on has not lasted. Writes outputs/[sf/]holdout.csv. LEAGUE=sf for superflex.
+
+Findings (2026-11, action calls that failed on the later half):
+- 1QB contenders' "Sell high now" on Day-2+ rookie RBs priced 101-200 (keep3 1.61 / 1.71 without the best, both
+  halves) is now a Lottery ticket, as for rebuilders. League sim, ranks 4-8: Contending 5-year titles 20.2 -> 23.2,
+  value 3 years on 186 -> 220; Default and Rebuilding unchanged. Superflex keeps the sell (it held).
+- 1QB "RB 30+, fading" Cut (2.03 / 0.68) stays: the 201-300 ones all returned 0 (14 of 14; 9 of 9 in superflex); the
+  holdout gain is two waiver-level RBs past 300 (Cordarrelle Patterson 2020, Jerick McKinnon 2021) on prices near 0.
+- Superflex: no action call fails.
 """
 import pathlib
 import sys
