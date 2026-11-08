@@ -222,11 +222,11 @@ function render() {
   const groups = Object.fromEntries(ORDER.map((k) => [k, []]));
   for (const r of mine) groups[kind(r.c?.act)].push(r);
   const byPrice = (a, b) => rankKey(D.players[a.sid] || {}, fmt) - rankKey(D.players[b.sid] || {}, fmt);
+  const pushFirst = (r) => (r.c?.act === "Sell: heavy" || r.c?.act === "Buy: strong" ? 0 : 1);
   let html = "";
   for (const k of ORDER) {
     if (!groups[k].length) continue;
-    const heavyFirst = (r) => (r.c?.act === "Sell: heavy" ? 0 : 1);
-    groups[k].sort((a, b) => heavyFirst(a) - heavyFirst(b) || byPrice(a, b));
+    groups[k].sort((a, b) => pushFirst(a) - pushFirst(b) || byPrice(a, b));
     html += `<h3>${SECTION[k]} (${groups[k].length})</h3>` + table(groups[k]);
   }
   $("roster").innerHTML = html || `<p class="hint">This roster is empty.</p>`;
@@ -244,7 +244,7 @@ function render() {
       if (c && kind(c.act) === "buy") targets.push({ sid, c, owner: teamName(r) });
     }
   }
-  targets.sort(byPrice);
+  targets.sort((a, b) => pushFirst(a) - pushFirst(b) || byPrice(a, b));
   $("targets").innerHTML = table(targets, { owner: true });
 
   // this season: contenders add production that's cheap in dynasty terms; rebuilders sell it to them.

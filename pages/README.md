@@ -22,15 +22,24 @@ The rules in [build/rules.py](build/rules.py) come from the
 - **NFL draft capital:** rounds 1-3, or round 4 or later and undrafted.
 - **Production:** PPR points per game this season. For players 30+, it is blended with last season.
 
-Plain sells come in two strengths, from
-[career_value/analysis/sell_strength.py](../career_value/analysis/sell_strength.py). For each group of players with a Sell
-call (FP top 200, 2018-21), it adds three years of VORP to what they were worth three years on and compares that with
-the average player at the same price, which is what a fair trade gets you on average. **Sell: heavy** groups returned
-under 65% of that: take any reasonable offer. **Sell: light** groups returned 65% or more: sell at the market price, and
-hold if no one pays it. Each note also gives the share of players who beat their price: a few QB groups average over
-100% only because of one or two big hits (Tom Brady's 40s), while most of their players returned less, so they stay
-light sells. [qb_sells.py](../career_value/analysis/qb_sells.py) checks every QB call this way, at 1, 3 and 5 years, for
-each mode and format. Two QB sells failed and are now holds: young superflex QB1s and starting QBs 30+.
+Buys and plain sells come in two strengths each, from
+[career_value/analysis/call_strength.py](../career_value/analysis/call_strength.py). For each group of players with the
+call (FantasyPros top 340, 2018 on), it compares what they returned with what the average player at the same price
+returned, which is what a fair trade gets you on average. It also checks the group without its best player, since a
+cheap group's average often rests on one hit. Groups under 8 players borrow the record of all players of that position
+and age class with the call, then of that age class; past that, the note says there are too few to tell.
+
+- **Sells** use three seasons of VORP plus what the player was worth after them, in every mode (when each mode sells
+  comes from the league simulation below; this only says how hard). **Sell: heavy** groups returned under 65% of their
+  price: take any reasonable offer. **Sell: light**: sell at the market price, and hold if no one pays it.
+- **Buys** are judged by what each mode plays for: Rebuilding by the three-year measure, Default by next season's VORP
+  plus value a year on, Contending by next season's VORP. **Buy: strong** groups returned at least 1.5 times their
+  price, and at least their price without the best player: pay the market price, or a little more. **Buy: weak**:
+  market price or below. A buy that returned under 90% of its price for that mode becomes Hold. The old "Buy with a 3rd /
+  4th" calls are now strong or weak buys; each row already shows the rookie pick closest to the player's market price.
+
+[qb_sells.py](../career_value/analysis/qb_sells.py) checks every QB call this way, at 1, 3 and 5 years. Two QB sells
+failed and are now holds: young superflex QB1s and starting QBs 30+.
 
 Players aged 30+ are compared with how similar players produced over the next 3 and 5 seasons from 1999 on
 ([build/old_lookup.json](build/old_lookup.json)).
