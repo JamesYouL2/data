@@ -207,8 +207,9 @@ def base_calls(x, f, ctx):
                 w = ("Day-2+ rookie RBs priced 101-200 kept their value over 3 years but produced little in year 1. "
                      + ("Rebuilders hold to summer; contenders sell into the November peak." if sf else
                         "Hold to summer, contenders too: the 2020-21 rookies returned more than their price over 3 years."))
-                # holdout.py: the 1QB contender Sell high now failed on 2020-21 (keep3 1.61 / 1.71 without the best)
-                return ("Rookie RB, NFL R2+, 101-200", (LOTTO, w), (SELLH if sf else LOTTO, w) if not prod else
+                # holdout.py: the 1QB contender Sell high now failed on 2020-21 (keep3 1.61 / 1.71 without the best).
+                # league sim, 1QB Contending ranks 4-8, titles yrs 1-3: Sell high now 15.6, Use then sell 15.4, Hold 15.9
+                return ("Rookie RB, NFL R2+, 101-200", (LOTTO, w), (SELLH if sf else HOLD, w) if not prod else
                         (HOLD, f"Producing now ({pos}{f0(prk)}). " + w))
             w = "Day-2+ rookie RBs priced 201+: Chase Brown and Kyren Williams came from here; most return nothing."
             return (f"Rookie RB, {cap}", (LOTTO, w), (LOTTO, w))

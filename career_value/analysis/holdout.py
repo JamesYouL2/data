@@ -17,8 +17,10 @@ warning: what made it work early on has not lasted. Writes outputs/[sf/]holdout.
 
 Findings (2026-11, action calls that failed on the later half):
 - 1QB contenders' "Sell high now" on Day-2+ rookie RBs priced 101-200 (keep3 1.61 / 1.71 without the best, both
-  halves) is now a Lottery ticket, as for rebuilders. League sim, ranks 4-8: Contending 5-year titles 20.2 -> 23.2,
-  value 3 years on 186 -> 220; Default and Rebuilding unchanged. Superflex keeps the sell (it held).
+  halves) is now Hold (to summer). League sim, ranks 4-8: Contending 5-year titles 20.2 -> 23.2, value 3 years on
+  186 -> 220; Default and Rebuilding unchanged. "Use, then sell" did worse than holding (titles yrs 1-3 15.4 vs 15.9,
+  value 3 years on 205 vs 220). Superflex keeps the sell (it held). The Hold shows here as "fails (sell?)": contender
+  holds are scored on year-1 production (prod1 0.41), and both ways of selling did worse in the sim.
 - 1QB "RB 30+, fading" Cut (2.03 / 0.68) stays: the 201-300 ones all returned 0 (14 of 14; 9 of 9 in superflex); the
   holdout gain is two waiver-level RBs past 300 (Cordarrelle Patterson 2020, Jerick McKinnon 2021) on prices near 0.
 - Superflex: no action call fails.
