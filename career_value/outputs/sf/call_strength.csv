@@ -1,75 +1,54 @@
 mode,side,grp,price,calls,own_n,own_keep,own_beat,own_solo,own_coh_below,own_rank,used,keep,beat,n_used,solo,lens,strength
-Rebuilding,buy,"QB 26-29, 3rd-round price",101-200,Buy with a 3rd,8,0.42013237648215673,0.125,0.371277062882456,3/3,159.0,"QB 26-29, 3rd-round price | 101-200",0.42,0.12,8,0.37,keep3,Hold (not backed)
-Rebuilding,buy,"QB 26-29, 3rd-round price",201+,Buy with a 3rd,10,0.6514062207200587,0.4,0.46833606145774387,1/4,210.0,"QB 26-29, 3rd-round price | 201+",0.65,0.4,10,0.47,keep3,Hold (not backed)
-Rebuilding,buy,"QB 28-29, underpriced",101-200,Buy,2,0.09143366912047031,0.0,0.0,1/1,116.0,all QB 26-29 | 101-200,0.3,0.1,10,0.27,keep3,Hold (not backed)
+Rebuilding,buy,"QB 26-29, 101-200",101-200,Buy,14,2.2678094308522585,0.35714285714285715,1.6348406963715545,2/4,151.5,"QB 26-29, 101-200 | 101-200",2.27,0.36,14,1.63,keep3,strong
+Rebuilding,buy,"QB 28-29, underpriced",101-200,Buy,2,0.09143366912047031,0.0,0.0,1/1,116.0,all QB 26-29 | 101-200,1.89,0.31,16,1.35,keep3,strong
 Rebuilding,buy,"QB 30+, long-term",51-100,Buy,3,0.7143371196473836,0.3333333333333333,0.40223008294788054,2/2,90.0,(too few),,,0,,keep3,weak (too few)
-Rebuilding,buy,"Young QB, NFL R1-3",101-200,Buy,5,3.962379135761052,0.4,1.7121444286318286,1/2,178.0,(too few),,,0,,keep3,weak (too few)
-Rebuilding,buy,"Young QB, NFL R1-3",201+,Buy,2,0.0,0.0,0.0,2/2,256.0,(too few),,,0,,keep3,weak (too few)
-Rebuilding,buy,"Young RB, NFL R4+/UDFA",101-200,Buy with a 3rd,12,1.582574493987269,0.3333333333333333,0.9348807755453629,2/4,181.0,"Young RB, NFL R4+/UDFA | 101-200",1.58,0.33,12,0.93,keep3,weak
-Rebuilding,buy,"Young RB, NFL R4+/UDFA",201+,Buy with a 3rd,18,0.3980348633318907,0.05555555555555555,0.03168405505051048,3/4,224.5,"Young RB, NFL R4+/UDFA | 201+",0.4,0.06,18,0.03,keep3,Hold (not backed)
-Rebuilding,buy,"Young TE, NFL R4+/UDFA",201+,Buy with a 4th,6,2.8750519914501083,0.16666666666666666,0.13343753470283085,2/3,267.5,all 25-,1.15,0.18,62,0.9,keep3,weak
-Rebuilding,buy,"Young WR, NFL R1-3",101-200,Buy with a 3rd,15,1.2738782213830686,0.2,0.5656637306731784,2/4,171.0,"Young WR, NFL R1-3 | 101-200",1.27,0.2,15,0.57,keep3,weak
-Rebuilding,buy,"Young WR, NFL R1-3",201+,Buy with a 3rd,11,0.8124305167002343,0.18181818181818182,0.27784118229632615,3/4,219.0,"Young WR, NFL R1-3 | 201+",0.81,0.18,11,0.28,keep3,Hold (not backed)
-Default,buy,"QB 26-29, 3rd-round price",101-200,Buy with a 3rd,13,1.8106801463403859,0.46153846153846156,1.2652230669051217,2/5,170.0,"QB 26-29, 3rd-round price | 101-200",1.81,0.46,13,1.27,keep1,strong
-Default,buy,"QB 26-29, 3rd-round price",201+,Buy with a 3rd,13,0.35423709831730793,0.07692307692307693,0.20666866554515603,5/6,211.0,"QB 26-29, 3rd-round price | 201+",0.35,0.08,13,0.21,keep1,Hold (not backed)
-Default,buy,"QB 28-29, underpriced",101-200,Buy,2,0.17165063451335572,0.0,0.12861822732610195,1/1,116.0,all QB 26-29 | 101-200,1.37,0.4,15,0.96,keep1,weak
+Default,buy,"QB 26-29, 101-200",101-200,Buy,20,1.408053879204518,0.4,1.1622630677327581,1/6,156.0,"QB 26-29, 101-200 | 101-200",1.41,0.4,20,1.16,keep1,weak
+Default,buy,"QB 28-29, underpriced",101-200,Buy,2,0.17165063451335572,0.0,0.12861822732610195,1/1,116.0,all QB 26-29 | 101-200,1.23,0.36,22,1.02,keep1,weak
 Default,buy,"QB 30+, long-term",1-50,Buy,9,0.9676771423055992,0.3333333333333333,0.9025506411106021,4/6,28.0,"QB 30+, long-term | 1-50",0.97,0.33,9,0.9,keep1,weak
-Default,buy,"QB 30+, long-term",51-100,Buy,6,1.0191406204557387,0.6666666666666666,0.8020707662987929,1/4,75.0,all QB 30+,0.97,0.41,17,0.92,keep1,weak
-Default,buy,"QB 30+, mid-tier",101-200,Buy,1,0.0,0.0,,1/1,189.0,all QB 30+,0.97,0.41,17,0.92,keep1,weak
-Default,buy,"QB 30+, mid-tier",201+,Buy,1,0.0,0.0,,1/1,216.0,all QB 30+,0.97,0.41,17,0.92,keep1,weak
-Default,buy,"Young QB, NFL R1-3",101-200,Buy,6,0.6042094594228177,0.16666666666666666,0.11877154558648569,3/3,181.5,all QB 25-,0.44,0.08,12,0.08,keep1,Hold (not backed)
-Default,buy,"Young QB, NFL R1-3",201+,Buy,6,0.0,0.0,0.0,4/4,245.5,all QB 25-,0.44,0.08,12,0.08,keep1,Hold (not backed)
-Default,buy,"Young RB, NFL R4+/UDFA",101-200,Buy with a 3rd,21,1.1406919564933984,0.23809523809523808,0.8857495704451291,3/6,176.0,"Young RB, NFL R4+/UDFA | 101-200",1.14,0.24,21,0.89,keep1,weak
-Default,buy,"Young RB, NFL R4+/UDFA",201+,Buy with a 3rd,26,0.8130794635382157,0.15384615384615385,0.6002256426058732,5/6,224.0,"Young RB, NFL R4+/UDFA | 201+",0.81,0.15,26,0.6,keep1,Hold (not backed)
-Default,buy,"Young TE, NFL R4+/UDFA",201+,Buy with a 4th,9,3.916268567935568,0.3333333333333333,2.2984186603759964,3/5,266.0,"Young TE, NFL R4+/UDFA | 201+",3.92,0.33,9,2.3,keep1,strong
-Default,buy,"Young WR, NFL R1-3",101-200,Buy with a 3rd,32,1.0226634798214298,0.21875,0.7267679457781618,3/6,172.5,"Young WR, NFL R1-3 | 101-200",1.02,0.22,32,0.73,keep1,weak
-Default,buy,"Young WR, NFL R1-3",201+,Buy with a 3rd,17,1.7213142864891826,0.35294117647058826,0.8480522860745131,2/6,222.0,"Young WR, NFL R1-3 | 201+",1.72,0.35,17,0.85,keep1,weak
-Default,buy,"Young WR, NFL R4+/UDFA",101-200,Buy with a 3rd,16,1.1287230699892246,0.3125,0.8695844584339216,2/5,172.0,"Young WR, NFL R4+/UDFA | 101-200",1.13,0.31,16,0.87,keep1,weak
-Default,buy,"Young WR, NFL R4+/UDFA",201+,Buy with a 3rd,17,1.0100673249698975,0.4117647058823529,0.7715125793625969,3/6,215.0,"Young WR, NFL R4+/UDFA | 201+",1.01,0.41,17,0.77,keep1,weak
-Contending,buy,"QB 26-29, 3rd-round price",101-200,Buy with a 3rd,13,3.6119902002987647,0.46153846153846156,2.3422926807738707,1/5,170.0,"QB 26-29, 3rd-round price | 101-200",3.61,0.46,13,2.34,prod1,strong
-Contending,buy,"QB 26-29, 3rd-round price",201+,Buy with a 3rd,13,0.0,0.0,0.0,6/6,211.0,"QB 26-29, 3rd-round price | 201+",0.0,0.0,13,0.0,prod1,Hold (not backed)
-Contending,buy,"QB 28-29, underpriced",101-200,Buy,2,0.0,0.0,0.0,1/1,116.0,all QB 26-29 | 101-200,2.62,0.4,15,1.67,prod1,strong
+Default,buy,"QB 30+, long-term",51-100,Buy,6,1.0191406204557387,0.6666666666666666,0.8020707662987929,1/4,75.0,all QB 30+,0.98,0.44,16,0.93,keep1,weak
+Default,buy,"QB 30+, mid-tier",201+,Buy,1,0.0,0.0,,1/1,216.0,all QB 30+,0.98,0.44,16,0.93,keep1,weak
+Contending,buy,"QB 26-29, 101-200",101-200,Buy,20,2.130880538331099,0.35,1.5603782045621135,2/6,156.0,"QB 26-29, 101-200 | 101-200",2.13,0.35,20,1.56,prod1,strong
+Contending,buy,"QB 28-29, underpriced",101-200,Buy,2,0.0,0.0,0.0,1/1,116.0,all QB 26-29 | 101-200,1.83,0.32,22,1.33,prod1,strong
 Contending,buy,"QB 30+, long-term",1-50,Buy,9,1.1920217342921975,0.4444444444444444,1.0141997684204276,4/6,28.0,"QB 30+, long-term | 1-50",1.19,0.44,9,1.01,prod1,weak
-Contending,buy,"QB 30+, long-term",51-100,Buy,6,1.496144504047653,0.6666666666666666,1.1751306436595903,1/4,75.0,all QB 30+,1.26,0.47,17,1.14,prod1,weak
-Contending,buy,"QB 30+, mid-tier",101-200,Buy,1,0.0,0.0,,1/1,189.0,all QB 30+,1.26,0.47,17,1.14,prod1,weak
-Contending,buy,"QB 30+, mid-tier",201+,Buy,1,0.0,0.0,,1/1,216.0,all QB 30+,1.26,0.47,17,1.14,prod1,weak
-Contending,buy,"TE 30+, 2-year window",101-200,Buy,1,0.0,0.0,,1/1,160.0,all 30+,1.17,0.25,8,0.61,prod1,weak
-Contending,buy,"TE 30+, 2-year window",201+,Buy,1,0.0,0.0,,1/1,247.0,all 30+,1.17,0.25,8,0.61,prod1,weak
-Contending,buy,"WR 30+, 2-year window",101-200,Buy,3,1.1878830133870664,0.3333333333333333,0.0,1/2,176.0,all 30+,1.17,0.25,8,0.61,prod1,weak
-Contending,buy,"WR 30+, 2-year window",201+,Buy,3,2.883163227088004,0.3333333333333333,0.0,2/3,269.0,all 30+,1.17,0.25,8,0.61,prod1,weak
-Contending,buy,"Young QB, NFL R1-3",101-200,Buy,6,0.0,0.0,0.0,3/3,181.5,all QB 25-,0.0,0.0,12,0.0,prod1,Hold (not backed)
-Contending,buy,"Young QB, NFL R1-3",201+,Buy,6,0.0,0.0,0.0,4/4,245.5,all QB 25-,0.0,0.0,12,0.0,prod1,Hold (not backed)
-Contending,buy,"Young RB, NFL R4+/UDFA",101-200,Buy with a 3rd,21,1.0742919562197222,0.19047619047619047,0.5764961802618279,3/6,176.0,"Young RB, NFL R4+/UDFA | 101-200",1.07,0.19,21,0.58,prod1,weak
-Contending,buy,"Young RB, NFL R4+/UDFA",201+,Buy with a 3rd,26,0.8888689201515841,0.07692307692307693,0.29694383755964854,5/6,224.0,"Young RB, NFL R4+/UDFA | 201+",0.89,0.08,26,0.3,prod1,Hold (not backed)
-Contending,buy,"Young TE, NFL R4+/UDFA",201+,Buy with a 4th,9,4.700502648734438,0.2222222222222222,2.1927135447959945,3/5,266.0,"Young TE, NFL R4+/UDFA | 201+",4.7,0.22,9,2.19,prod1,strong
-Contending,buy,"Young WR, NFL R1-3",101-200,Buy with a 3rd,32,1.057718729472362,0.1875,0.657343951015509,3/6,172.5,"Young WR, NFL R1-3 | 101-200",1.06,0.19,32,0.66,prod1,weak
-Contending,buy,"Young WR, NFL R1-3",201+,Buy with a 3rd,17,2.0602938453187645,0.23529411764705882,0.7468625024433087,3/6,222.0,"Young WR, NFL R1-3 | 201+",2.06,0.24,17,0.75,prod1,weak
-Contending,buy,"Young WR, NFL R4+/UDFA",101-200,Buy with a 3rd,16,1.0503498885222862,0.25,0.5830009615632686,2/5,172.0,"Young WR, NFL R4+/UDFA | 101-200",1.05,0.25,16,0.58,prod1,weak
-Contending,buy,"Young WR, NFL R4+/UDFA",201+,Buy with a 3rd,17,0.8876373905959838,0.11764705882352941,0.2278974093748097,4/6,215.0,"Young WR, NFL R4+/UDFA | 201+",0.89,0.12,17,0.23,prod1,Hold (not backed)
+Contending,buy,"QB 30+, long-term",51-100,Buy,6,1.496144504047653,0.6666666666666666,1.1751306436595903,1/4,75.0,all QB 30+,1.27,0.5,16,1.15,prod1,weak
+Contending,buy,"QB 30+, mid-tier",201+,Buy,1,0.0,0.0,,1/1,216.0,all QB 30+,1.27,0.5,16,1.15,prod1,weak
+Contending,buy,"RB 30+, 2-year window",101-200,Buy,1,0.0,0.0,,1/1,127.0,all 30+,2.19,0.44,18,1.87,prod1,strong
+Contending,buy,"TE 30+, 2-year window",101-200,Buy,1,0.0,0.0,,1/1,160.0,all 30+,2.19,0.44,18,1.87,prod1,strong
+Contending,buy,"TE 30+, 2-year window",201+,Buy,1,0.0,0.0,,1/1,247.0,all 30+,2.19,0.44,18,1.87,prod1,strong
+Contending,buy,"WR 30+, 2-year window",101-200,Buy,12,2.457111918021213,0.5833333333333334,2.1208989989642717,3/6,136.5,"WR 30+, 2-year window | 101-200",2.46,0.58,12,2.12,prod1,strong
+Contending,buy,"WR 30+, 2-year window",201+,Buy,3,2.883163227088004,0.3333333333333333,0.0,2/3,269.0,all WR 30+,2.47,0.53,15,2.16,prod1,strong
+Contending,buy,"Young TE, NFL R4+/UDFA, 201-300",201+,Buy,12,3.3052631503383028,0.16666666666666666,1.4821386540787227,3/5,257.5,"Young TE, NFL R4+/UDFA, 201-300 | 201+",3.31,0.17,12,1.48,prod1,strong
 all (rebuilder sells),sell,"QB 26-27, priced QB13-20",51-100,Sell,1,0.8632717610397569,0.0,,1/1,64.0,(too few),,,0,,keep3,light
 all (rebuilder sells),sell,"QB 36+, win-now",1-50,Sell,3,1.162123730025178,0.3333333333333333,0.8310594030729709,2/3,38.0,all QB 30+,1.05,0.26,23,0.92,keep3,light
 all (rebuilder sells),sell,"QB 36+, win-now",101-200,Sell,7,1.018490178019485,0.2857142857142857,0.4289107014501441,3/4,150.0,all QB 30+,1.05,0.26,23,0.92,keep3,light
 all (rebuilder sells),sell,"QB 36+, win-now",201+,Sell,4,0.0,0.0,0.0,3/3,240.5,all QB 30+,1.05,0.26,23,0.92,keep3,light
 all (rebuilder sells),sell,"QB 36+, win-now",51-100,Sell,9,1.027304585773173,0.3333333333333333,0.7784075497524249,3/4,69.0,"QB 36+, win-now | 51-100",1.03,0.33,9,0.78,keep3,light
-all (rebuilder sells),sell,RB 26-29,51-100,Sell,16,0.38587168773215685,0.0625,0.29899766411284745,4/4,73.5,RB 26-29 | 51-100,0.39,0.06,16,0.3,keep3,heavy
-all (rebuilder sells),sell,"RB 26-29, core",1-50,Sell,16,0.8549143992159273,0.4375,0.797895528851289,3/4,24.0,"RB 26-29, core | 1-50",0.85,0.44,16,0.8,keep3,light
-all (rebuilder sells),sell,"RB 30+, 2-year window",101-200,Sell,1,0.0,0.0,,1/1,127.0,all 30+,0.68,0.24,54,0.57,keep3,light
-all (rebuilder sells),sell,"RB 30+, fading",101-200,Sell,5,1.0228652030851177,0.2,0.04088298074222535,3/4,186.0,all 30+,0.68,0.24,54,0.57,keep3,light
-all (rebuilder sells),sell,TE 26-29,101-200,Sell,17,0.8581623716793982,0.17647058823529413,0.5505972982844678,3/4,181.0,TE 26-29 | 101-200,0.86,0.18,17,0.55,keep3,light
-all (rebuilder sells),sell,TE 26-29,201+,Sell,4,1.5961401884749757,0.25,0.1533731242940688,2/3,210.5,all TE 26-29,0.68,0.18,28,0.59,keep3,light
-all (rebuilder sells),sell,TE 26-29,51-100,Sell,7,0.5141242313455155,0.14285714285714285,0.3691789810144946,4/4,85.0,all TE 26-29,0.68,0.18,28,0.59,keep3,light
-all (rebuilder sells),sell,"TE 30+, 2-year window",1-50,Sell,3,1.608432357659299,1.0,1.318985445102302,0/3,37.0,all TE 30+,1.22,0.31,16,0.95,keep3,light
+all (rebuilder sells),sell,"RB 26-29, 1-50",1-50,Sell,16,0.8549143992159273,0.4375,0.797895528851289,3/4,24.0,"RB 26-29, 1-50 | 1-50",0.85,0.44,16,0.8,keep3,light
+all (rebuilder sells),sell,"RB 26-29, 101-200",101-200,Sell,33,0.5267952134238831,0.21212121212121213,0.4087398589398994,3/4,152.0,"RB 26-29, 101-200 | 101-200",0.53,0.21,33,0.41,keep3,heavy
+all (rebuilder sells),sell,"RB 26-29, 201-300",201+,Sell,46,0.298145328083502,0.06521739130434782,0.20210946833762858,4/4,250.0,"RB 26-29, 201-300 | 201+",0.3,0.07,46,0.2,keep3,heavy
+all (rebuilder sells),sell,"RB 26-29, 51-100",51-100,Sell,16,0.38587168773215685,0.0625,0.29899766411284745,4/4,73.5,"RB 26-29, 51-100 | 51-100",0.39,0.06,16,0.3,keep3,heavy
+all (rebuilder sells),sell,"RB 30+, 2-year window",101-200,Sell,1,0.0,0.0,,1/1,127.0,all 30+,0.69,0.26,58,0.58,keep3,light
+all (rebuilder sells),sell,"RB 30+, fading",101-200,Sell,5,1.0228652030851177,0.2,0.04088298074222535,3/4,186.0,all 30+,0.69,0.26,58,0.58,keep3,light
+all (rebuilder sells),sell,"TE 26-29, 101-200",101-200,Sell,27,0.6042579460503805,0.14814814814814814,0.45932149229932917,3/4,166.0,"TE 26-29, 101-200 | 101-200",0.6,0.15,27,0.46,keep3,heavy
+all (rebuilder sells),sell,"TE 26-29, 51-100",51-100,Sell,7,0.5141242313455155,0.14285714285714285,0.3691789810144946,4/4,85.0,all TE 26-29,0.56,0.15,34,0.48,keep3,heavy
+all (rebuilder sells),sell,"TE 30+, 2-year window",1-50,Sell,3,1.608432357659299,1.0,1.318985445102302,0/3,37.0,all TE 30+,1.19,0.3,23,0.93,keep3,light
 all (rebuilder sells),sell,"TE 30+, 2-year window",101-200,Sell,1,0.8116801108678218,0.0,,1/1,160.0,all TE 30+ | 101-200,0.48,0.2,10,0.4,keep3,heavy
-all (rebuilder sells),sell,"TE 30+, 2-year window",201+,Sell,1,0.0,0.0,,1/1,247.0,all TE 30+,1.22,0.31,16,0.95,keep3,light
+all (rebuilder sells),sell,"TE 30+, 2-year window",201+,Sell,1,0.0,0.0,,1/1,247.0,all TE 30+ | 201+,0.48,0.2,10,0.35,keep3,heavy
 all (rebuilder sells),sell,"TE 30+, fading",101-200,Sell,9,0.4377112886781975,0.2222222222222222,0.3393044440980989,3/4,168.0,"TE 30+, fading | 101-200",0.44,0.22,9,0.34,keep3,heavy
-all (rebuilder sells),sell,"TE 30+, fading",201+,Sell,2,0.4151851777995283,0.0,0.0,2/2,209.0,all TE 30+,1.22,0.31,16,0.95,keep3,light
-all (rebuilder sells),sell,WR 26-29,51-100,Sell,28,1.0403931977892409,0.35714285714285715,0.9471912293500461,2/4,78.0,WR 26-29 | 51-100,1.04,0.36,28,0.95,keep3,light
-all (rebuilder sells),sell,"WR 26-29, core",1-50,Sell,12,0.7044546052999285,0.3333333333333333,0.6081543273000166,3/4,25.0,"WR 26-29, core | 1-50",0.7,0.33,12,0.61,keep3,light
-all (rebuilder sells),sell,"WR 30+, 2-year window",1-50,Sell,4,0.12964474313784827,0.0,0.022737936067904974,2/2,31.0,all WR 30+,0.42,0.22,32,0.37,keep3,heavy
+all (rebuilder sells),sell,"TE 30+, fading",201+,Sell,9,0.5203127175160484,0.2222222222222222,0.3855546854950461,3/4,236.0,"TE 30+, fading | 201+",0.52,0.22,9,0.39,keep3,heavy
+all (rebuilder sells),sell,"WR 26-29, 1-50",1-50,Sell,12,0.7044546052999285,0.3333333333333333,0.6081543273000166,3/4,25.0,"WR 26-29, 1-50 | 1-50",0.7,0.33,12,0.61,keep3,light
+all (rebuilder sells),sell,"WR 26-29, 101-200",101-200,Sell,43,0.6647505165714607,0.27906976744186046,0.5999305865788529,3/4,163.0,"WR 26-29, 101-200 | 101-200",0.66,0.28,43,0.6,keep3,light
+all (rebuilder sells),sell,"WR 26-29, 201-300",201+,Sell,41,0.20384313986026342,0.07317073170731707,0.14354695467308465,4/4,262.0,"WR 26-29, 201-300 | 201+",0.2,0.07,41,0.14,keep3,heavy
+all (rebuilder sells),sell,"WR 26-29, 51-100",51-100,Sell,28,1.0403931977892409,0.35714285714285715,0.9471912293500461,2/4,78.0,"WR 26-29, 51-100 | 51-100",1.04,0.36,28,0.95,keep3,light
+all (rebuilder sells),sell,"WR 30+, 2-year window",1-50,Sell,4,0.12964474313784827,0.0,0.022737936067904974,2/2,31.0,all WR 30+,0.43,0.24,29,0.38,keep3,heavy
 all (rebuilder sells),sell,"WR 30+, 2-year window",101-200,Sell,7,0.6599563740680581,0.2857142857142857,0.4326404697225953,4/4,141.0,all WR 30+ | 101-200,0.49,0.24,17,0.39,keep3,heavy
-all (rebuilder sells),sell,"WR 30+, 2-year window",201+,Sell,3,0.7832409345484684,0.3333333333333333,0.0,2/3,269.0,all WR 30+,0.42,0.22,32,0.37,keep3,heavy
-all (rebuilder sells),sell,"WR 30+, 2-year window",51-100,Sell,3,0.5285895555977677,0.0,0.28876279221248213,2/2,76.0,all WR 30+,0.42,0.22,32,0.37,keep3,heavy
+all (rebuilder sells),sell,"WR 30+, 2-year window",201+,Sell,3,0.7832409345484684,0.3333333333333333,0.0,2/3,269.0,all WR 30+,0.43,0.24,29,0.38,keep3,heavy
+all (rebuilder sells),sell,"WR 30+, 2-year window",51-100,Sell,3,0.5285895555977677,0.0,0.28876279221248213,2/2,76.0,all WR 30+,0.43,0.24,29,0.38,keep3,heavy
 all (rebuilder sells),sell,"WR 30+, fading",101-200,Sell,10,0.3454166069121109,0.2,0.12208076327064506,3/3,171.0,"WR 30+, fading | 101-200",0.35,0.2,10,0.12,keep3,heavy
-all (rebuilder sells),sell,"WR 30+, fading",201+,Sell,3,0.13720974476792552,0.0,0.0,3/3,210.0,all WR 30+,0.42,0.22,32,0.37,keep3,heavy
-all (rebuilder sells),sell,"WR 30+, fading",51-100,Sell,2,1.572335952175737,1.0,1.5315982893922726,0/2,88.0,all WR 30+,0.42,0.22,32,0.37,keep3,heavy
-all (rebuilder sells),sell,Young RB,51-100,Sell,30,0.8614467650741643,0.3,0.7794280062662633,3/4,81.0,Young RB | 51-100,0.86,0.3,30,0.78,keep3,light
+all (rebuilder sells),sell,"WR 30+, fading",51-100,Sell,2,1.572335952175737,1.0,1.5315982893922726,0/2,88.0,all WR 30+,0.43,0.24,29,0.38,keep3,heavy
+all (rebuilder sells),sell,"Young RB, 51-100",51-100,Sell,30,0.8614467650741643,0.3,0.7794280062662633,3/4,81.0,"Young RB, 51-100 | 51-100",0.86,0.3,30,0.78,keep3,light
+all (rebuilder sells),sell,"Young RB, NFL R1-3, 101-200",101-200,Sell,26,0.4668929674656836,0.07692307692307693,0.40942294442629523,4/4,141.5,"Young RB, NFL R1-3, 101-200 | 101-200",0.47,0.08,26,0.41,keep3,heavy
+all (rebuilder sells),sell,"Young TE, NFL R1-3, 201-300",201+,Sell,7,2.051025565421848,0.42857142857142855,0.5997539132106277,1/3,239.0,all TE 25- | 201+,1.9,0.27,15,1.08,keep3,light (sell not backed)
+all (rebuilder sells),sell,"Young TE, NFL R4+/UDFA, 101-200",101-200,Sell,6,0.0,0.0,0.0,3/3,170.0,all TE 25-,0.8,0.19,21,0.44,keep3,light
+all (rebuilder sells),sell,"Young TE, NFL R4+/UDFA, 201-300",201+,Sell,8,1.6870780791761544,0.125,0.0723241524299382,2/3,261.5,"Young TE, NFL R4+/UDFA, 201-300 | 201+",1.69,0.12,8,0.07,keep3,light
+all (rebuilder sells),sell,"Young WR, NFL R1-3, 201-300",201+,Sell,24,0.5721341439768749,0.08333333333333333,0.2030293002822778,3/4,248.0,"Young WR, NFL R1-3, 201-300 | 201+",0.57,0.08,24,0.2,keep3,heavy
