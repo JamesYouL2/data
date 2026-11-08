@@ -303,7 +303,7 @@ $("fmt").addEventListener("click", (e) => { const v = e.target.dataset?.v; if (v
 const m = D.meta;
 $("foot").innerHTML = `Prices: FantasyPros dynasty rankings via <a href="https://github.com/dynastyprocess/data">DynastyProcess</a>, ${esc(m.values_date)}. ` +
   `Production: <a href="https://github.com/nflverse/nflverse-data">nflverse</a> ${m.season} stats through ${m.games} games. Rebuilt daily, last ${esc(m.built)}. ` +
-  `Ages are as of September ${m.next}. Price bands: 151-239 is a 3rd-round rookie pick, 240-300 a 4th. ` +
+  `Ages are as of September ${m.next}. Price bands: FantasyPros rank 1-50, 51-100, 101-200, 201-300; past 300 is waiver level. ` +
   `The calls come from backtests of 2018-2025 rankings against later VORP; players 30+ use 1999-${m.last} history. ` +
   (m.market ? `Trade market: <a href="https://fantasycalc.com">FantasyCalc</a> dynasty values (12 teams, PPR), with "≈ pick" labels from its ${m.picks?.sf_year ?? ""} pick values. ` : "") +
   (m.ros ? `Rest of season (ROS) and next game: FantasyPros ROS PPR and weekly rankings via DynastyProcess, ${esc(m.fp_date)}; the ROS overall rank is 1QB. ` : "") +

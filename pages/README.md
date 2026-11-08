@@ -16,8 +16,11 @@ The rules in [build/rules.py](build/rules.py) come from the
 [DynastyProcess data repo](https://github.com/dynastyprocess/data). The backtests compare FantasyPros dynasty rankings
 (2018 onward) with the value above replacement (VORP) each player went on to score. A player's call depends on:
 
-- **Price:** overall FantasyPros dynasty rank, in 1QB or superflex. Ranks 151-239 cost about a 3rd-round rookie pick,
-  and 240-300 about a 4th.
+- **Price:** overall FantasyPros dynasty rank, in 1QB or superflex, in bands of 1-50, 51-100, 101-200 and 201-300.
+  Past 300 is waiver level. The bands used to follow rookie-pick prices (151-239 a 3rd, 240-300 a 4th). Where merging
+  them joined bands with different calls, [rebucket.py](../career_value/analysis/rebucket.py) picked the call from
+  what the whole new band returned: Rebuilding by the three-year measure below, Contending by next season's VORP. A pick
+  is never moved to rest on one player's season, even where the league simulation liked it (the docstring lists them).
 - **Age entering next season:** rookie, 25 or younger, 26-29, or 30+.
 - **NFL draft capital:** rounds 1-3, or round 4 or later and undrafted.
 - **Production:** PPR points per game this season. For players 30+, it is blended with last season.
@@ -40,10 +43,11 @@ evidence, and the note says when one is used.
   plus value a year on, Contending by next season's VORP. **Buy: strong** groups returned at least 1.5 times their
   price, and at least their price without the best player: pay the market price, or a little more. **Buy: weak**:
   market price or below. A buy that returned under 90% of its price for that mode becomes Hold. The old "Buy with a 3rd /
-  4th" calls are now strong or weak buys; each row shows the rookie pick closest to the player's market price.
+  4th" and "Sell for a 3rd / 4th" calls are now plain buys and sells with a strength; each row shows the rookie pick
+  closest to the player's market price.
 
 [qb_sells.py](../career_value/analysis/qb_sells.py) checks every QB call this way, at 1, 3 and 5 years. Five QB sells
-failed and are now holds: young superflex QB1s, starting QBs 30+, 1QB QBs 26-29 priced 101-239, 1QB QBs 36+ and
+failed and are now holds: young superflex QB1s, starting QBs 30+, 1QB QBs 26-29 priced 101-200, 1QB QBs 36+ and
 superflex backup QBs 30+.
 
 Players aged 30+ are compared with how similar players produced over the next 3 and 5 seasons from 1999 on
