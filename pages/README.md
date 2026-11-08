@@ -20,7 +20,8 @@ The rules in [build/rules.py](build/rules.py) come from the
   Past 300 is waiver level. The bands used to follow rookie-pick prices (151-239 a 3rd, 240-300 a 4th). Where merging
   them joined bands with different calls, [rebucket.py](../career_value/analysis/rebucket.py) picked the call from
   what the whole new band returned: Rebuilding by the three-year measure below, Contending by next season's VORP. The league
-  simulation then checked the biggest picks; the docstring lists the one call it changed.
+  simulation then checked the biggest picks (the docstring lists them), and
+  [holdout.py](../career_value/analysis/holdout.py) checks every call on 2020-23 against 2018-20.
 - **Age entering next season:** rookie, 25 or younger, 26-29, or 30+.
 - **NFL draft capital:** rounds 1-3, or round 4 or later and undrafted.
 - **Production:** PPR points per game this season. For players 30+, it is blended with last season.
@@ -41,7 +42,8 @@ evidence, and the note says when one is used.
   price: take any reasonable offer. **Sell: light**: sell at the market price, and hold if no one pays it.
 - **Buys** are judged by what each mode plays for: Rebuilding by the three-year measure, Default by next season's VORP
   plus value a year on, Contending by next season's VORP. **Buy: strong** groups returned at least 1.5 times their
-  price, and at least their price without the best player: pay the market price, or a little more. **Buy: weak**:
+  price, at least their price without the best player, and at least 1 in 4 beat their price: pay the market price, or
+  a little more. Default is a strong buy wherever Rebuilding and Contending both are. **Buy: weak**:
   market price or below. A buy that returned under 90% of its price for that mode becomes Hold. The old "Buy with a 3rd /
   4th" and "Sell for a 3rd / 4th" calls are now plain buys and sells with a strength; each row shows the rookie pick
   closest to the player's market price.

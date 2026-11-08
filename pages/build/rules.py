@@ -47,6 +47,7 @@ _SJ = Path(__file__).with_name("strength.json")
 STRENGTH = json.loads(_SJ.read_text()) if _SJ.exists() else {}
 HEAVY_BELOW = 0.65              # sells: below this, take any fair offer
 STRONG_AT = 1.5                 # buys: at or above this, and still >= 1 without the best player, pay up
+STRONG_BEAT = 0.25              # ... and at least this share of the players beat their price
 BUY_HOLD_BELOW = 0.9            # buys: below this the buy isn't backed for that mode: hold
 LENS = {"keep3": "3-year VORP plus value three years on", "keep1": "next season's VORP plus value a year on",
         "prod1": "next season's VORP"}
@@ -118,10 +119,11 @@ def buy_strength(f, mode, g, pos, ac, pb):
     if k < BUY_HOLD_BELOW:
         return HOLD, (f"{who} returned only {pct} of what the average player at their price did ({lens}): "
                       "not worth the market price. Keep him if you have him. ")
-    if k >= STRONG_AT and solo >= 1:
+    if k >= STRONG_AT and solo >= 1 and b >= STRONG_BEAT:
         return STRONG, (f"{who} returned {pct} of what the average player at their price did ({lens}), "
-                        f"{100 * solo:.0f}% even without the best one: pay the market price, or a little more. ")
-    hits = f" Much of that is one hit; without it, {100 * solo:.0f}%." if k >= 1 and solo < 1 else ""
+                        f"{100 * solo:.0f}% even without the best one, and {beat} beat it: pay the market price, or a little more. ")
+    hits = (f" Much of that is one hit; without it, {100 * solo:.0f}%." if k >= 1 and solo < 1 else
+            " A few players carry it." if k >= STRONG_AT and b < STRONG_BEAT else "")
     return WEAK, (f"{who} returned {pct} of what the average player at their price did ({lens}), "
                   f"and {beat} beat it.{hits} Buy at the market price or below, not above. ")
 
@@ -368,8 +370,9 @@ def base_calls(x, f, ctx):
             w = f"Young Day-3/UDFA RBs priced 101-200: {'30' if not sf else '36'} VORP over 3 yrs, more than the average player at their price returned."
             if not sf:                            # league sim: a rebuilder Buy cost 1QB value (641 -> 510)
                 return (G(f"Young RB, {cap}"), (HOLD, w), (BUY, w + " They out-produced their price next season too."))
-            # league sim: a rebuilder Buy lifted SF Rebuilding (5-yr titles 23 -> 46). Weak: rests on Ekeler 2018.
-            return (G(f"Young RB, {cap}"), (BUY, w), (HOLD, w))
+            # league sim: a rebuilder Buy lifted SF Rebuilding, but only through the 2018-20 cohorts (Ekeler, Pollard);
+            # it lost in 2021-24 (holdout.py), so rebuilders hold
+            return (G(f"Young RB, {cap}"), (HOLD, w), (HOLD, w))
         w = ("Young Day-3/UDFA RBs priced 201-300: 2-3 VORP over 3 yrs, almost all from one hit (Kyren Williams)."
              if ranked else "Young Day-3/UDFA RB: an opportunity bet. Hold if you have the roster spot.")
         return (G(f"Young RB, {cap}"), (LOTTO, w), (LOTTO, w))
@@ -458,6 +461,9 @@ def classify(x, f, ctx, split=True):
             return act, why
         return a, pre + why
     r, c, m = push("reb", ra, rw), push("con", ca, cw), push("mid", *mid)
+    if m[0] == WEAK and r[0] == STRONG and c[0] == STRONG:   # both sides pay up: so does Default
+        m = (STRONG, "Rebuilders and contenders both have this as a strong buy: pay the market price, or a little more. "
+             + mid[1])
     for side in ("buy", "sell"):                    # Default never buys or sells where neither side does
         if kind(m[0]) == side and side not in (kind(r[0]), kind(c[0])):
             m = (HOLD, f"Neither rebuilders nor contenders should {side} him here, so keep him. " + mid[1])
