@@ -225,7 +225,8 @@ function render() {
   let html = "";
   for (const k of ORDER) {
     if (!groups[k].length) continue;
-    groups[k].sort(byPrice);
+    const heavyFirst = (r) => (r.c?.act === "Sell: heavy" ? 0 : 1);
+    groups[k].sort((a, b) => heavyFirst(a) - heavyFirst(b) || byPrice(a, b));
     html += `<h3>${SECTION[k]} (${groups[k].length})</h3>` + table(groups[k]);
   }
   $("roster").innerHTML = html || `<p class="hint">This roster is empty.</p>`;
