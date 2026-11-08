@@ -160,7 +160,7 @@ def score(b, lens):
 def label(tab, side):
     if side == "buy":
         return np.where(tab.keep.isna(), "weak (too few)", np.where(tab.keep < R.BUY_HOLD_BELOW, "Hold (not backed)",
-                        np.where((tab.keep >= R.STRONG_AT) & (tab.solo >= 1), "strong", "weak")))
+                        np.where((tab.keep >= R.STRONG_AT) & (tab.solo >= 1) & (tab.beat >= R.STRONG_BEAT), "strong", "weak")))
     return np.where(tab.keep < R.HEAVY_BELOW, "heavy", np.where((tab.keep >= 1.1) & (tab.solo >= 1), "light (sell not backed)", "light"))
 
 
