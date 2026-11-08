@@ -31,6 +31,7 @@ all (rebuilder sells),sell,"RB 26-29, 201-300",201+,Sell,46,0.298145328083502,0.
 all (rebuilder sells),sell,"RB 26-29, 51-100",51-100,Sell,16,0.38587168773215685,0.0625,0.29899766411284745,4/4,73.5,"RB 26-29, 51-100 | 51-100",0.39,0.06,16,0.3,keep3,heavy
 all (rebuilder sells),sell,"RB 30+, 2-year window",101-200,Sell,1,0.0,0.0,,1/1,127.0,all 30+,0.69,0.26,58,0.58,keep3,light
 all (rebuilder sells),sell,"RB 30+, fading",101-200,Sell,5,1.0228652030851177,0.2,0.04088298074222535,3/4,186.0,all 30+,0.69,0.26,58,0.58,keep3,light
+all (rebuilder sells),sell,Rookie TE,201+,Sell,13,0.7414514550474589,0.15384615384615385,0.28866634982428996,3/4,261.0,Rookie TE | 201+,0.74,0.15,13,0.29,keep3,light
 all (rebuilder sells),sell,"TE 26-29, 101-200",101-200,Sell,27,0.6042579460503805,0.14814814814814814,0.45932149229932917,3/4,166.0,"TE 26-29, 101-200 | 101-200",0.6,0.15,27,0.46,keep3,heavy
 all (rebuilder sells),sell,"TE 26-29, 51-100",51-100,Sell,7,0.5141242313455155,0.14285714285714285,0.3691789810144946,4/4,85.0,all TE 26-29,0.56,0.15,34,0.48,keep3,heavy
 all (rebuilder sells),sell,"TE 30+, 2-year window",1-50,Sell,3,1.608432357659299,1.0,1.318985445102302,0/3,37.0,all TE 30+,1.19,0.3,23,0.93,keep3,light
@@ -50,6 +51,7 @@ all (rebuilder sells),sell,"WR 30+, fading",101-200,Sell,10,0.3454166069121109,0
 all (rebuilder sells),sell,"WR 30+, fading",51-100,Sell,2,1.572335952175737,1.0,1.5315982893922726,0/2,88.0,all WR 30+,0.43,0.24,29,0.38,keep3,heavy
 all (rebuilder sells),sell,"Young RB, 51-100",51-100,Sell,30,0.8614467650741643,0.3,0.7794280062662633,3/4,81.0,"Young RB, 51-100 | 51-100",0.86,0.3,30,0.78,keep3,light
 all (rebuilder sells),sell,"Young RB, NFL R1-3, 101-200",101-200,Sell,26,0.4668929674656836,0.07692307692307693,0.40942294442629523,4/4,141.5,"Young RB, NFL R1-3, 101-200 | 101-200",0.47,0.08,26,0.41,keep3,heavy
+all (rebuilder sells),sell,"Young RB, NFL R4+/UDFA, 201-300",201+,Sell,58,0.5575247467987942,0.10344827586206896,0.3852571840047388,4/4,266.5,"Young RB, NFL R4+/UDFA, 201-300 | 201+",0.56,0.1,58,0.39,keep3,heavy
 all (rebuilder sells),sell,"Young TE, NFL R1-3, 201-300",201+,Sell,7,2.051025565421848,0.42857142857142855,0.5997539132106277,1/3,239.0,all TE 25- | 201+,1.9,0.27,15,1.08,keep3,light (sell not backed)
 all (rebuilder sells),sell,"Young TE, NFL R4+/UDFA, 101-200",101-200,Sell,6,0.0,0.0,0.0,3/3,170.0,all TE 25-,0.8,0.19,21,0.44,keep3,light
 all (rebuilder sells),sell,"Young TE, NFL R4+/UDFA, 201-300",201+,Sell,8,1.6870780791761544,0.125,0.0723241524299382,2/3,261.5,"Young TE, NFL R4+/UDFA, 201-300 | 201+",1.69,0.12,8,0.07,keep3,light
