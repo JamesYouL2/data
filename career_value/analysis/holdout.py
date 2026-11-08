@@ -46,6 +46,20 @@ in both the 2018-20 and the 2021-24 cohorts (sim deltas per team, clustered by l
   2019, 2 of 26); contender Hold, not Buy, on old 1QB QBs (later half 0.56 / 0.00).
 - Superflex RBs and WRs: no group besides rookie WRs 51-100 beat its price in both halves; the young NFL R1-3 WRs
   101-200 that 1QB contenders now buy had prod1 1.09 / 0.98 in superflex.
+
+Lottery tickets (2026-11): buy, hold or sell? Sims as above, ranks 4-8, by cohort 2018-20 / 2021-24:
+- No buy. Rebuilder Buy on rookie WRs 201-300 (keep3 3.82 1QB, 3.93 SF; 2018 McLaurin and Diontae Johnson at 17-33x):
+  Rebuilding value 3 years on +182 / -267 (1QB), +148 / -88 (SF). SF Day-3 rookie RBs 201-300 (keep3 2.68, 0.47 in
+  2018-19): +26 / -109.
+- Adopted: rebuilder Sell on young Day-3 RBs 201-300 (keep3 0.53 / 0.56; 2020-21 0.03 / 0.05). Rebuilding value 3
+  years on +43 / +35 (1QB), +52 / +45 (SF); Default +57 / +68, +70 / +115. Titles flat.
+- Adopted: rebuilder Sell on rookie TEs 201-300 (keep3 0.54 / 0.74; 0.18 / 0.29 without Dawson Knox 2018). Rebuilding
+  +74 / +111 (1QB), +31 / +57 (SF); Default +23 / +17 and +8 / -8. Contenders sell them too unless producing (the
+  contender rule; Contending +19 / +28 in 1QB, 0 / -8 in SF) and keep the RBs as Lottery tickets.
+- Adopted, 1QB only: rebuilder Buy on rookie TEs 101-200 (keep3 1.84 / 0.96 without the best, n=8; 5 of 8 beat their
+  price). Rebuilding value 3 years on +63 / +53, 5-year titles +5.1 (2018-20), 3-year titles +4.0 (2021-24), year-1
+  -0.9 / -0.3; Default +18 / +8. Superflex gained only in 2018-20 (+108 / +2, 3-year titles -8.0 in 2021-24). A
+  contender Buy added little (1QB Contending +10 / +19; prod1 0.81 would make it a Hold).
 """
 import pathlib
 import sys
