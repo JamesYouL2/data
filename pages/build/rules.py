@@ -40,9 +40,10 @@ HEAVY, LIGHT = "Sell: heavy", "Sell: light"
 STRONG, WEAK = "Buy: strong", "Buy: weak"
 
 # How hard a call pushes (career_value/analysis/call_strength.py, FP top 340, 2018-21 / 2018-23): per format, the plain
-# sells by group, and the buys by mode and group, each [keep, beat, n, pool used, keep without the best player]. keep =
-# what players like this returned as a share of what the average player at their price did; small groups use a pool
-# ("all RB 26-29", then "all 26-29"), and past that there are too few players to say.
+# sells, and the buys by mode, each keyed "group | price" and stored as [keep, beat, n, key used, keep without the best
+# player]. keep = what players like this returned as a share of what the average player at their price did. Price is
+# the FP rank: 1-50, 51-100, 101-200, 201+. A cell with too few players uses a pool: "all RB 26-29 | 101-200", then
+# "all RB 26-29" (any price), then "all 26-29" (RB / WR / TE; QBs aren't pooled with them); past that there are too few players to say.
 _SJ = Path(__file__).with_name("strength.json")
 STRENGTH = json.loads(_SJ.read_text()) if _SJ.exists() else {}
 HEAVY_BELOW = 0.65              # sells: below this, take any fair offer
@@ -51,17 +52,23 @@ BUY_HOLD_BELOW = 0.9            # buys: below this the buy isn't backed for that
 LENS = {"keep3": "3-year VORP plus value three years on", "keep1": "next season's VORP plus value a year on",
         "prod1": "next season's VORP"}
 BUY_LENS = {"reb": "keep3", "mid": "keep1", "con": "prod1"}
-PRICE = {"Buy with a 3rd": "Costs about a 3rd-round rookie pick. ", "Buy with a 4th": "Costs about a 4th-round rookie pick. "}
 
 
-def age_class(x, ctx):
+def price_bucket(r):
+    """FP overall rank -> 1-50, 51-100, 101-200, 201+ (unranked counts as 201+)"""
+    if r is None or (isinstance(r, float) and math.isnan(r)):
+        return "201+"
+    return "1-50" if r <= 50 else "51-100" if r <= 100 else "101-200" if r <= 200 else "201+"
+
+
+def age_class(x, ctx=None):
     a = x.age
-    return ("rookie" if x.dy == ctx["ROOKIE"] else "25-" if not pd.isna(a) and a < 26 else "30+" if not pd.isna(a) and a >= 30
-            else "26-29")
+    return ("rookie" if ctx and x.dy == ctx["ROOKIE"] else "25-" if not pd.isna(a) and a < 26
+            else "30+" if not pd.isna(a) and a >= 30 else "26-29")
 
 
-def lookup(tab, g, pos, ac):
-    for k in (g, f"all {pos} {ac}" if ac else None, f"all {ac}" if ac else None):
+def lookup(tab, g, pos, ac, pb):
+    for k in (f"{g} | {pb}", f"all {pos} {ac} | {pb}", f"all {pos} {ac}", f"all {ac}" if pos != "QB" else None):
         if k in tab:
             return tab[k]
     return None
@@ -70,52 +77,53 @@ def lookup(tab, g, pos, ac):
 AGES = {"rookie": "rookies", "25-": "25 or younger", "26-29": "26-29", "30+": "30+"}
 
 
-def _pool(e, g):
-    if e[3] == g:
-        return ""
-    parts = e[3].split()[1:]
+def _who(e, g, pb):
+    """'Players like this (FP 101-200)' or, for a pool, which players it is"""
+    at = f"FP {pb}"
+    if e[3] == f"{g} | {pb}":
+        return f"Players like this ({at})"
+    key, _, price = e[3].partition(" | ")
+    parts = key.split()[1:]
     if len(parts) == 2:
         who = f"rookie {parts[0]}s" if parts[1] == "rookie" else f"{parts[0]}s {AGES[parts[1]]}"
     else:
         who = "rookies" if parts[0] == "rookie" else f"players {AGES[parts[0]]}"
-    return f"Too few past players in this group, so this is all {who} with this call ({e[2]}). "
+    where = f" at {at}" if price else " at any price"
+    return f"Too few past players like this at his price, so this is all {who}{where} with this call ({e[2]}). They"
 
 
-def strength(f, g, pos, ac=None):
+def strength(f, g, pos, ac, pb):
     """(Sell: heavy or Sell: light, why prefix) for a plain Sell in group g"""
-    e = lookup(STRENGTH.get(f, {}).get("sell", {}), g, pos, ac)
+    e = lookup(STRENGTH.get(f, {}).get("sell", {}), g, pos, ac, pb)
     if e is None:
         return LIGHT, "Too few past players like this to say how hard to sell: sell at the market price. "
     k, b, _, _, solo = e
-    pct, beat, pre = f"{100 * k:.0f}%", f"{100 * b:.0f}%", _pool(e, g)
+    pct, beat, who = f"{100 * k:.0f}%", f"{100 * b:.0f}%", _who(e, g, pb)
+    said = f"{who} returned {pct} of what the average player at their price did ({LENS['keep3']}), and {beat} beat it"
     if k < HEAVY_BELOW:
-        return HEAVY, (pre + f"Players like this returned {pct} of what the average player at their price did ({LENS['keep3']}), "
-                       f"and {beat} beat it: take any reasonable offer, even below market. ")
+        return HEAVY, said + ": take any reasonable offer, even below market. "
     if k < 1 or solo < 1:
         hits = (f" One hit lifts the group; without it, {100 * solo:.0f}%." if k >= 1 else "")
-        return LIGHT, (pre + f"Players like this returned {pct} of what the average player at their price did ({LENS['keep3']}), "
-                       f"and {beat} beat it.{hits} Sell at the market price, hold if no one pays it. ")
-    return LIGHT, (pre + f"Players like this returned {pct} of what the average player at their price did ({LENS['keep3']}), "
-                   f"and {beat} beat it, so selling is a close call: sell only at the market price. ")
+        return LIGHT, said + f".{hits} Sell at the market price, hold if no one pays it. "
+    return LIGHT, said + ", so selling is a close call: sell only at the market price. "
 
 
-def buy_strength(f, mode, g, pos, ac, act):
+def buy_strength(f, mode, g, pos, ac, pb):
     """(Buy: strong, Buy: weak or Hold, why prefix) for any Buy call in mode reb / mid / con"""
-    e = lookup(STRENGTH.get(f, {}).get("buy", {}).get(mode, {}), g, pos, ac)
-    price = PRICE.get(act, "")
+    e = lookup(STRENGTH.get(f, {}).get("buy", {}).get(mode, {}), g, pos, ac, pb)
     if e is None:
-        return WEAK, price + "Too few past players like this to say how hard to buy: buy at the market price, not above. "
+        return WEAK, "Too few past players like this to say how hard to buy: buy at the market price, not above. "
     k, b, _, _, solo = e
     lens = LENS[BUY_LENS[mode]]
-    pct, beat, pre = f"{100 * k:.0f}%", f"{100 * b:.0f}%", _pool(e, g)
+    pct, beat, who = f"{100 * k:.0f}%", f"{100 * b:.0f}%", _who(e, g, pb)
     if k < BUY_HOLD_BELOW:
-        return HOLD, (pre + f"Buys like this returned only {pct} of what the average player at their price did ({lens}): "
+        return HOLD, (f"{who} returned only {pct} of what the average player at their price did ({lens}): "
                       "not worth the market price. Keep him if you have him. ")
     if k >= STRONG_AT and solo >= 1:
-        return STRONG, (price + pre + f"Players like this returned {pct} of what the average player at their price did ({lens}), "
+        return STRONG, (f"{who} returned {pct} of what the average player at their price did ({lens}), "
                         f"{100 * solo:.0f}% even without the best one: pay the market price, or a little more. ")
     hits = f" Much of that is one hit; without it, {100 * solo:.0f}%." if k >= 1 and solo < 1 else ""
-    return WEAK, (price + pre + f"Players like this returned {pct} of what the average player at their price did ({lens}), "
+    return WEAK, (f"{who} returned {pct} of what the average player at their price did ({lens}), "
                   f"and {beat} beat it.{hits} Buy at the market price or below, not above. ")
 
 
@@ -201,7 +209,10 @@ def base_calls(x, f, ctx):
         if pos == "QB":
             if a >= 36:
                 w = f"QBs 34+ keep producing, but at {a:.0f} retirement ends it: a 1-2 season asset. " + hist
-                return ("QB 36+, win-now", (SELL if bd != "U" else CUT, w),
+                if not sf and bd != "U":            # call_strength.py: 1QB keep3 1.43, 1.13 without the best
+                    w = ("1QB QBs 36+ kept returning more than the average player at their price (Brady, Rodgers): play "
+                         "him out. ") + w
+                return ("QB 36+, win-now", (SELL if sf and bd != "U" else HOLD if bd != "U" else CUT, w),
                         (HOLD if t != "bench" else CUT, w))
             if t in ("elite", "top"):
                 cheap = pd.notna(pr) and pd.notna(prodr) and pr >= prodr + 6
@@ -211,7 +222,9 @@ def base_calls(x, f, ctx):
             if t == "starter":               # qb_sells.py: 2/3+ beat their price in 3 years, both formats
                 w = "Starting QBs 30+ beat their price: 67-78% returned more than the average player at their price. " + hist
                 return ("QB 30+, mid-tier", (HOLD, w), (BUY if sf and bd in ("D3", "D34", "D4", "U") else HOLD, w))
-            return ("QB 30+, backup", (SELL if bd in ("A", "B", "C", "D3") else CUT, hist),
+            if sf and bd in ("A", "B", "C", "D3"):  # call_strength.py: SF keep3 1.45, 1.09 without the best
+                hist = "Superflex backup QBs 30+ returned more than the average player at their price. " + hist
+            return ("QB 30+, backup", ((HOLD if sf else SELL) if bd in ("A", "B", "C", "D3") else CUT, hist),
                     (HOLD if sf and bd != "U" else CUT, ("Bye-week / injury cover. " if sf else "") + hist))
         if v3 >= 40:
             w = "Value is front-loaded, a 2-year window. " + hist
@@ -246,8 +259,9 @@ def base_calls(x, f, ctx):
                 w = "1QB QBs 26-29 priced top 100 hold value (rank ~33-94 two years on)."
                 return ("QB 26-29", (HOLD, w), (HOLD, w))
             if bd in ("C", "D3", "D34"):
-                w = "1QB QBs 26-29 priced 101-215 returned 11-32 VORP over 3 yrs and fall to ~#210-220 next May."
-                return ("QB 26-29", (SELL, w), con_prod(SELL, w))
+                w = ("1QB QBs 26-29 priced 101-239 returned more than the average player at their price over 3 years, "
+                     "even without the best one (call_strength.py): keep him.")
+                return ("QB 26-29", (HOLD, w), (HOLD, w))
             if bd == "D4":
                 w = "1QB QBs 26-29 at a 4th-round price: 44 VORP over 3 yrs, 33% had a top-6 season (Mayfield, Goff)."
                 return ("QB 26-29, 4th-round price", (BUY4, w), (BUY4, w))
@@ -407,13 +421,13 @@ def classify(x, f, ctx, split=True):
 
     if not split:                                   # the analyses score the calls before this split
         return g, (ra, rw), (ca, cw), mid
-    ac = age_class(x, ctx)
+    ac, pb = age_class(x, ctx), price_bucket(getattr(x, f"r_{f}"))
 
     def push(mode, act, why):                       # how hard: Sell heavy / light, Buy strong / weak / hold
         if act == SELL:
-            a, pre = strength(f, g, pos, ac)
+            a, pre = strength(f, g, pos, ac, pb)
         elif kind(act) == "buy":
-            a, pre = buy_strength(f, mode, g, pos, ac, act)
+            a, pre = buy_strength(f, mode, g, pos, ac, pb)
         else:
             return act, why
         return a, pre + why
@@ -484,7 +498,7 @@ def situational(x, f, call):
         if not out and rp is not None and rp <= line and (kind(act) == "sell" or act in (CUT, LOTTO)):
             return USE, f"FantasyPros ranks him {x.position}{f0(rp)} for the rest of the season: start him through your playoffs, then: {act.lower()}."
         if not out and act == USE and (rp is None and getattr(x, "gone", False) is True or rp is not None and rp > 2 * line):
-            return strength(f, g, x.position)[0], (("FantasyPros no longer ranks him for the rest of the season" if rp is None else
+            return strength(f, g, x.position, age_class(x), price_bucket(r))[0], (("FantasyPros no longer ranks him for the rest of the season" if rp is None else
                            f"FantasyPros ranks him only {x.position}{f0(rp)} for the rest of the season") + ": not a starter, so sell now.")
         return act, ""
     (ca, cros), (ma, mros) = ros(ca), ros(ma)
