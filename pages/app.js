@@ -29,10 +29,12 @@ function call(sid, fmt, mode) {
   const p = D.players[sid];
   if (!p) return null;
   const r = D.rules[fmt === "sf" ? p.c2 : p.c1];
-  const [grp, ra, rw, ca, cw, rn, cn] = r;
-  return mode === "c" ? { grp, act: ca, why: cw, note: cn, other: ra, otherLbl: "Rebuilding" }
-    : { grp, act: ra, why: rw, note: rn, other: ca, otherLbl: "Contending" };
+  const [grp, ra, rw, ca, cw, rn, cn, ma, mw, mn] = r;
+  const all = { m: [ma, mw, mn], c: [ca, cw, cn], r: [ra, rw, rn] };
+  const [act, why, note] = all[mode] || all.m;
+  return { grp, act, why, note, others: Object.keys(MODES).filter((k) => k !== mode).map((k) => [MODES[k], all[k][0]]) };
 }
+const MODES = { m: "Default", c: "Contending", r: "Rebuilding" };
 
 // ---------- trade market (FantasyCalc), injuries, rest of season ----------
 const OUT = new Set(["IR", "PUP", "Out", "Sus", "DNR", "NA"]);
@@ -112,14 +114,15 @@ async function loadLeague(id) {
     $("leagueName").textContent = `${league.name} · ${league.season} · ${rosters.length} teams`;
     $("controls").hidden = false;
     status("");
-    pickTeam(Number($("team").value), saved.modes?.[$("team").value]);
+    pickTeam(Number($("team").value), saved.modes2?.[$("team").value]);
   } catch (e) {
     status(e.message === "not found" ? `No Sleeper league with ID ${id}.` : `Couldn't load the league: ${e.message}`, true);
   }
 }
 
-// Suggest contending for the top half of the league: by record and points for once games are played,
-// otherwise by roster strength at the current FantasyPros prices.
+// Where each team stands: by record and points for once games are played, otherwise by roster strength at the
+// current FantasyPros prices. The top half are the likely buyers of this-season production. It no longer picks
+// your mode: Default (the middle call) fits most teams.
 function suggestModes() {
   const rs = state.rosters, played = rs.some((r) => pf(r) > 0);
   const fmt = state.autoFmt;
@@ -146,14 +149,15 @@ function savePrefs() {
   const k = `prefs:${id}`, cur = JSON.parse(localStorage.getItem(k) || "{}");
   cur.roster = state.roster.roster_id;
   cur.fmt = state.fmt;
-  cur.modes = { ...(cur.modes || {}), [state.roster.roster_id]: state.mode };
+  delete cur.modes;                     // saved before the Default mode existed: mostly the old auto-suggestion
+  cur.modes2 = { ...(cur.modes2 || {}), [state.roster.roster_id]: state.mode };
   localStorage.setItem(k, JSON.stringify(cur));
   history.replaceState(null, "", `#league=${id}&team=${state.roster.roster_id}`);
 }
 
 function pickTeam(rid, mode) {
   state.roster = state.rosters.find((r) => r.roster_id === rid) || state.rosters[0];
-  state.mode = mode || state.suggested[state.roster.roster_id]?.mode || "r";
+  state.mode = MODES[mode] ? mode : "m";
   render();
 }
 
@@ -189,7 +193,7 @@ function table(rows, opts = {}) {
   const head = `<tr><th>Player</th>${opts.owner ? "<th>Team</th>" : ""}<th>Price</th><th>${D.meta.season} PPR/game · now</th><th>Call</th><th>Why</th></tr>`;
   const body = rows.map(({ sid, c, owner, ownerHint, tags }) => {
     const x = playerCells(sid, state.fmt);
-    const other = c && c.other !== c.act ? `<div class="other">${c.otherLbl}: ${esc(c.other)}</div>` : "";
+    const other = (c?.others || []).filter(([, a]) => a !== c.act).map(([l, a]) => `<div class="other">${l}: ${esc(a)}</div>`).join("");
     const tg = [...x.tags, ...(tags || []).map((t) => ({ t }))].map((t) => `<span class="tag ${t.cls || ""}">${esc(t.t)}</span>`).join("");
     return `<tr><td><span class="nm">${x.name}</span>${tg}<div class="meta">${x.meta}</div></td>` +
       (opts.owner ? `<td class="meta">${esc(owner)}${ownerHint ? `<div>${esc(ownerHint)}</div>` : ""}</td>` : "") +
@@ -204,7 +208,11 @@ function render() {
   setSeg("mode", mode); setSeg("fmt", fmt);
   $("team").value = roster.roster_id;
   const sug = state.suggested[roster.roster_id];
-  $("modeHint").textContent = sug ? `Suggested: ${sug.mode === "c" ? "contending" : "rebuilding"} (${ordinal(sug.place)} of ${state.rosters.length} by ${sug.by}).` : "";
+  $("modeHint").textContent = (sug ? `${ordinal(sug.place)} of ${state.rosters.length} by ${sug.by}. ` : "") + {
+    m: "Default fits most teams: keep your starters, sell fading players who aren't starting.",
+    c: "Contending: like Default, but buys more for this season.",
+    r: "Rebuilding: for teams playing for year 4 and later. Sells fading players even if they start for you.",
+  }[mode];
   $("fmtHint").textContent = `League settings say ${state.autoFmt === "sf" ? "superflex" : "1QB"}.`;
   savePrefs();
 
@@ -242,15 +250,15 @@ function render() {
   // Uses the FantasyCalc rest-of-season value against its dynasty value, both in this format.
   const nowRows = [], buyers = state.rosters.filter((r) => r.roster_id !== roster.roster_id && state.suggested[r.roster_id]?.mode === "c");
   const lean = (sid) => { const p = D.players[sid], m = p && mkt(p, fmt); return m && m[3] && m[3] <= 100 && healthy(p) ? m : null; };
-  if (mode === "c") {
+  if (mode !== "r") {
     $("nowTitle").textContent = "Win-now targets";
-    $("nowHint").textContent = "Healthy players on other teams whose rest-of-season value is high for their dynasty price: production you can add cheaply. Rebuilding owners are the likeliest sellers.";
+    $("nowHint").textContent = "Healthy players on other teams whose rest-of-season value is high for their dynasty price: production you can add cheaply. Owners in the bottom half are the likeliest sellers.";
     for (const r of state.rosters) {
       if (r.roster_id === roster.roster_id) continue;
       const sg = state.suggested[r.roster_id];
       for (const sid of rosterPlayers(r)) {
         const m = lean(sid);
-        if (m && m[2] >= 1.1 * m[1]) nowRows.push({ sid, c: call(sid, fmt, mode), owner: teamName(r), ownerHint: sg?.mode === "r" ? "likely rebuilding" : "", k: m[2] / m[1] });
+        if (m && m[2] >= 1.1 * m[1]) nowRows.push({ sid, c: call(sid, fmt, mode), owner: teamName(r), ownerHint: sg?.mode === "r" ? "bottom half" : "", k: m[2] / m[1] });
       }
     }
   } else {
@@ -263,7 +271,7 @@ function render() {
     }
   }
   nowRows.sort((a, b) => b.k - a.k);
-  $("now").innerHTML = D.meta.market ? table(nowRows.slice(0, 15), { owner: mode === "c" }) : `<p class="hint">No trade-market data in this build.</p>`;
+  $("now").innerHTML = D.meta.market ? table(nowRows.slice(0, 15), { owner: mode !== "r" }) : `<p class="hint">No trade-market data in this build.</p>`;
 
   // free agents
   const fa = [];
@@ -286,7 +294,7 @@ $("load").addEventListener("submit", (e) => { e.preventDefault(); loadInput($("l
 $("leaguePick").addEventListener("change", (e) => e.target.value && loadLeague(e.target.value));
 $("team").addEventListener("change", (e) => {
   const rid = Number(e.target.value), saved = JSON.parse(localStorage.getItem(`prefs:${state.league.league_id}`) || "{}");
-  pickTeam(rid, saved.modes?.[rid]);
+  pickTeam(rid, saved.modes2?.[rid]);
 });
 $("mode").addEventListener("click", (e) => { const v = e.target.dataset?.v; if (v) { state.mode = v; render(); } });
 $("fmt").addEventListener("click", (e) => { const v = e.target.dataset?.v; if (v) { state.fmt = v; render(); } });

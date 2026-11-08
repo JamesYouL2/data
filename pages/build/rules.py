@@ -2,7 +2,9 @@
 career_value/README.md sections 6 and 12, plus the deep-roster, pick-price and 30+ analyses).
 
 classify(x, f, ctx) takes one player row and a format ("1qb" or "sf") and returns
-(group, (rebuilder action, why), (contender action, why)). ctx carries ROOKIE (latest rookie class) and LOOK
+(group, (rebuilder action, why), (contender action, why), (default action, why)). The default ("middle") call and the
+contender rule that a fading player the rebuilder sells is sold unless he's starting now come from
+career_value/analysis/middle_mode.py. ctx carries ROOKIE (latest rookie class) and LOOK
 (the 30+ history lookup from old_lookup.json).
 """
 import math
@@ -30,6 +32,24 @@ def ageband(a):
 BUY, BUY3, BUY4, HOLD, HOLDF, LOTTO, SELLH, SELL, SELL3, SELL4, USE, CUT = (
     "Buy", "Buy with a 3rd", "Buy with a 4th", "Hold", "Hold to February", "Lottery ticket", "Sell high now", "Sell",
     "Sell for a 3rd", "Sell for a 4th", "Use, then sell", "Cut")
+STASH, BUYLOW, SELLHEALTHY = "Stash", "Buy low (injured)", "Sell when healthy"
+
+
+def kind(a):
+    """Buy* -> buy, Hold* / Stash -> hold, Use -> use, Sell* -> sell, Lottery -> lotto, Cut -> cut"""
+    if not a:
+        return "none"
+    return ("buy" if a.startswith("Buy") else "hold" if a.startswith("Hold") or a == STASH else "use" if a == USE
+            else "sell" if a.startswith("Sell") else "lotto" if a == LOTTO else "cut" if a == CUT else "none")
+
+
+def producing(x, f, ctx):
+    """(PPG positional rank at or inside the starter line, that rank). Until anyone has 4 games this season
+    (ctx EARLY), last season's rank stands in."""
+    rk = x.prk
+    if pd.isna(rk) and ctx.get("EARLY"):
+        rk = getattr(x, "prk_last", float("nan"))
+    return bool(pd.notna(rk) and rk <= START[f][x.position]), rk
 
 
 def band(r):
@@ -43,8 +63,8 @@ def f0(x):
     return "n/a" if x is None or (isinstance(x, float) and math.isnan(x)) else f"{x:.0f}"
 
 
-def classify(x, f, ctx):
-    """-> (group, (reb action, why), (con action, why))"""
+def base_calls(x, f, ctx):
+    """The backtested calls: (group, (reb action, why), (con action, why)), before classify's contender rule."""
     ROOKIE, look = ctx["ROOKIE"], ctx["LOOK"]
     pos, a, r, pr, rd = x.position, x.age, getattr(x, f"r_{f}"), getattr(x, f"pr_{f}"), x.rd
     sf = f == "sf"
@@ -52,13 +72,13 @@ def classify(x, f, ctx):
     rookie = x.dy == ROOKIE
     young = (not rookie) and a < 26
     early = rd <= 3
-    prod = pd.notna(x.prk) and x.prk <= START[f][pos]
+    prod, prk = producing(x, f, ctx)
     prodr = x.prod_rank
     cap = "NFL R1-3" if early else "NFL R4+/UDFA"
 
     def con_prod(act, why):                       # contenders keep whoever is starting for them now
         if prod and act in (SELL, SELL3, SELL4, CUT):
-            return (USE, f"Producing now ({pos}{f0(x.prk)} by PPG). Start him through the playoffs, then: {act.lower()}. " + why)
+            return (USE, f"Producing now ({pos}{f0(prk)} by PPG). Start him through the playoffs, then: {act.lower()}. " + why)
         return (act, why)
 
     if math.isnan(a) and not rookie:
@@ -79,7 +99,7 @@ def classify(x, f, ctx):
             if bd in ("A", "B", "C"):
                 w = "Rookie RB prices peak in November and Day-2+ RBs trail their price: sell into the peak."
                 return (f"Rookie RB, NFL R{rd:.0f}", (SELLH, w), con_prod(SELLH, w) if not prod else
-                        (HOLD, f"Producing now ({pos}{f0(x.prk)}). " + w))
+                        (HOLD, f"Producing now ({pos}{f0(prk)}). " + w))
             w = "Day-3 rookie RBs at 4th-round prices: Chase Brown and Kyren Williams came from here; most return nothing."
             return (f"Rookie RB, {cap}", (LOTTO, w), (LOTTO, w))
         if rd >= 5 and bd in ("D4", "U"):
@@ -272,9 +292,40 @@ def classify(x, f, ctx):
     return (f"Young TE, {cap}", (CUT, w), con_prod(CUT, w))
 
 
+def classify(x, f, ctx):
+    """-> (group, (reb action, why), (con action, why), (default action, why))
+
+    Contender: a player the rebuilder sells and the contender would hold is used through the playoffs and then sold
+    if he's starting now, else sold now. Default (the middle mode): the same; Hold where rebuilders sell and
+    contenders buy; the contender's Buy where rebuilders hold or buy too; otherwise the contender call if he's
+    starting now, else the rebuilder call. In the middle_mode.py league sim this beat the old contender calls over
+    seasons 1-3 at every projected finish and gave up little in season 1."""
+    g, (ra, rw), (ca, cw) = base_calls(x, f, ctx)
+    prod, rk = producing(x, f, ctx)
+    pos, line = x.position, START[f][x.position]
+    kr, kc = kind(ra), kind(ca)
+    if kr == "sell" and kc == "hold":
+        if prod:
+            ca, cw = USE, f"Producing now ({pos}{f0(rk)} by PPG). Start him through the playoffs, then: {ra.lower()}. " + rw
+        else:
+            now = "no PPG rank yet (under 4 games)" if pd.isna(rk) else f"{pos}{f0(rk)} by PPG"
+            ca, cw = ra, f"Not a starter now ({now}; starters are {pos}1-{line}), so sell before his price falls. " + rw
+    elif kr == "sell" and kc == "use" and not prod:
+        ca, cw = ra, rw
+    kc = kind(ca)
+    if ra == ca:
+        mid = (ra, cw if prod else rw)
+    elif kr == "sell" and kc == "buy":
+        mid = (HOLD, f"Rebuilders should {ra.lower()} and contenders {ca.lower()}: in between, keep him. " + cw)
+    elif kc == "buy" and kr in ("hold", "buy"):
+        mid = (ca, cw)
+    else:
+        mid = (ca, cw) if prod else (ra, rw)
+    return g, (ra, rw), (ca, cw), mid
+
+
 # ---------- market, injury and rest-of-season notes (not backtested) ----------
 OUT_STATUSES = ("IR", "PUP", "Out", "Sus", "DNR", "NA")
-STASH, BUYLOW, SELLHEALTHY = "Stash", "Buy low (injured)", "Sell when healthy"
 
 
 def gap(r, m):
@@ -288,11 +339,12 @@ def gap(r, m):
 
 
 def situational(x, f, call):
-    """Adjust a backtested call for the trade market (FantasyCalc), injuries (Sleeper) and rest-of-season value.
+    """Adjust the backtested calls for the trade market (FantasyCalc), injuries (Sleeper) and rest-of-season value.
 
-    Returns (group, reb action, reb why, con action, con why, reb note, con note). The notes say what moved and why;
-    none of these adjustments come from the backtests."""
-    g, (ra, rw), (ca, cw) = call
+    Returns (group, reb action, reb why, con action, con why, reb note, con note, default action, default why,
+    default note). The notes say what moved and why; none of these adjustments come from the backtests. The default
+    call is adjusted like the contender call: both care about this season."""
+    g, (ra, rw), (ca, cw), (ma, mw) = call
     r, m = getattr(x, f"r_{f}"), getattr(x, f"mr_{f}")
     rv = getattr(x, f"rv_{f}")
     inj = x.inj if isinstance(x.inj, str) else None
@@ -305,46 +357,50 @@ def situational(x, f, call):
     season_over = out and bool(gone)
     gp = gap(r, m)
     where = f"FP #{f0(r)}, market #{f0(m)}"
-    rn = cn = ""
     if season_over:
         what = f"{x.position} on {inj}" + (f" ({x.inj_part})" if isinstance(x.inj_part, str) else "") + " and off the rest-of-season rankings"
+
+        def sell_later():
+            return SELLHEALTHY, f"{what}. Selling now takes an injury discount ({where}); sell once he's playing again."
         if ra in (HOLD, HOLDF, BUY, BUY3, BUY4) and gp == "less":
             ra, rn = BUYLOW, (f"{what}. The market has marked him down ({where}). Contenders who need help now will sell: "
                               "buy if the injury isn't career-threatening.")
-        elif ra.startswith("Sell") or ra == SELLH:
-            ra, rn = SELLHEALTHY, f"{what}. Selling now takes an injury discount ({where}); sell once he's playing again."
+        elif kind(ra) == "sell":
+            ra, rn = sell_later()
         else:
             rn = f"{what} ({where})."
-        if ca in (HOLD, HOLDF, BUY, BUY3, BUY4):
-            ca, cn = STASH, (f"{what}: no help to a title run this year. Keep him for next year if you have the IR slot; "
-                             f"trading him now sells at an injury discount ({where}).")
-        elif ca == USE:
-            ca, cn = SELL, f"{what}, so there's nothing left to use. The long-term call is to sell."
-        else:
-            cn = f"{what} ({where})."
-        return (g, ra, rw, ca, cw, rn, cn)
-    # contenders: rest-of-season role. FP's ROS positional rank decides whether he starts for you the rest of this year.
+
+        def now(act):
+            if act in (HOLD, HOLDF, BUY, BUY3, BUY4):
+                return STASH, (f"{what}: no help this season. Keep him for next year if you have the IR slot; "
+                               f"trading him now sells at an injury discount ({where}).")
+            if kind(act) in ("sell", "use"):
+                return sell_later()
+            return act, f"{what} ({where})."
+        (ca, cn), (ma, mn) = now(ca), now(ma)
+        return (g, ra, rw, ca, cw, rn, cn, ma, mw, mn)
+    # contender / default: rest-of-season role. FP's ROS positional rank decides whether he starts for you this year.
     rp = getattr(x, "ros_p", None)
     rp = None if rp is None or (isinstance(rp, float) and math.isnan(rp)) else rp
     line = START[f][x.position]
-    ros_note = ""
-    if not out and rp is not None and rp <= line and ca in (SELL, SELL3, SELL4, SELLH, CUT, LOTTO):
-        ros_note = f"FantasyPros ranks him {x.position}{f0(rp)} for the rest of the season: start him through your playoffs, then: {ca.lower()}."
-        ca = USE
-    elif not out and ca == USE and (rp is None and getattr(x, "gone", False) is True or rp is not None and rp > 2 * line):
-        ros_note = ("FantasyPros no longer ranks him for the rest of the season" if rp is None else
-                    f"FantasyPros ranks him only {x.position}{f0(rp)} for the rest of the season") + ": not a starter, so sell now."
-        ca = SELL
-    if gp == "more":
-        def more(act):
+
+    def ros(act):
+        if not out and rp is not None and rp <= line and act in (SELL, SELL3, SELL4, SELLH, CUT, LOTTO):
+            return USE, f"FantasyPros ranks him {x.position}{f0(rp)} for the rest of the season: start him through your playoffs, then: {act.lower()}."
+        if not out and act == USE and (rp is None and getattr(x, "gone", False) is True or rp is not None and rp > 2 * line):
+            return SELL, (("FantasyPros no longer ranks him for the rest of the season" if rp is None else
+                           f"FantasyPros ranks him only {x.position}{f0(rp)} for the rest of the season") + ": not a starter, so sell now.")
+        return act, ""
+    (ca, cros), (ma, mros) = ros(ca), ros(ma)
+
+    def mkt_note(act):
+        if gp == "more":
             if act.startswith("Sell") or act in (CUT, USE, LOTTO):
                 return f"The trade market pays more than the rankings ({where}): sell at the market price."
             if act.startswith("Hold"):
                 return f"The trade market pays more than the rankings ({where}): sell if someone offers that."
             return f"The trade market prices him above the rankings ({where}): buying at market price costs more."
-        rn, cn = more(ra), more(ca)
-    elif gp == "less":
-        def less(act):
+        if gp == "less":
             if act.startswith("Buy"):
                 return f"The trade market is cheaper than the rankings ({where}): buy at the market price."
             if act.startswith("Hold"):
@@ -353,13 +409,12 @@ def situational(x, f, call):
             if act.startswith("Sell") or act == USE:
                 return f"The trade market has already marked him down ({where}): you'll get less than the rankings suggest."
             return f"Market #{f0(m)}, FP #{f0(r)}."
-        rn, cn = less(ra), less(ca)
-    if ros_note:
-        cn = (ros_note + " " + cn).strip()
-    if out and not season_over:
-        ros = getattr(x, "ros_r", None)
+        return ""
+    rn, cn, mn = mkt_note(ra), (cros + " " + mkt_note(ca)).strip(), (mros + " " + mkt_note(ma)).strip()
+    if out:
+        rr = getattr(x, "ros_r", None)
         tag = (f"Currently {inj}" + (f" ({x.inj_part})" if isinstance(x.inj_part, str) else "")
-               + (f"; FP rest-of-season #{f0(ros)}" if ros is not None and not math.isnan(ros) else "")
-               + (", so little help this season" if ros is not None and not math.isnan(ros) and ros > 150 else "") + ".")
-        rn, cn = (tag + " " + rn).strip(), (tag + " " + cn).strip()
-    return (g, ra, rw, ca, cw, rn, cn)
+               + (f"; FP rest-of-season #{f0(rr)}" if rr is not None and not math.isnan(rr) else "")
+               + (", so little help this season" if rr is not None and not math.isnan(rr) and rr > 150 else "") + ".")
+        rn, cn, mn = ((tag + " " + n).strip() for n in (rn, cn, mn))
+    return (g, ra, rw, ca, cw, rn, cn, ma, mw, mn)
