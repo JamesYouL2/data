@@ -24,6 +24,28 @@ Findings (2026-11, action calls that failed on the later half):
 - 1QB "RB 30+, fading" Cut (2.03 / 0.68) stays: the 201-300 ones all returned 0 (14 of 14; 9 of 9 in superflex); the
   holdout gain is two waiver-level RBs past 300 (Cordarrelle Patterson 2020, Jerick McKinnon 2021) on prices near 0.
 - Superflex: no action call fails.
+
+Bucket audit (2026-11): every call group against "young: keep unless a sale returns more; old: contenders buy,
+rebuilders sell". Each candidate change ran through the league sim (middle_mode.py) and was kept only if the gain held
+in both the 2018-20 and the 2021-24 cohorts (sim deltas per team, clustered by league):
+- Adopted: 1QB contender Buy on "Young WR, NFL R1-3" 101-200 (prod1 1.58 / 1.41 without the best, n=57). Contending
+  and Default value 3 years on +65-93; by cohort, Contending +73 / +72, Default +80 / +52. Year-1 titles rose only in
+  2018-20 (+2.3 / 0.0).
+- Adopted: superflex rebuilder Buy on rookie WRs 51-100 (keep3 1.62 / 1.31, n=12). Default value 3 years on +160 /
+  +167 and titles yrs 1-3 +7.8 / +2.3 by cohort; Rebuilding 5-year titles +13 (2018-20), value 3 years on -14 ± 27 in
+  2021-24.
+- Dropped, gain only in 2018-20: 1QB rookie WRs 51-100 rebuilder Buy (Rebuilding value 3 years on +17 / -107, Default
+  +169 / -28); 1QB Day-2+ rookie RBs 101-200 rebuilder Buy (+159 / -325); selling young Day-3 WRs 101-200 (both
+  formats; Default and Contending -52 to -71 in 2021-24). The rookie RB Hold shows here as "fails (buy?)" (keep3
+  1.61 / 1.71); the sim says the Buy lost on the later cohorts.
+- Both adopted buys hold on the holdout half (1QB Contending prod1 1.50, Default keep1 1.32; superflex Rebuilding
+  keep3 1.28, n=8).
+- Dropped outright: superflex rebuilder Buy on young Day-3 WRs 201-300; Lottery tickets on young TEs 201-300 (about
+  neutral).
+- Exceptions kept: contender Cut on fading 30+ RBs / WRs / TEs 201-300 (prod1 2.15 on WRs is Thielen 2022 and Beasley
+  2019, 2 of 26); contender Hold, not Buy, on old 1QB QBs (later half 0.56 / 0.00).
+- Superflex RBs and WRs: no group besides rookie WRs 51-100 beat its price in both halves; the young NFL R1-3 WRs
+  101-200 that 1QB contenders now buy had prod1 1.09 / 0.98 in superflex.
 """
 import pathlib
 import sys
