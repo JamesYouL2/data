@@ -300,7 +300,7 @@ $("foot").innerHTML = `Prices: FantasyPros dynasty rankings via <a href="https:/
   (m.ros ? `Rest of season (ROS) and next game: FantasyPros ROS PPR and weekly rankings via DynastyProcess, ${esc(m.fp_date)}; the ROS overall rank is 1QB. ` : "") +
   `Injuries: <a href="https://sleeper.com">Sleeper</a>. ` +
   `The market, injury and rest-of-season adjustments (the notes under each call, and the Stash, Buy low and Sell when healthy calls) are judgment calls, not backtested. ` +
-  `<a href="https://github.com/JamesYouL2/dynasty-buy-sell">Source and method</a>.`;
+  `<a href="https://github.com/JamesYouL2/data/tree/career-value/pages">Source and method</a>.`;
 
 (function init() {
   const h = new URLSearchParams(location.hash.slice(1));

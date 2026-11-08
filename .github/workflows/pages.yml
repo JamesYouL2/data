@@ -1,11 +1,12 @@
-name: Build and deploy
+name: Build and deploy pages
 
 on:
   schedule:
-    - cron: "17 11 * * *"   # daily, 11:17 UTC (after nflverse's overnight stats update)
+    - cron: "17 11 * * *"   # daily, 11:17 UTC (after nflverse's overnight stats update); runs from the default branch only
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [master, career-value]
+    paths: ["pages/**", ".github/workflows/pages.yml"]
 
 permissions:
   contents: read
@@ -19,6 +20,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: pages
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -33,7 +37,7 @@ jobs:
         run: cp index.html app.js style.css _site/
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: _site
+          path: pages/_site
 
   deploy:
     needs: build

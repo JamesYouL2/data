@@ -10,7 +10,7 @@ against 1QB and superflex replacement levels) and nflverse players.parquet for b
 completes:
 
   uv run --with pandas --with pyarrow python -I tools/make_lookup.py \
-      ~/data/career_value/data/player_seasons.parquet ~/data/career_value/raw/players/players.parquet
+      ../career_value/data/player_seasons.parquet ../career_value/raw/players/players.parquet
 """
 import json
 import sys
