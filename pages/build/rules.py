@@ -31,9 +31,8 @@ def ageband(a):
 
 
 # ---------- rules ----------
-BUY, BUY3, BUY4, HOLD, HOLDF, LOTTO, SELLH, SELL, SELL3, SELL4, USE, CUT = (
-    "Buy", "Buy with a 3rd", "Buy with a 4th", "Hold", "Hold to February", "Lottery ticket", "Sell high now", "Sell",
-    "Sell for a 3rd", "Sell for a 4th", "Use, then sell", "Cut")
+BUY, HOLD, HOLDF, LOTTO, SELLH, SELL, USE, CUT = (
+    "Buy", "Hold", "Hold to February", "Lottery ticket", "Sell high now", "Sell", "Use, then sell", "Cut")
 STASH, BUYLOW, SELLHEALTHY = "Stash", "Buy low (injured)", "Sell when healthy"
 HEAVY, LIGHT = "Sell: heavy", "Sell: light"
 
@@ -145,10 +144,10 @@ def producing(x, f, ctx):
 
 
 def band(r):
-    if r is None or math.isnan(r):
-        return "U"
-    return "A" if r <= 50 else "B" if r <= 100 else "C" if r <= 150 else "D3" if r <= 215 else "D34" if r <= 239 \
-        else "D4" if r <= 300 else "U"
+    """FP overall rank -> price band. Past 300 is waiver level."""
+    if r is None or math.isnan(r) or r > 300:
+        return "300+"
+    return "1-50" if r <= 50 else "51-100" if r <= 100 else "101-200" if r <= 200 else "201-300"
 
 
 def f0(x):
@@ -156,11 +155,18 @@ def f0(x):
 
 
 def base_calls(x, f, ctx):
-    """The backtested calls: (group, (reb action, why), (con action, why)), before classify's contender rule."""
+    """The backtested calls: (group, (reb action, why), (con action, why)), before classify's contender rule.
+
+    Price bands are FP overall rank 1-50, 51-100, 101-200, 201-300 and 300+ (waiver level). Where the old rookie-pick
+    bands (101-150, 151-215, 216-239, 240-300) merged with different calls, the call comes from
+    career_value/analysis/rebucket.py: the rebuilder's by 3-year return (keep3), the contender's by next season's
+    VORP (prod1), each against the average player at the same price."""
     ROOKIE, look = ctx["ROOKIE"], ctx["LOOK"]
     pos, a, r, pr, rd = x.position, x.age, getattr(x, f"r_{f}"), getattr(x, f"pr_{f}"), x.rd
     sf = f == "sf"
     bd = band(r)
+    ranked = bd != "300+"
+    top200 = bd in ("1-50", "51-100", "101-200")
     rookie = x.dy == ROOKIE
     young = (not rookie) and a < 26
     early = rd <= 3
@@ -168,8 +174,11 @@ def base_calls(x, f, ctx):
     prodr = x.prod_rank
     cap = "NFL R1-3" if early else "NFL R4+/UDFA"
 
+    def G(fam):
+        return f"{fam}, {bd}"
+
     def con_prod(act, why):                       # contenders keep whoever is starting for them now
-        if prod and act in (SELL, SELL3, SELL4, CUT):
+        if prod and act in (SELL, CUT):
             return (USE, f"Producing now ({pos}{f0(prk)} by PPG). Start him through the playoffs, then: {act.lower()}. " + why)
         return (act, why)
 
@@ -188,14 +197,20 @@ def base_calls(x, f, ctx):
             if rd <= 1:
                 w = "NFL first-round RBs are the only rookie RBs worth their price. RB prices peak in November, so hold unless you get a big offer."
                 return ("Rookie RB, NFL R1", (HOLD, w), (HOLD, w))
-            if bd in ("A", "B", "C"):
+            if bd in ("1-50", "51-100"):
                 w = "Rookie RB prices peak in November and Day-2+ RBs trail their price: sell into the peak."
                 return (f"Rookie RB, NFL R{rd:.0f}", (SELLH, w), con_prod(SELLH, w) if not prod else
                         (HOLD, f"Producing now ({pos}{f0(prk)}). " + w))
-            w = "Day-3 rookie RBs at 4th-round prices: Chase Brown and Kyren Williams came from here; most return nothing."
+            if bd == "101-200":                   # rebucket.py: keep3 1.67 / 1.14, prod1 0.44 / 0.34
+                w = ("Day-2+ rookie RBs priced 101-200 kept their value over 3 years but produced little in year 1. "
+                     "Rebuilders hold to summer; contenders sell into the November peak.")
+                return ("Rookie RB, NFL R2+, 101-200", (LOTTO, w), (SELLH, w) if not prod else
+                        (HOLD, f"Producing now ({pos}{f0(prk)}). " + w))
+            w = "Day-2+ rookie RBs priced 201+: Chase Brown and Kyren Williams came from here; most return nothing."
             return (f"Rookie RB, {cap}", (LOTTO, w), (LOTTO, w))
-        if rd >= 5 and bd in ("D4", "U"):
-            w = "Late rookies ranked 250+ returned ~0 VORP, but 11-22% got a camp-hype price bump: hold to summer, sell into hype."
+        if rd >= 5 and not top200:                # rebucket.py: the line moved from 240 to 200
+            w = ("Late rookies priced 201+ returned almost nothing in year 1, but 11-22% of those ranked 250+ got a "
+                 "camp-hype price bump: hold to summer, sell into hype.")
             return (f"Rookie {pos}, NFL R5+/UDFA", (LOTTO, w), (CUT if not prod else HOLD, "Cut if you need the roster spot. " + w))
         w = ("Rookie WRs rise ~9% from now to February." if pos == "WR" else
              "Rookie TEs rise ~26% from now to February; TEs taken in rookie rounds 3-4 returned almost nothing after that." if pos == "TE"
@@ -209,10 +224,10 @@ def base_calls(x, f, ctx):
         if pos == "QB":
             if a >= 36:
                 w = f"QBs 34+ keep producing, but at {a:.0f} retirement ends it: a 1-2 season asset. " + hist
-                if not sf and bd != "U":            # call_strength.py: 1QB keep3 1.43, 1.13 without the best
+                if not sf and ranked:              # call_strength.py: 1QB keep3 1.43, 1.13 without the best
                     w = ("1QB QBs 36+ kept returning more than the average player at their price (Brady, Rodgers): play "
                          "him out. ") + w
-                return ("QB 36+, win-now", (SELL if sf and bd != "U" else HOLD if bd != "U" else CUT, w),
+                return ("QB 36+, win-now", (SELL if sf and ranked else HOLD if ranked else CUT, w),
                         (HOLD if t != "bench" else CUT, w))
             if t in ("elite", "top"):
                 cheap = pd.notna(pr) and pd.notna(prodr) and pr >= prodr + 6
@@ -221,172 +236,182 @@ def base_calls(x, f, ctx):
                 return ("QB 30+, long-term", (BUY if cheap else HOLD, w), (BUY, w))
             if t == "starter":               # qb_sells.py: 2/3+ beat their price in 3 years, both formats
                 w = "Starting QBs 30+ beat their price: 67-78% returned more than the average player at their price. " + hist
-                return ("QB 30+, mid-tier", (HOLD, w), (BUY if sf and bd in ("D3", "D34", "D4", "U") else HOLD, w))
-            if sf and bd in ("A", "B", "C", "D3"):  # call_strength.py: SF keep3 1.45, 1.09 without the best
+                return ("QB 30+, mid-tier", (HOLD, w), (BUY if sf and not top200 else HOLD, w))
+            if sf and top200:                # call_strength.py: SF keep3 1.45, 1.09 without the best
                 hist = "Superflex backup QBs 30+ returned more than the average player at their price. " + hist
-            return ("QB 30+, backup", ((HOLD if sf else SELL) if bd in ("A", "B", "C", "D3") else CUT, hist),
-                    (HOLD if sf and bd != "U" else CUT, ("Bye-week / injury cover. " if sf else "") + hist))
+            elif sf and ranked:              # rebucket.py: SF 201-300 keep3 2.56, 0.10 without the best
+                hist = "Superflex backup QBs 30+ priced 201-300: what they returned rests on one player. " + hist
+            return ("QB 30+, backup", ((HOLD if sf else SELL) if top200 else CUT, hist),
+                    (HOLD if sf and ranked else CUT, ("Bye-week / injury cover. " if sf else "") + hist))
         if v3 >= 40:
             w = "Value is front-loaded, a 2-year window. " + hist
-            return (f"{pos} 30+, 2-year window", (SELL, w), (BUY if bd in ("D3", "D34", "D4", "U") else HOLD, w))
-        w = hist + " Take any 3rd or 4th offered."
-        return (f"{pos} 30+, fading", (SELL if bd in ("A", "B", "C", "D3") else CUT, w),
-                con_prod(SELL if bd in ("A", "B", "C", "D3") else CUT, w))
+            if bd not in ("1-50", "51-100"):     # rebucket.py: WRs priced 101-200 prod1 1.81 / 2.45
+                w += " Priced 101+, players like this out-produced their price the next season."
+            return (f"{pos} 30+, 2-year window", (SELL, w), (BUY if bd not in ("1-50", "51-100") else HOLD, w))
+        if top200:
+            act, w = SELL, hist + " Take any reasonable offer."
+        elif ranked and pos == "TE":               # rebucket.py: TE 201-300 keep3 0.54 / 0.52
+            act, w = SELL, hist + " TEs like this priced 201-300 still returned about half their price: sell if anyone pays."
+        else:                                      # RB 0.00 / 0.00, WR 0.28 / 0.34 (0.03 / 0.08 without the best)
+            act, w = CUT, hist + (" Priced 201-300, RBs and WRs like this returned almost nothing." if ranked else "")
+        return (f"{pos} 30+, fading", (act, w), con_prod(act, w))
     # ---------------- 26-29 ----------------
     if not young:
         if pos == "QB":
             if sf:
-                if bd == "A":
+                if bd == "1-50":
                     w = "Superflex QBs priced top 50 hold their value (median rank a year later: #8)."
-                    return ("QB 26-29, core", (HOLD, w), (HOLD, w))
+                    return (G("QB 26-29"), (HOLD, w), (HOLD, w))
                 if pd.notna(pr) and 13 <= pr <= 28 and pd.notna(prodr) and pr >= prodr + 6 and a >= 28:
                     w = f"28+ QBs priced QB13-28 beat their price by +75 to +123%; priced QB{pr:.0f}, producing like QB{prodr:.0f}."
                     return ("QB 28-29, underpriced", (BUY, w), (BUY, w))
                 if pd.notna(pr) and 13 <= pr <= 20 and a < 28:
                     w = "QBs 25-27 priced QB13-20 returned -44% / -92% / -56% of their price."
                     return ("QB 26-27, priced QB13-20", (SELL, w), con_prod(HOLD, w))
-                if bd in ("B", "C"):
-                    w = "QBs 26-29 priced 51-150 kept producing (170 VORP over 3 yrs at 51-100) but fall to ~#125-150 next May."
-                    return ("QB 26-29", (HOLD, w), (HOLD, w))
-                if bd in ("D3", "D34"):
-                    w = "Superflex QBs 26-29 at a 3rd-round price: 78 VORP over 3 yrs, 60% had a starter season (Mayfield, Darnold)."
-                    return ("QB 26-29, 3rd-round price", (BUY3, w), (BUY3, w))
-                if bd == "D4":
-                    w = "Superflex QBs 26-29 at a 4th-round price: backups, 43% had a starter season, ~7 VORP."
-                    return ("QB 26-29, backup", (CUT, w), (HOLD, w))
-                return ("QB 26-29, unranked", (CUT, "Waiver level."), con_prod(CUT, "Waiver level."))
-            if bd in ("A", "B"):
+                if bd == "51-100":
+                    w = "Superflex QBs 26-29 priced 51-100 kept producing (109 VORP over 3 yrs) but fall to ~#113 next May."
+                    return (G("QB 26-29"), (HOLD, w), (HOLD, w))
+                if bd == "101-200":               # rebucket.py: keep3 2.26 (1.6 without the best), prod1 2.13
+                    w = ("Superflex QBs 26-29 priced 101-200: 86 VORP over 3 yrs, more than twice what the average player "
+                         "at their price returned (Mayfield, Darnold).")
+                    return (G("QB 26-29"), (BUY, w), (BUY, w))
+                if bd == "201-300":               # rebucket.py: keep3 0.61, 0.46 without the best
+                    w = "Superflex QBs 26-29 priced 201-300: backups, ~8 VORP over 3 yrs. Bye-week cover for a contender."
+                    return (G("QB 26-29"), (CUT, w), (HOLD, w))
+                return (G("QB 26-29"), (CUT, "Waiver level."), con_prod(CUT, "Waiver level."))
+            if bd in ("1-50", "51-100"):
                 w = "1QB QBs 26-29 priced top 100 hold value (rank ~33-94 two years on)."
-                return ("QB 26-29", (HOLD, w), (HOLD, w))
-            if bd in ("C", "D3", "D34"):
-                w = ("1QB QBs 26-29 priced 101-239 returned more than the average player at their price over 3 years, "
-                     "even without the best one (call_strength.py): keep him.")
-                return ("QB 26-29", (HOLD, w), (HOLD, w))
-            if bd == "D4":
-                w = "1QB QBs 26-29 at a 4th-round price: 44 VORP over 3 yrs, 33% had a top-6 season (Mayfield, Goff)."
-                return ("QB 26-29, 4th-round price", (BUY4, w), (BUY4, w))
-            return ("QB 26-29, unranked", (CUT, "Waiver level."), con_prod(CUT, "Waiver level."))
+                return (G("QB 26-29"), (HOLD, w), (HOLD, w))
+            if bd == "101-200":
+                w = "1QB QBs 26-29 priced 101-200 returned more than the average player at their price over 3 years: keep him."
+                return (G("QB 26-29"), (HOLD, w), (HOLD, w))
+            if bd == "201-300":                   # rebucket.py: keep3 2.86 (1.74 without the best), prod1 2.80
+                w = ("1QB QBs 26-29 priced 201-300: 23 VORP over 3 yrs, almost three times what the average player at "
+                     "their price returned (Mayfield, Goff).")
+                return (G("QB 26-29"), (BUY, w), (BUY, w))
+            return (G("QB 26-29"), (CUT, "Waiver level."), con_prod(CUT, "Waiver level."))
         if pos == "RB":
-            if bd == "A":
-                w = "RBs 26-29 priced top 50 produce (~220-235 VORP over 3 yrs) but their rank falls from ~#50 to ~#71-83 within 2 years."
-                return ("RB 26-29, core", (SELL, w), (HOLD, w))
-            if bd == "B":
-                w = "RBs priced 51-100 fall to ~#115 next May and ~#190-205 in 2 years."
-                return ("RB 26-29", (SELL, w), (HOLD, w))
-            if bd == "C":
-                w = (f"RBs 26-29 priced 101-150: {'24' if not sf else '51'} VORP over 3 yrs, median rank next May ~#{'226' if not sf else '208'}.")
-                return ("RB 26-29", (SELL3, w), (HOLD, w) if sf else con_prod(SELL3, w))
-            if bd in ("D3", "D34"):
-                w = "RBs 26-29 at a 3rd-round price: 8-11 VORP over 3 yrs, none became top-100. A 4th is worth more."
-                return ("RB 26-29, filler", (SELL3, w), con_prod(SELL4, w))
-            w = "RBs 26-29 ranked 240+: 2-6 VORP over 3 yrs; 75%+ drop out of the top 300 within a year."
-            return ("RB 26-29, filler", (CUT if bd == "U" else SELL4, w), con_prod(CUT, w))
+            if bd == "1-50":
+                w = "RBs 26-29 priced top 50 produce (~195-230 VORP over 3 yrs) but sit at a median ~#52-58 next May."
+                return (G("RB 26-29"), (SELL, w), (HOLD, w))
+            if bd == "51-100":
+                w = "RBs 26-29 priced 51-100 fall to ~#117-127 next May and ~#190-205 in 2 years."
+                return (G("RB 26-29"), (SELL, w), (HOLD, w))
+            if bd == "101-200":
+                w = f"RBs 26-29 priced 101-200: {'15' if not sf else '24'} VORP over 3 yrs, median rank next May ~#{'243' if not sf else '242'}."
+                return (G("RB 26-29"), (SELL, w), (HOLD, w) if sf else con_prod(SELL, w))
+            if bd == "201-300":
+                w = f"RBs 26-29 priced 201-300: {'5' if not sf else '3'} VORP over 3 yrs, median rank next May ~#{'291' if not sf else '267'}."
+                return (G("RB 26-29"), (SELL, w), con_prod(SELL, w))
+            w = "RBs 26-29 ranked past 300: waiver level."
+            return (G("RB 26-29"), (CUT, w), con_prod(CUT, w))
         if pos == "WR":
-            if bd == "A":
-                w = "WRs 26-29 priced top 50: ~214 VORP over 3 yrs; rank falls from ~#40 to ~#75-90 within 2 years."
-                return ("WR 26-29, core", (HOLD if a < 28 else SELL, w), (HOLD, w))
-            if bd == "B":
-                w = "WRs 26-29 priced 51-100: ~72-100 VORP over 3 yrs; rank falls to ~#105 next May, ~#164 in 2 years."
-                return ("WR 26-29", (SELL, w), (HOLD, w))
-            if bd == "C":
-                w = "WRs 26-29 priced 101-150 returned 35-51 VORP over 3 yrs: worth more than a 3rd."
-                return ("WR 26-29", (HOLD, w), (HOLD, w))
-            if bd in ("D3", "D34"):
-                w = "WRs 26-29 at a 3rd-round price: 1-2 VORP over 3 yrs, none became top-100."
-                return ("WR 26-29, filler", (SELL3, w), con_prod(SELL4, w))
-            w = "WRs 26-29 ranked 240+: 0-3 VORP over 3 yrs."
-            return ("WR 26-29, filler", (CUT if bd == "U" else SELL4, w), con_prod(CUT, w))
+            if bd == "1-50":
+                w = "WRs 26-29 priced top 50: ~220 VORP over 3 yrs; median rank next May ~#37-50."
+                return (G("WR 26-29"), (HOLD if a < 28 else SELL, w), (HOLD, w))
+            if bd == "51-100":
+                w = f"WRs 26-29 priced 51-100: ~{'80' if not sf else '138'} VORP over 3 yrs; rank falls to ~#101-106 next May, ~#164 in 2 years."
+                return (G("WR 26-29"), (SELL, w), (HOLD, w))
+            if bd == "101-200":                   # rebucket.py: keep3 0.44 / 0.66, prod1 1.36 / 1.31
+                w = (f"WRs 26-29 priced 101-200: {'14' if not sf else '28'} VORP over 3 yrs, well under what the average "
+                     "player at their price returned, but they out-produced their price next season: contenders keep them.")
+                return (G("WR 26-29"), (SELL, w), (HOLD, w))
+            if bd == "201-300":
+                w = "WRs 26-29 priced 201-300: 1-2 VORP over 3 yrs."
+                return (G("WR 26-29"), (SELL, w), con_prod(SELL, w))
+            w = "WRs 26-29 ranked past 300: waiver level."
+            return (G("WR 26-29"), (CUT, w), con_prod(CUT, w))
         # TE
-        if bd == "A":
-            w = "TEs 26-29 priced top 50: ~104 VORP over 3 yrs, 86% had a top-6 season."
-            return ("TE 26-29, core", (HOLD, w), (HOLD, w))
-        if bd == "B":
-            w = "TEs 26-29 priced 51-100 fall to ~#100 next May and ~#130 in 2 years."
-            return ("TE 26-29", (SELL, w), (HOLD, w))
-        if bd in ("C", "D3"):
-            w = "TEs 26-29 priced 101-215: 13-35 VORP over 3 yrs, 16-42% had a top-6 season."
-            return ("TE 26-29", (HOLD if bd == "C" else SELL, w), (HOLD, w))
-        w = "TEs 26-29 ranked 216+: 0-6 VORP over 3 yrs."
-        return ("TE 26-29, filler", (CUT, w), con_prod(CUT, w))
+        if bd == "1-50":
+            w = "TEs 26-29 priced top 50: ~160-170 VORP over 3 yrs, 86% had a top-6 season."
+            return (G("TE 26-29"), (HOLD, w), (HOLD, w))
+        if bd == "51-100":
+            w = "TEs 26-29 priced 51-100 fall to ~#85-92 next May and ~#130 in 2 years."
+            return (G("TE 26-29"), (SELL, w), (HOLD, w))
+        if bd == "101-200":                       # rebucket.py: keep3 0.74 / 0.60
+            w = "TEs 26-29 priced 101-200: ~15-17 VORP over 3 yrs, under what the average player at their price returned."
+            return (G("TE 26-29"), (SELL, w), (HOLD, w))
+        w = "TEs 26-29 priced 201+: 0-4 VORP over 3 yrs."     # rebucket.py: 201-300 keep3 0.08 1QB, 0.13 SF without the best
+        return (G("TE 26-29"), (CUT, w), con_prod(CUT, w))
     # ---------------- young (25 or younger, not a rookie) ----------------
     if pos == "QB":
         if sf and pd.notna(pr) and pr <= 6 and a < 25:          # qb_sells.py: was Sell; 64% beat their price
             w = ("Young superflex QB1s keep their price: counting what they're still worth three years on, 64% beat the "
                  "average player at their price (Mahomes, Lamar, Herbert).")
             return ("Young QB priced as a QB1", (HOLD, w), (HOLD, w))
-        if bd in ("A", "B"):
+        if bd in ("1-50", "51-100"):
             w = "Young QBs priced top 100 hold their value."
-            return ("Young QB, core", (HOLD, w), (HOLD, w))
-        if sf and early and bd in ("C", "D3", "D34", "D4"):
-            if bd == "C":
-                return (f"Young QB, {cap}", (HOLD, "27 VORP over 3 yrs at ranks 101-150."), (HOLD, "27 VORP over 3 yrs at ranks 101-150."))
-            w = "Young superflex QBs with NFL R1-3 capital ranked 151-250: 68 VORP over 3 yrs, half later ranked top 100 (Jordan Love, Darnold)."
-            return (f"Young QB, {cap}", (BUY, w), (BUY, w))
-        if early and bd in ("C", "D3", "D34"):
-            w = "Young 1QB QBs with NFL R1-3 capital: 23-55 VORP over 3 yrs, 14-15% later ranked top 100."
-            return (f"Young QB, {cap}", (HOLD, w), (HOLD, w))
-        w = "Young QBs ranked 250+ (or without early capital) returned ~0."
-        return (f"Young QB, {cap}", (CUT, w), con_prod(CUT, w))
+            return (G("Young QB"), (HOLD, w), (HOLD, w))
+        if early and bd == "101-200":
+            w = (f"Young QBs with NFL R1-3 capital priced 101-200: {'58' if sf else '48'} VORP over 3 yrs, more than the "
+                 "average player at their price returned.")
+            return (G(f"Young QB, {cap}"), (HOLD, w), (HOLD, w))
+        if sf and early and bd == "201-300":     # rebucket.py: was Buy (151-300); 201-300 returned ~0 (n=6)
+            w = "Young superflex QBs with NFL R1-3 capital priced 201-300: a cheap bet on a starting job, but few have paid off."
+            return (G(f"Young QB, {cap}"), (HOLD, w), (HOLD, w))
+        w = "Young QBs priced 201+ (or without early capital) returned ~0."
+        return (G(f"Young QB, {cap}"), (CUT, w), con_prod(CUT, w))
     if pos == "RB":
-        if bd == "A":
-            w = "Young RBs priced top 50 hold value: rank ~#30-42 next May, ~#51-64 in 2 years."
-            return ("Young RB, core", (HOLD, w), (HOLD, w))
-        if bd == "B":
-            w = "RBs priced 51-100 fall to ~#111-122 next May and ~#194-200 in 2 years."
-            return ("Young RB", (SELL, w), (HOLD, w))
-        if bd == "C":
-            if early:
-                w = ("Young NFL R1-3 RBs priced 101-150: 50 VORP over 3 yrs, 55% had a starter season." if sf else
-                     "Young NFL R1-3 RBs priced 101-150: 12 VORP over 3 yrs, no top-12 seasons, 7% later top-100.")
-                return (f"Young RB, {cap}", (HOLD, w) if sf else (SELL3, w), (HOLD, w) if sf else con_prod(SELL3, w))
-            w = "Young Day-3/UDFA RBs priced 101-150: 32-53 VORP over 3 yrs, 33% later top-100."
-            return (f"Young RB, {cap}", (HOLD, w), (HOLD, w))
-        if bd in ("D3", "D34"):
-            if early:
-                w = "Young NFL R1-3 RBs at a 3rd-round price: 4-7 VORP over 3 yrs. Early picks who fall this far rarely come back."
-                return (f"Young RB, {cap}", (SELL4, w), con_prod(SELL4, w))
-            w = "Young Day-3/UDFA RBs at a 3rd-round price: 25-31 VORP over 3 yrs, 23-24% later top-100 (beats a 3rd-round rookie)."
-            return (f"Young RB, {cap}", (BUY3, w), (BUY3, w))
+        if bd == "1-50":
+            w = "Young RBs priced top 50 hold value: rank ~#28-34 next May, ~#51-64 in 2 years."
+            return (G("Young RB"), (HOLD, w), (HOLD, w))
+        if bd == "51-100":
+            w = "Young RBs priced 51-100 fall to ~#101-135 next May and ~#194-200 in 2 years."
+            return (G("Young RB"), (SELL, w), (HOLD, w))
         if early:
-            w = "Young NFL R1-3 RBs ranked 240+: ~0 VORP."
-            return (f"Young RB, {cap}", (CUT, w), con_prod(CUT, w))
-        w = ("Young Day-3/UDFA RBs ranked 240-300: 13-18 VORP over 3 yrs, almost all from one hit (Kyren Williams, #256)."
-             if bd == "D4" else "Young Day-3/UDFA RB: an opportunity bet. Hold if you have the roster spot.")
-        return (f"Young RB, {cap}", (LOTTO, w), (LOTTO, w))
+            if bd == "101-200":                   # rebucket.py: keep3 0.41 / 0.46
+                w = f"Young NFL R1-3 RBs priced 101-200: {'11' if not sf else '15'} VORP over 3 yrs, under half what the average player at their price returned."
+                return (G(f"Young RB, {cap}"), (SELL, w), con_prod(SELL, w))
+            w = "Young NFL R1-3 RBs priced 201+: ~0-3 VORP over 3 yrs. Early picks who fall this far rarely come back."
+            return (G(f"Young RB, {cap}"), (CUT, w), con_prod(CUT, w))
+        if bd == "101-200":                       # rebucket.py: keep3 1.33 / 1.21; prod1 1.44 (1QB, 1.08 without the best)
+            w = f"Young Day-3/UDFA RBs priced 101-200: {'30' if not sf else '36'} VORP over 3 yrs, more than the average player at their price returned."
+            if not sf:
+                return (G(f"Young RB, {cap}"), (HOLD, w), (BUY, w + " They out-produced their price next season too."))
+            return (G(f"Young RB, {cap}"), (HOLD, w), (HOLD, w))   # sim liked a Buy (rebucket.py); rests on Ekeler
+        w = ("Young Day-3/UDFA RBs priced 201-300: 2-3 VORP over 3 yrs, almost all from one hit (Kyren Williams)."
+             if ranked else "Young Day-3/UDFA RB: an opportunity bet. Hold if you have the roster spot.")
+        return (G(f"Young RB, {cap}"), (LOTTO, w), (LOTTO, w))
     if pos == "WR":
-        if bd == "A":
+        if bd == "1-50":
             w = "The safest asset in dynasty: young WRs priced top 50 sat at median #25 and were still #28 two years later."
-            return ("Young WR, core", (HOLD, w), (HOLD, w))
-        if bd in ("B", "C"):
-            w = "Young WRs priced 51-150: 30-103 VORP over 3 yrs, 20-35% later ranked top 100."
-            return ("Young WR", (HOLD, w), (HOLD, w))
-        if bd in ("D3", "D34"):
-            if early:
-                if sf:
-                    w = "Young NFL R1-3 WRs at a 3rd-round price: 38 VORP over 3 yrs, 21% later top-100 (beats a 3rd-round rookie)."
-                    return (f"Young WR, {cap}", (BUY3, w), (BUY3, w))
-                w = "Young NFL R1-3 WRs at a 3rd-round price: 20 VORP over 3 yrs, 13% later top-100 (about a 3rd-round rookie)."
-                return (f"Young WR, {cap}", (HOLD, w), (HOLD, w))
-            w = "Young Day-3/UDFA WRs at a 3rd-round price: 34-37 VORP over 3 yrs, 60-70% had a starter season, but only 7-10% later top-100."
-            return (f"Young WR, {cap}", (HOLD, w), (BUY3, w))
+            return (G("Young WR"), (HOLD, w), (HOLD, w))
+        if bd == "51-100":
+            w = "Young WRs priced 51-100: 54-103 VORP over 3 yrs, about what the average player at their price returned."
+            return (G("Young WR"), (HOLD, w), (HOLD, w))
+        if bd == "101-200":
+            w = ("Young NFL R1-3 WRs priced 101-200: 32-36 VORP over 3 yrs, about what the average player at their price returned." if early
+                 else "Young Day-3/UDFA WRs priced 101-200: ~19 VORP over 3 yrs; 60-70% had a starter season, but few later ranked top 100.")
+            return (G(f"Young WR, {cap}"), (HOLD, w), (HOLD, w))
         if early:
-            w = "Young NFL R1-3 WRs fallen to 240+: 0-4 VORP over 3 yrs; 10-15% still top-300 a year later."
-            return (f"Young WR, {cap}", (SELL4 if bd == "D4" else CUT, w), con_prod(SELL4 if bd == "D4" else CUT, w))
-        w = ("Young Day-3/UDFA WRs ranked 240-300: 8-9 VORP over 3 yrs, the best price retention in the band (Renfrow, Meyers)."
-             if bd == "D4" else "Young Day-3/UDFA WR: an opportunity bet. Hold if you have the roster spot.")
-        return (f"Young WR, {cap}", (LOTTO, w), (LOTTO, w))
+            if bd == "201-300":                   # rebucket.py: keep3 0.31 / 0.57 (0.10 / 0.20 without the best)
+                w = "Young NFL R1-3 WRs priced 201-300: 3-4 VORP over 3 yrs; early picks who fall this far rarely come back."
+                return (G(f"Young WR, {cap}"), (SELL, w), con_prod(SELL, w))
+            w = "Young NFL R1-3 WRs ranked past 300: ~0 VORP over 3 yrs."
+            return (G(f"Young WR, {cap}"), (CUT, w), con_prod(CUT, w))
+        w = ("Young Day-3/UDFA WRs priced 201-300: 9-13 VORP over 3 yrs, the best price retention in the band (Renfrow, Meyers)."
+             if ranked else "Young Day-3/UDFA WR: an opportunity bet. Hold if you have the roster spot.")
+        return (G(f"Young WR, {cap}"), (LOTTO, w), (LOTTO, w))
     # TE
-    if bd in ("A", "B", "C"):
-        w = "Young TEs priced top 150: 40-99 VORP over 3 yrs."
-        return ("Young TE", (HOLD, w), (HOLD, w))
-    if bd in ("D3", "D34"):
-        w = "Young TEs at a 3rd-round price: 0-3 VORP over 3 yrs. A 4th is worth more."
-        return ("Young TE", (SELL4, w), con_prod(SELL4, w))
-    if not early and bd == "D4":
-        w = "Young Day-3/UDFA TEs at a 4th-round price: 17-21 VORP over 3 yrs, 25% had a top-6 season (Ferguson, Schultz). Small sample."
-        return (f"Young TE, {cap}", (BUY4, w), (BUY4, w))
-    w = "Young TEs ranked 240+ (early-capital ones especially) rarely come back."
-    return (f"Young TE, {cap}", (CUT, w), con_prod(CUT, w))
+    if bd in ("1-50", "51-100"):
+        w = "Young TEs priced top 100: 40-110 VORP over 3 yrs."
+        return (G("Young TE"), (HOLD, w), (HOLD, w))
+    if bd == "101-200":
+        if early:                                 # rebucket.py: keep3 1.39 / 1.10
+            w = "Young NFL R1-3 TEs priced 101-200: 31-34 VORP over 3 yrs, more than the average player at their price returned."
+            return (G(f"Young TE, {cap}"), (HOLD, w), (HOLD, w))
+        w = "Young Day-3/UDFA TEs priced 101-200: ~0 VORP over 3 yrs (12-13 players)."
+        return (G(f"Young TE, {cap}"), (SELL, w), con_prod(SELL, w))
+    if bd == "201-300":
+        if early:                                 # rebucket.py: keep3 1.51 / 2.05 resting on one player; prod1 0.48 / 0.45
+            w = "Young NFL R1-3 TEs priced 201-300: 9-11 VORP over 3 yrs, mostly from one player, and little next season."
+            return (G(f"Young TE, {cap}"), (SELL, w), con_prod(CUT, w))
+        # rebucket.py: keep3 1.32 / 1.68 but 0.06 / 0.07 without the best; prod1 3.04 / 3.30 (1.31 / 1.48 without)
+        w = ("Young Day-3/UDFA TEs priced 201-300: 7-9 VORP over 3 yrs, almost all from one player (Ferguson, Schultz), "
+             "but as a group they out-produced their price next season. Small sample.")
+        return (G(f"Young TE, {cap}"), (SELL, w), (BUY, w))
+    w = "Young TEs ranked past 300 rarely come back."
+    return (G(f"Young TE, {cap}"), (CUT, w), con_prod(CUT, w))
 
 
 def classify(x, f, ctx, split=True):
@@ -431,7 +456,11 @@ def classify(x, f, ctx, split=True):
         else:
             return act, why
         return a, pre + why
-    return g, push("reb", ra, rw), push("con", ca, cw), push("mid", *mid)
+    r, c, m = push("reb", ra, rw), push("con", ca, cw), push("mid", *mid)
+    for side in ("buy", "sell"):                    # Default never buys or sells where neither side does
+        if kind(m[0]) == side and side not in (kind(r[0]), kind(c[0])):
+            m = (HOLD, f"Neither rebuilders nor contenders should {side} him here, so keep him. " + mid[1])
+    return g, r, c, m
 
 
 # ---------- market, injury and rest-of-season notes (not backtested) ----------
