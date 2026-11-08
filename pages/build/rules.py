@@ -366,9 +366,10 @@ def base_calls(x, f, ctx):
             return (G(f"Young RB, {cap}"), (CUT, w), con_prod(CUT, w))
         if bd == "101-200":                       # rebucket.py: keep3 1.33 / 1.21; prod1 1.44 (1QB, 1.08 without the best)
             w = f"Young Day-3/UDFA RBs priced 101-200: {'30' if not sf else '36'} VORP over 3 yrs, more than the average player at their price returned."
-            if not sf:
+            if not sf:                            # league sim: a rebuilder Buy cost 1QB value (641 -> 510)
                 return (G(f"Young RB, {cap}"), (HOLD, w), (BUY, w + " They out-produced their price next season too."))
-            return (G(f"Young RB, {cap}"), (HOLD, w), (HOLD, w))   # sim liked a Buy (rebucket.py); rests on Ekeler
+            # league sim: a rebuilder Buy lifted SF Rebuilding (5-yr titles 23 -> 46). Weak: rests on Ekeler 2018.
+            return (G(f"Young RB, {cap}"), (BUY, w), (HOLD, w))
         w = ("Young Day-3/UDFA RBs priced 201-300: 2-3 VORP over 3 yrs, almost all from one hit (Kyren Williams)."
              if ranked else "Young Day-3/UDFA RB: an opportunity bet. Hold if you have the roster spot.")
         return (G(f"Young RB, {cap}"), (LOTTO, w), (LOTTO, w))
