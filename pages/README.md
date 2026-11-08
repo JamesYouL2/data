@@ -48,9 +48,39 @@ evidence, and the note says when one is used.
   4th" and "Sell for a 3rd / 4th" calls are now plain buys and sells with a strength; each row shows the rookie pick
   closest to the player's market price.
 
+- **Hold or Lottery ticket** is set by price alone. A non-QB kept past FantasyPros rank 200 who isn't producing is a
+  **Lottery ticket**: three in four players priced 201-300 returned under a quarter of their price over 3 years (about
+  half at 101-150). Inside 200 it is **Hold**. QBs (backups kept as bye-week and injury cover) stay Hold at any price.
+
 [qb_sells.py](../career_value/analysis/qb_sells.py) checks every QB call this way, at 1, 3 and 5 years. Five QB sells
 failed and are now holds: young superflex QB1s, starting QBs 30+, 1QB QBs 26-29 priced 101-200, 1QB QBs 36+ and
 superflex backup QBs 30+.
+
+A check of every call group against two rules of thumb (young players: keep unless a sale returns more; old players:
+contenders buy, rebuilders sell) added two buys, both kept only because the league simulation gained in both the
+2018-20 and the 2021-24 classes:
+
+- 1QB contenders buy young NFL R1-3 WRs priced 101-200: they returned 1.58 times their price in next season's VORP.
+- Superflex rebuilders buy rookie WRs priced 51-100: they returned 1.62 times their price over 3 years.
+
+Three other changes gained in the simulation only through the 2018-20 classes and lost on 2021-24, so they were
+dropped:
+
+- 1QB rebuilders buying Day-2+ rookie RBs priced 101-200.
+- Selling young Day-3 WRs priced 101-200.
+- Buying 1QB rookie WRs priced 51-100.
+
+Buying superflex Day-3 WRs priced 201-300 lost outright.
+
+The exceptions to the rules of thumb stay:
+
+- Contenders cut fading 30+ RBs and WRs priced 201-300 (nearly all returned nothing; the averages rest on one or two
+  players).
+- Old 1QB QBs that contenders hold aren't buys (they failed on the later classes).
+- Rebuilders sell young TEs priced 201-300.
+
+In superflex, the market prices RBs and WRs about right. Apart from rookie WRs, no RB or WR group returned more than
+its price in both halves of the sample, which is why the superflex buys are mostly QBs.
 
 Players aged 30+ are compared with how similar players produced over the next 3 and 5 seasons from 1999 on
 ([build/old_lookup.json](build/old_lookup.json)).
