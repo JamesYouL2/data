@@ -91,6 +91,7 @@ p["ppg"] = p.gsis_id.map(cs.ppg)
 p["prk"] = p.gsis_id.map(cs.prk)
 p["prk_last"] = p.gsis_id.map(ls.prk)
 p["prod_rank"] = p[["prk", "prk_last"]].mean(axis=1)                  # blend: half a season alone is noisy
+ctx["EARLY"] = bool(p.prk.isna().all())                              # before week 4: last season stands in for "producing now"
 
 # ---------- trade market (FantasyCalc) and injuries (Sleeper) ----------
 def load_json(name):

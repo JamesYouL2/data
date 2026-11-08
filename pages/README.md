@@ -3,7 +3,7 @@
 **Site:** https://jamesyoul2.github.io/data/
 
 Enter a Sleeper league ID (or a username), pick a team, and get a buy, hold, sell or cut call for every player on the
-roster. The call depends on whether you are rebuilding or contending. The page also lists buy targets on other teams
+roster, in three modes: **Default** (most teams), **Contending** and **Rebuilding**. The page also lists buy targets on other teams
 and free agents worth a roster spot.
 
 Everything runs in the browser. The page reads your league straight from the public
@@ -25,7 +25,24 @@ The rules in [build/rules.py](build/rules.py) come from the
 Players aged 30+ are compared with how similar players produced over the next 3 and 5 seasons from 1999 on
 ([build/old_lookup.json](build/old_lookup.json)).
 
-A contender keeps anyone who is starting for them now ("Use, then sell"), even if a rebuilder should sell him.
+### Three modes
+
+The backtests give two calls per player, one for a rebuilder and one for a contender. The page shows three modes,
+built in `classify()`:
+
+- **Rebuilding:** the rebuilder call. It sells anything that loses value, even a starter.
+- **Default:** the contender call while a player starts for you, the rebuilder call once he doesn't. "Starting" means
+  points per game at or inside the starter line: QB12 (QB24 in superflex), RB24, WR30, TE12. Before week 4, last
+  season's rank counts. If the rebuilder sells and the contender holds, Default plays him through your playoffs and
+  then sells ("Use, then sell"), or sells now if he isn't starting. If rebuilders sell and contenders buy, it holds. If
+  the contender buys and the rebuilder holds or buys, it buys.
+- **Contending:** Default's rule for players the rebuilder sells, plus the contender's buys and holds everywhere else.
+
+[career_value/analysis/middle_mode.py](../career_value/analysis/middle_mode.py) tests the three in a 12-team league
+simulation. Teams draft the FantasyPros top 340 (2018-24 classes), play real PPR scoring for the next five seasons, and
+follow each mode's calls with equal-price trades. The old contender calls kept fading players who weren't starting.
+Default and the new Contending won more titles over seasons 1-3 than those old calls. Rebuilding kept the most dynasty
+value and is the call for a team playing for year four and later.
 
 ## In-season adjustments (not backtested)
 
@@ -36,13 +53,13 @@ calls, and each one shows as a note under the call:
   trades, and the rookie pick closest in value. When the market is 12+ spots (or 25%) away from FantasyPros, a note says
   whether that makes it a better time to buy or to sell.
 - **Injuries** come from Sleeper. A player who is out and has dropped off the FantasyPros rest-of-season rankings is
-  treated as out for the season. A contender gets **Stash** instead of Hold or Buy. A rebuilder gets **Buy low
-  (injured)** if the market has marked him down, or **Sell when healthy** instead of Sell. Other injured players get a
+  treated as out for the season. Default and Contending get **Stash** instead of Hold or Buy. A rebuilder gets **Buy low
+  (injured)** if the market has marked him down. Every mode gets **Sell when healthy** instead of Sell. Other injured players get a
   note with their rest-of-season rank.
 - **Rest of season.** FantasyPros ROS and weekly rankings show each player's role this year and next week's matchup and
-  projection. A contender's Sell or Cut becomes "Use, then sell" if FantasyPros ranks him a starter for the rest of the
+  projection. In Default and Contending, a Sell or Cut becomes "Use, then sell" if FantasyPros ranks him a starter for the rest of the
   season. A "Use, then sell" becomes Sell if he is ranked below twice the starter line.
-- **This season section.** Contenders get *win-now targets*: healthy players on other teams whose FantasyCalc
+- **This season section.** Default and Contending get *win-now targets*: healthy players on other teams whose FantasyCalc
   rest-of-season value is high for their dynasty value. Rebuilders get *sell to contenders*: their own players worth
   more this year than in dynasty terms, plus the teams likeliest to buy.
 
