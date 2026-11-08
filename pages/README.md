@@ -41,7 +41,8 @@ built in `classify()`:
 [career_value/analysis/middle_mode.py](../career_value/analysis/middle_mode.py) tests the three in a 12-team league
 simulation. Teams draft the FantasyPros top 340 (2018-24 classes), play real PPR scoring for the next five seasons, and
 follow each mode's calls with equal-price trades. The old contender calls kept fading players who weren't starting.
-Default and the new Contending won more titles over seasons 1-3 than those old calls. Rebuilding kept the most dynasty
+Default and the new Contending won more titles over seasons 1-3 than those old calls. Contending won the most in
+season 1; Default won about as many over seasons 1-3 and kept far more dynasty value. Rebuilding kept the most dynasty
 value and is the call for a team playing for year four and later.
 
 ## In-season adjustments (not backtested)
