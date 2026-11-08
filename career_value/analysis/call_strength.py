@@ -3,7 +3,7 @@
     Sell: heavy (take any fair offer, even below market) / Sell: light (market price, else hold).
 
 Players: FP dynasty top 340 per cohort (May snapshots after season t; market_residuals.prepare, as middle_mode.py),
-since most buys are priced 151-300. The site's calls are rebuilt from each player's features at t (rules.classify
+since most buys are priced 101-300. The site's calls are rebuilt from each player's features at t (rules.classify
 with split=False: before this script's split). What holding him returns over h years:
     hold_h = VORP over seasons t+1..t+h + his value at t+h,
 value = expected 3-year VORP at that FP rank (isotonic fit on log rank; 0 once he drops out of the top 340). A fair
@@ -88,12 +88,12 @@ def horizons(hs=(1, 3)):
     return H
 
 
-def calls(x):
-    """the site's calls for each row (before the strength split), plus its age class"""
+def features(x):
+    """yield (row index, the site's feature row, ctx) for each FP row: ranks within the cohort's top POOL, age, NFL
+    round, rookie flag, PPG rank in season t and the t / t-1 blend, as build_data.py"""
     pr = prod_ranks()
     look = {(r["f"], r["pos"], r["ab"], r["tier"]): (r["v3"], r["v5"], r["y5"], r["n"])
             for r in json.loads((HERE.parent / "pages" / "build" / "old_lookup.json").read_text())["rows"]}
-    out = []
     for t, g in x.groupby("t"):
         f = pd.DataFrame({
             "position": g.position, "age": g.age, f"r_{F}": g.mkt_rank.rank(method="first"),
@@ -103,10 +103,16 @@ def calls(x):
         })
         f["prod_rank"] = pd.concat([f.prk, g.gsis_id.map(pr[6].get(t - 1, {}))], axis=1).mean(axis=1)
         ctx = {"ROOKIE": t + 1, "LOOK": look}
-        for i, row in zip(g.index, f.itertuples(index=False)):
-            grp, (ra, _), (ca, _), (ma, _) = R.classify(row, F, ctx, split=False)
-            r = getattr(row, f"r_{F}")
-            out.append((i, grp, ra, ca, ma, R.band(r), R.price_bucket(r), R.age_class(row, ctx)))
+        yield from ((i, row, ctx) for i, row in zip(g.index, f.itertuples(index=False)))
+
+
+def calls(x):
+    """the site's calls for each row (before the strength split), plus its age class"""
+    out = []
+    for i, row, ctx in features(x):
+        grp, (ra, _), (ca, _), (ma, _) = R.classify(row, F, ctx, split=False)
+        r = getattr(row, f"r_{F}")
+        out.append((i, grp, ra, ca, ma, R.band(r), R.price_bucket(r), R.age_class(row, ctx)))
     c = pd.DataFrame(out, columns=["i", "grp", "reb", "con", "mid", "band", "pb", "acls"]).set_index("i")
     return x.join(c)
 
