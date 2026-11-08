@@ -205,8 +205,10 @@ def base_calls(x, f, ctx):
                         (HOLD, f"Producing now ({pos}{f0(prk)}). " + w))
             if bd == "101-200":                   # rebucket.py: keep3 1.67 / 1.14, prod1 0.44 / 0.34
                 w = ("Day-2+ rookie RBs priced 101-200 kept their value over 3 years but produced little in year 1. "
-                     "Rebuilders hold to summer; contenders sell into the November peak.")
-                return ("Rookie RB, NFL R2+, 101-200", (LOTTO, w), (SELLH, w) if not prod else
+                     + ("Rebuilders hold to summer; contenders sell into the November peak." if sf else
+                        "Hold to summer, contenders too: the 2020-21 rookies returned more than their price over 3 years."))
+                # holdout.py: the 1QB contender Sell high now failed on 2020-21 (keep3 1.61 / 1.71 without the best)
+                return ("Rookie RB, NFL R2+, 101-200", (LOTTO, w), (SELLH if sf else LOTTO, w) if not prod else
                         (HOLD, f"Producing now ({pos}{f0(prk)}). " + w))
             w = "Day-2+ rookie RBs priced 201+: Chase Brown and Kyren Williams came from here; most return nothing."
             return (f"Rookie RB, {cap}", (LOTTO, w), (LOTTO, w))
