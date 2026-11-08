@@ -224,6 +224,18 @@ def base_calls(x, f, ctx):
             # league sim, superflex: Default value 3 years on +154-176 and 5-year titles +16-18 points, in both cohort halves
             return (f"Rookie {pos}", (BUY, "Superflex rookie WRs priced 51-100 returned 1.6 times their price over 3 years. " + w),
                     (HOLDF, w + " Sell after February if you need vets."))
+        if not sf and pos == "TE" and bd == "101-200":  # call_strength.py: keep3 1.84 / 0.96 without the best (n=8)
+            # league sim, 1QB ranks 4-8: Rebuilding value 3 years on +63 / +53, 2018-20 / 2021-24 cohorts; superflex
+            # gained only in 2018-20 (+108 / +2), so it holds. A contender Buy added little (prod1 0.81).
+            return (f"Rookie {pos}", (BUY, "1QB rookie TEs priced 101-200 returned 1.8 times their price over 3 years, and 5 "
+                                           "of 8 beat it (Hockenson, Kmet, Freiermuth, McBride). " + w),
+                    (HOLDF, w + " Sell after February if you need vets."))
+        if pos == "TE" and bd == "201-300":    # call_strength.py: keep3 0.54 / 0.18 without the best (1QB), 0.74 / 0.29 (SF)
+            # league sim, ranks 4-8: Rebuilding value 3 years on +74 / +111 (1QB) and +31 / +57 (SF), 2018-20 / 2021-24.
+            # Contenders sell too unless he's producing (classify's contender rule): +19 / +28 (1QB), 0 / -8 (SF)
+            return (f"Rookie {pos}", (SELL, "Rookie TEs priced 201-300 returned about 54-74% of their price over 3 years; "
+                                            "under a third without Dawson Knox. " + w + " Sell then, or sooner at market price."),
+                    (HOLDF, w + " Sell after February if you need vets."))
         return (f"Rookie {pos}", (HOLDF, w), (HOLDF, w + " Sell after February if you need vets."))
     # ---------------- 30+ ----------------
     if a >= 30:
@@ -380,8 +392,14 @@ def base_calls(x, f, ctx):
             # league sim: a rebuilder Buy lifted SF Rebuilding, but only through the 2018-20 cohorts (Ekeler, Pollard);
             # it lost in 2021-24 (holdout.py), so rebuilders hold
             return (G(f"Young RB, {cap}"), (HOLD, w), (HOLD, w))
-        w = ("Young Day-3/UDFA RBs priced 201-300: 2-3 VORP over 3 yrs, almost all from one hit (Kyren Williams)."
-             if ranked else "Young Day-3/UDFA RB: an opportunity bet. Hold if you have the roster spot.")
+        if ranked:                            # call_strength.py: keep3 0.53 / 0.29 without the best (1QB), 0.56 / 0.39 (SF)
+            # league sim, ranks 4-8: Rebuilding value 3 years on +43 / +35 (1QB) and +52 / +45 (SF), Default +57-115,
+            # 2018-20 / 2021-24 cohorts. Contenders keep the ticket.
+            w = ("Young Day-3/UDFA RBs priced 201-300 returned about half their price over 3 years, and the 2020-21 ones "
+                 "almost nothing: sell for a pick at market price.")
+            return (G(f"Young RB, {cap}"), (SELL, w), (LOTTO, "Young Day-3/UDFA RBs priced 201-300: about half their price "
+                                                              "over 3 years. Keep only while he might start for you."))
+        w = "Young Day-3/UDFA RB: an opportunity bet. Hold if you have the roster spot."
         return (G(f"Young RB, {cap}"), (LOTTO, w), (LOTTO, w))
     if pos == "WR":
         if bd == "1-50":
