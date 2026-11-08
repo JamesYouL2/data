@@ -33,6 +33,36 @@ BUY, BUY3, BUY4, HOLD, HOLDF, LOTTO, SELLH, SELL, SELL3, SELL4, USE, CUT = (
     "Buy", "Buy with a 3rd", "Buy with a 4th", "Hold", "Hold to February", "Lottery ticket", "Sell high now", "Sell",
     "Sell for a 3rd", "Sell for a 4th", "Use, then sell", "Cut")
 STASH, BUYLOW, SELLHEALTHY = "Stash", "Buy low (injured)", "Sell when healthy"
+HEAVY, LIGHT = "Sell: heavy", "Sell: light"
+
+# How hard a plain Sell sells (career_value/analysis/sell_strength.py, FP top 200, 2018-21): 3-year VORP plus value
+# three years on, as a share of the same for the average player at his price. Groups with 5+ players.
+KEEP = {
+    "1qb": {"WR 30+, 2-year window": .33, "TE 30+, fading": .39, "RB 26-29": .40, "TE 26-29": .58,
+            "WR 30+, fading": .62, "Young RB": .69, "RB 30+, fading": .80, "WR 26-29, core": .82,
+            "RB 26-29, core": .82, "WR 26-29": .86, "QB 26-29": 1.19, "QB 30+, mid-tier": 1.26, "QB 36+, win-now": 1.58},
+    "sf": {"WR 30+, 2-year window": .30, "TE 30+, fading": .38, "RB 26-29": .38, "TE 26-29": .62,
+           "WR 26-29, core": .70, "WR 30+, fading": .76, "RB 26-29, core": .85, "Young RB": .87, "WR 26-29": 1.02,
+           "QB 36+, win-now": 1.08, "Young QB priced as a QB1": 1.17, "QB 30+, mid-tier": 1.23, "QB 30+, backup": 1.32,
+           "RB 30+, fading": 1.49},
+}
+HEAVY_BELOW = 0.65
+
+
+def strength(f, g):
+    """(Sell: heavy or Sell: light, why prefix) for a plain Sell in group g"""
+    k = KEEP[f].get(g)
+    if k is None:
+        return LIGHT, "Too few past players like this to say how hard to sell: sell at the market price. "
+    pct = f"{100 * k:.0f}%"
+    if k < HEAVY_BELOW:
+        return HEAVY, (f"Players like this returned {pct} of what the average player at their price did (3-year VORP "
+                       "plus value three years on): take any reasonable offer, even below market. ")
+    if k < 1:
+        return LIGHT, (f"Players like this returned {pct} of what the average player at their price did (3-year VORP "
+                       "plus value three years on): sell at the market price, hold if no one pays it. ")
+    return LIGHT, (f"By 3-year VORP plus value three years on, players like this did as well as the average player at "
+                   f"their price ({pct}): sell only at the market price. ")
 
 
 def kind(a):
@@ -321,7 +351,13 @@ def classify(x, f, ctx):
         mid = (ca, cw)
     else:
         mid = (ca, cw) if prod else (ra, rw)
-    return g, (ra, rw), (ca, cw), mid
+
+    def heavy_light(act, why):
+        if act != SELL:
+            return act, why
+        a, pre = strength(f, g)
+        return a, pre + why
+    return g, heavy_light(ra, rw), heavy_light(ca, cw), heavy_light(*mid)
 
 
 # ---------- market, injury and rest-of-season notes (not backtested) ----------
@@ -385,10 +421,10 @@ def situational(x, f, call):
     line = START[f][x.position]
 
     def ros(act):
-        if not out and rp is not None and rp <= line and act in (SELL, SELL3, SELL4, SELLH, CUT, LOTTO):
+        if not out and rp is not None and rp <= line and (kind(act) == "sell" or act in (CUT, LOTTO)):
             return USE, f"FantasyPros ranks him {x.position}{f0(rp)} for the rest of the season: start him through your playoffs, then: {act.lower()}."
         if not out and act == USE and (rp is None and getattr(x, "gone", False) is True or rp is not None and rp > 2 * line):
-            return SELL, (("FantasyPros no longer ranks him for the rest of the season" if rp is None else
+            return strength(f, g)[0], (("FantasyPros no longer ranks him for the rest of the season" if rp is None else
                            f"FantasyPros ranks him only {x.position}{f0(rp)} for the rest of the season") + ": not a starter, so sell now.")
         return act, ""
     (ca, cros), (ma, mros) = ros(ca), ros(ma)

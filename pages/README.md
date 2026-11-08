@@ -22,6 +22,13 @@ The rules in [build/rules.py](build/rules.py) come from the
 - **NFL draft capital:** rounds 1-3, or round 4 or later and undrafted.
 - **Production:** PPR points per game this season. For players 30+, it is blended with last season.
 
+Plain sells come in two strengths, from
+[career_value/analysis/sell_strength.py](../career_value/analysis/sell_strength.py). For each group of players with a Sell
+call (FP top 200, 2018-21), it adds three years of VORP to what they were worth three years on and compares that with
+the average player at the same price, which is what a fair trade gets you on average. **Sell: heavy** groups returned
+under 65% of that: take any reasonable offer. **Sell: light** groups returned 65% or more: sell at the market price, and
+hold if no one pays it. Most QB sells came out at or above 100% by this measure, so they are light.
+
 Players aged 30+ are compared with how similar players produced over the next 3 and 5 seasons from 1999 on
 ([build/old_lookup.json](build/old_lookup.json)).
 
