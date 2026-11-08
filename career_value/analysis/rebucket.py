@@ -30,8 +30,8 @@ as for the rebuilder (prod1 said Sell where keep3 said Cut); "Young QB, NFL R1-3
 (all six returned ~0, but the cell had one call). Rookie TEs R5+ in SF: 2 players.
 League sim (middle_mode.py) checks of the result: a rebuilder Buy on "Young RB, NFL R4+/UDFA" 101-200 (the rule's
 Hold: keep3 1.22 SF, 0.81 without Ekeler 2018) lifted superflex Rebuilding's 5-year titles at ranks 4-8 from 23.0 to
-45.7 points and value 3 years on from 516 to 537, but cost 1QB value (641 -> 510). It stays Hold: one player's season
-is not enough to move a call. Undoing the other big changes (rebuilders hold SF QBs 26-29 at 101-200; Buy SF young NFL R1-3 WRs at
+45.7 points and value 3 years on from 516 to 537 (Default 17.6 -> 27.2), but cost 1QB value (641 -> 510). So it is a
+superflex rebuilder Buy, weak (call_strength.py) because it rests on that one season; 1QB holds. Undoing the other big changes (rebuilders hold SF QBs 26-29 at 101-200; Buy SF young NFL R1-3 WRs at
 101-200; hold young NFL R1-3 RBs at 101-200, young NFL R1-3 WRs at 201-300, WRs 26-29 at 101-200) did worse.
 In-sample: the calls are picked on the same 2018-23 cohorts they are scored on.
 """

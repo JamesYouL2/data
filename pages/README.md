@@ -19,8 +19,8 @@ The rules in [build/rules.py](build/rules.py) come from the
 - **Price:** overall FantasyPros dynasty rank, in 1QB or superflex, in bands of 1-50, 51-100, 101-200 and 201-300.
   Past 300 is waiver level. The bands used to follow rookie-pick prices (151-239 a 3rd, 240-300 a 4th). Where merging
   them joined bands with different calls, [rebucket.py](../career_value/analysis/rebucket.py) picked the call from
-  what the whole new band returned: Rebuilding by the three-year measure below, Contending by next season's VORP. A pick
-  is never moved to rest on one player's season, even where the league simulation liked it (the docstring lists them).
+  what the whole new band returned: Rebuilding by the three-year measure below, Contending by next season's VORP. The league
+  simulation then checked the biggest picks; the docstring lists the one call it changed.
 - **Age entering next season:** rookie, 25 or younger, 26-29, or 30+.
 - **NFL draft capital:** rounds 1-3, or round 4 or later and undrafted.
 - **Production:** PPR points per game this season. For players 30+, it is blended with last season.
