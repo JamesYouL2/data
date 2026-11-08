@@ -51,17 +51,26 @@ evidence, and the note says when one is used.
 - **Hold or Lottery ticket** is set by price alone. A non-QB kept past FantasyPros rank 200 who isn't producing is a
   **Lottery ticket**: three in four players priced 201-300 returned under a quarter of their price over 3 years (about
   half at 101-150). Inside 200 it is **Hold**. QBs (backups kept as bye-week and injury cover) stay Hold at any price.
+  No lottery ticket is a buy: rookie WRs priced 201-300 returned 3-4 times their price, and superflex Day-3 rookie RBs
+  2.7 times, but in the league simulation buying them gained on the 2018-20 classes (McLaurin, Diontae Johnson) and
+  lost on 2021-24. Two are sells for rebuilders, since selling them gained in both halves: young Day-3 RBs priced
+  201-300 (about half their price over 3 years; the 2020-21 ones almost nothing) and rookie TEs priced 201-300 (54-74%,
+  under a third without Dawson Knox). Contenders keep the RBs as Lottery tickets and sell the TEs too unless one is
+  producing.
 
 [qb_sells.py](../career_value/analysis/qb_sells.py) checks every QB call this way, at 1, 3 and 5 years. Five QB sells
 failed and are now holds: young superflex QB1s, starting QBs 30+, 1QB QBs 26-29 priced 101-200, 1QB QBs 36+ and
 superflex backup QBs 30+.
 
 A check of every call group against two rules of thumb (young players: keep unless a sale returns more; old players:
-contenders buy, rebuilders sell) added two buys, both kept only because the league simulation gained in both the
+contenders buy, rebuilders sell) added three buys, each kept only because the league simulation gained in both the
 2018-20 and the 2021-24 classes:
 
 - 1QB contenders buy young NFL R1-3 WRs priced 101-200: they returned 1.58 times their price in next season's VORP.
 - Superflex rebuilders buy rookie WRs priced 51-100: they returned 1.62 times their price over 3 years.
+- 1QB rebuilders buy rookie TEs priced 101-200: they returned 1.84 times their price over 3 years, and 5 of 8 beat it.
+  Only 8 players, the thinnest record behind any buy. In superflex the gain came only from the 2018-20 classes, so
+  superflex holds.
 
 Three other changes gained in the simulation only through the 2018-20 classes and lost on 2021-24, so they were
 dropped:
