@@ -556,6 +556,11 @@ def gap(r, m):
 #   25 or younger, ROS positional rank a quarter better than dynasty: buy. Best gain per trade in both formats.
 #   Rookies with that gap: buy for rebuilders only. Value gained, this season's title odds didn't.
 # Players off the ROS list get no signal: mostly out for the year, and the Stash / Sell when healthy calls cover them.
+# Two groups don't get the sells (inseason_movers.csv, off-list dropped, value kept vs the price; not simmed on their own):
+#   QBs beat their price with the signal too: all, 1 / 3 years on, 1.07 / 1.34 in 1QB, 1.03 / 1.16 in superflex (non-QBs 0.83 /
+#   0.78, 0.85 / 0.79). Contenders still sell hurt ones, for this season: rest of season 0.33, 0.47.
+#   Hurt RB / WR / TE 25 or younger are about fairly priced: 0.91 / 0.92 in 1QB, 0.97 / 1.01 in superflex (26+: 0.59 /
+#   0.59, 0.54 / 0.51). Contenders still sell them: rest of season 0.36, 0.34.
 # A quarter is one place near the top of the list (#3 to #4), and small moves there had no edge: top-36 players down 5
 # ROS places or fewer kept their value like players with no signal (1 year on, 1.07 vs 1.04 in 1QB, 1.09 vs 1.02 in
 # superflex), as did 1QB fallers down 2 dynasty places or fewer. The sim didn't have these floors.
@@ -583,8 +588,8 @@ def signals(x, f, ctx):
     pre, now = (x.do_pre, x.do_now) if f == "1qb" else (x.dsf_pre, x.dsf_now)
     if fell(pre, now, SIG_FLOOR_DYN):
         s["faller"] = (pre, now)
-        s["hurt"] = x.inj in SIG_HURT
     rookie = x.dy == ctx["ROOKIE"]
+    s["hurt"], s["young"] = x.inj in SIG_HURT, bool(rookie or x.age - 1 < 26)
     # the backtests' age is at the September of the season played; x.age is at next September
     if (rookie or x.age - 1 < 26) and getattr(x, f"pr_{f}") / x.ros_p >= SIG_MOVE:
         s["gap"], s["rookie"] = (getattr(x, f"pr_{f}"), x.ros_p), bool(rookie)
@@ -598,12 +603,17 @@ TAKE_BACK = {"reb": "Trade him for a younger player at his price.",
 
 def apply_signal(act, mode, x, f, s):
     """(action, note) for one mode. The sim's sells and buys override Hold-type calls; where one meets the opposite
-    backtested call, or a sell and a buy fire together, the player is held."""
+    backtested call, or a sell and a buy fire together, the player is held. QBs, and hurt players 25 or younger, keep
+    their usual call on a sell signal, except for contenders with hurt ones."""
     sells = []
-    if "ros_down" in s:
+    if x.position == "QB":
+        no_sell = not (mode == "con" and s.get("hurt"))
+    else:
+        no_sell = bool(s.get("hurt") and s.get("young") and mode != "con")
+    if "ros_down" in s and not no_sell:
         sells.append(f"FantasyPros' rest-of-season rank fell from #{f0(s['ros_down'][0])} in the preseason to "
                      f"#{f0(s['ros_down'][1])}, and dynasty prices lag that.")
-    if "faller" in s and f == "1qb":
+    if "faller" in s and f == "1qb" and not no_sell:
         sells.append(f"His dynasty rank fell from #{f0(s['faller'][0])} in the preseason to #{f0(s['faller'][1])}, and "
                      "selling 1QB fallers gained in the league sim.")
     gap = s.get("gap") if mode == "reb" or not s.get("rookie") else None
@@ -622,7 +632,7 @@ def apply_signal(act, mode, x, f, s):
         if k in ("sell", "cut", "use"):
             return HOLD, gtxt + f". The usual call is {act.lower()}, so hold rather than sell."
         return WEAK, gtxt + ": buy at the market price, not above."
-    if s.get("hurt") and f == "sf":
+    if "faller" in s and s.get("hurt") and f == "sf" and not no_sell:
         return act, (f"Hurt, and his dynasty rank fell from #{f0(s['faller'][0])} in the preseason to "
                      f"#{f0(s['faller'][1])}: selling players like this gained a little in the league sim.")
     return act, ""
