@@ -10,6 +10,7 @@ Arms, against live (the site's rules with their current exemptions):
   noros          no sell on a fall in the rest-of-season rank
   nofaller       no sell on a fall in the dynasty rank (1QB only: in superflex that is only a note)
   norookie       no buy of rookies (rebuilders only)
+  novetbuy       no buy of veterans; rebuilders keep their rookie buys, and only they get those
   nohurtsell     no sell signals on hurt players
   nowellsell     no sell signals on healthy players
   mfsell         no sell signals where the market is already well below FP (rules.gap, the site's own test: "less")
@@ -17,8 +18,11 @@ Arms, against live (the site's rules with their current exemptions):
   msig           signals read the market's rank in place of FP's dynasty rank (would need a Sept 1 market snapshot)
 mfsell and mfbuy could run on the site today: it has FantasyCalc's current ranks. Caveats as market_price_sim.py: the rules were fit on
 FP ranks over these cohorts, 3-year results rest on 2-3 cohorts, and the KTC and FantasyCalc runs share players and seasons.
-Writes outputs/[sf/]signal_sim_<source>.csv.gz. LEAGUE=sf for superflex; SOURCE=ktc or fantasycalc; REPS, WEEKS, JOBS.
+The saved outputs ran before the site dropped healthy sells for 1QB contenders and default teams and veteran buys for superflex rebuilders;
+rerun, live has those changes and those arms match it. Writes outputs/[sf/]signal_sim_<source>.csv.gz, or signal_sim_<arms>_<source>.csv.gz with ARMS set. LEAGUE=sf for superflex;
+SOURCE=ktc or fantasycalc; REPS, WEEKS, JOBS; ARMS=live,novetbuy to run only those (keep live first).
 """
+import os
 import pathlib
 import sys
 from contextlib import contextmanager
@@ -32,14 +36,15 @@ import rank_input_sim as rs  # noqa: E402
 R, F = mps.R, mps.F
 MODES, LENS = mps.MODES, mps.LENS
 SELLS = ("ros_down", "faller")
-ARMS = ("live", "nosig", "nosell", "nobuy", "noros", "nofaller", "norookie", "nohurtsell", "nowellsell", "mfsell", "mfbuy", "msig")
+ALL_ARMS = ("live", "nosig", "nosell", "nobuy", "noros", "nofaller", "norookie", "novetbuy", "nohurtsell", "nowellsell", "mfsell", "mfbuy", "msig")
+ARMS = tuple(os.environ["ARMS"].split(",")) if os.environ.get("ARMS") else ALL_ARMS
 
 
 def strip(arm, x, s):
     """what fired, less what this arm turns off"""
     gp = R.gap(getattr(x, f"r_{F}"), getattr(x, f"mr_{F}"))
     off = {"nosell": SELLS, "nobuy": ("gap",), "noros": ("ros_down",), "nofaller": ("faller",),
-           "norookie": ("gap",) if s.get("rookie") else (),
+           "norookie": ("gap",) if s.get("rookie") else (), "novetbuy": ("gap",) if not s.get("rookie") else (),
            "nohurtsell": SELLS if s.get("hurt") else (), "nowellsell": SELLS if not s.get("hurt") else (),
            "mfsell": SELLS if gp == "less" else (), "mfbuy": ("gap",) if gp == "more" else ()}.get(arm, ())
     return {k: v for k, v in s.items() if k not in off}
@@ -113,12 +118,12 @@ def summarize(df):
     for arm in ARMS[1:]:
         table(f"{arm} - live", f"m:{arm}", "m:live")
     print("\n=== By cohort, against live")
-    for arm in ("nosig", "nosell", "nobuy", "mfsell", "mfbuy"):
+    for arm in [a for a in ("nosig", "nosell", "nobuy", "novetbuy", "mfsell", "mfbuy") if a in ARMS]:
         d = idx.xs(f"m:{arm}", level="arm")[mets] - idx.xs("m:live", level="arm")[mets]
         print(f"\n-- {arm} - live\n{d.groupby(level=['mode', 't']).mean().round(1).to_string()}")
 
 
-mps.OUT = "signal_sim"
+mps.OUT = "signal_sim" if ARMS == ALL_ARMS else "signal_sim_" + "_".join(ARMS[1:])
 mps.F_ARMS, mps.M_ARMS, mps.RANDOM, mps.KIND = (), ARMS, (), ()
 mps.snapshot_calls, mps.summarize = snapshot_calls, summarize
 
