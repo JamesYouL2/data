@@ -315,6 +315,38 @@ $("foot").innerHTML = `Prices: FantasyPros dynasty rankings via <a href="https:/
   `The exception is the notes on rank moves since the preseason and on rest-of-season ranks well above dynasty ranks: those sells and buys, shown from week 5 to week 14, come from a league simulation on the same seasons that suggested them. ` +
   `<a href="https://github.com/JamesYouL2/data/tree/career-value/pages">Source and method</a>.`;
 
+function testResults(t) {
+  const groups = { form: "Production to date", hurt: "Injury status", ros: "FantasyPros rest-of-season ranks", all: "All three" };
+  const cols = [["1qb", "ktc", "1QB KTC"], ["1qb", "fantasycalc", "1QB FantasyCalc"], ["sf", "ktc", "Superflex KTC"], ["sf", "fantasycalc", "Superflex FantasyCalc"]];
+  const num = (x) => (x > 0 ? "+" : x < 0 ? "−" : "") + Math.abs(x).toFixed(1);
+  const table = (pick, showPass) => {
+    const line = (g) => {
+      const rows = cols.map(([f, s]) => pick(t.cells.find((c) => c.format === f && c.source === s))?.find((r) => r.group === g));
+      const pass = rows.every((r) => r?.ok);
+      return `<tr><td>${groups[g]}</td>` + rows.map((r) => `<td class="num">${r ? `${num(r.skill)} (${num(r.floor)})` : "–"}</td>`).join("") +
+        (showPass ? `<td>${pass ? "Yes" : "No"}</td>` : "") + "</tr>";
+    };
+    return `<div class="scroll"><table class="tbl"><tr><th>Added to the market rank</th>${cols.map((c) => `<th>${c[2]}</th>`).join("")}` +
+      `${showPass ? "<th>Passes</th>" : ""}</tr>${Object.keys(groups).map(line).join("")}</table></div>`;
+  };
+  const how = `<p class="hint">Each number is the % of the market rank's squared error removed. In brackets: the best of 10 shuffled copies.</p>`;
+  const final = [["ros", "Rest of season: final"], ["mv1", "Market rank next May: final"]].filter(([k]) => t.cells.some((c) => c[k]));
+  const when = { ros: "January 2027", mv1: "May 2027" };
+  const waiting = Object.keys(when).filter((k) => !t.cells.some((c) => c[k]));
+  let out = waiting.length ? `<p class="hint"><b>Status.</b> Results due: ${waiting.map((k) => `${k === "ros" ? "rest of season" : "market rank next May"}, ${when[k]}`).join("; ")}.</p>` : "";
+  out += final.map(([k, title]) => `<h4>${title}</h4>${table((c) => c?.[k], true)}`).join("");
+  const i = t.cells.find((c) => c.interim)?.interim;
+  if (!final.some(([k]) => k === "ros") && i) {
+    out += `<h4>Interim, not the test: value over weeks ${i.snapshots[0] + 1}-${i.through}, from the week ${i.snapshots.join(" and ")} snapshot</h4>` +
+      table((c) => c?.interim?.ros, false) + how.replace("</p>", ` It's a model refit on those weeks of past seasons, not the saved predictions. Updated ${esc(t.built)}.</p>`) +
+      `<p class="hint">${esc(t.note)}</p>`;
+  } else if (final.length) {
+    out += how;
+  }
+  return out;
+}
+if (m.test) $("test-results").innerHTML = testResults(m.test);
+
 (function init() {
   const h = new URLSearchParams(location.hash.slice(1));
   const id = h.get("league") || localStorage.getItem("league");

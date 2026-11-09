@@ -1,0 +1,42 @@
+{
+ "format": "sf",
+ "source": "fantasycalc",
+ "played": 8,
+ "snapshots": [
+  4,
+  8
+ ],
+ "interim": {
+  "through": 8,
+  "rows": 304,
+  "snapshots": [
+   4
+  ],
+  "ros": [
+   {
+    "group": "form",
+    "skill": -5.1,
+    "floor": -1.3,
+    "ok": false
+   },
+   {
+    "group": "hurt",
+    "skill": 5.1,
+    "floor": -1.6,
+    "ok": true
+   },
+   {
+    "group": "ros",
+    "skill": -0.8,
+    "floor": -0.6,
+    "ok": false
+   },
+   {
+    "group": "all",
+    "skill": 2.4,
+    "floor": -0.5,
+    "ok": true
+   }
+  ]
+ }
+}

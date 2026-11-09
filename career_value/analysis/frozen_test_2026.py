@@ -53,6 +53,10 @@ GROUPS["all"] = [c for g in GROUPS.values() for c in g]
 OUT = out_dir(SF) / f"frozen_test_2026_{SOURCE}.csv.gz"
 SITE = HERE.parent / "pages" / "build" / "frozen_test.json"
 DD = HERE / "raw" / "dynastydaddy"
+# the page's reading of the interim table, which only shows until the first final score: rewrite it if the interim is rerun
+INTERIM_NOTE = ("Injury status leads in every column, but that's partly built in: a dynasty price isn't a forecast of the next four weeks, and a player "
+                "ruled out for next week scores nothing in one of them. Production to date is below zero in all four, so the market seems to have priced it "
+                "already. One snapshot and four weeks is very little, and the result that bears on dynasty value is next May's.")
 
 
 def rows_2026():
@@ -224,7 +228,7 @@ def site():
             f = out_dir(sf) / f"frozen_test_2026_{src}_score.json"
             if f.exists():
                 cells.append(json.loads(f.read_text()))
-    SITE.write_text(json.dumps({"built": str(dt.date.today()), "cells": cells}, indent=1) + "\n")
+    SITE.write_text(json.dumps({"built": str(dt.date.today()), "note": INTERIM_NOTE, "cells": cells}, indent=1) + "\n")
     print("wrote", SITE, len(cells), "cells")
 
 

@@ -110,6 +110,22 @@
       rankings (by 12+ spots, or 25%). <b>Now</b> shows the FantasyPros rest-of-season (ROS) positional and overall rank, and next week's positional rank,
       opponent and projected PPR points.</p>
   </details>
+
+  <details id="test">
+    <summary>The 2026 test: do these signals beat the market?</summary>
+    <p class="hint">The backtests behind this page use seasons that helped build it, so they can't show it works on new data. This test can.
+      It was <a href="https://github.com/JamesYouL2/data/commit/ec155b1">written down with its predictions</a> before any 2026 result was scored.</p>
+    <p class="hint"><b>The question.</b> Starting from the current KTC or FantasyCalc rank, at weeks 4, 8 and 12, does adding production to date, injury status
+      or FantasyPros rest-of-season ranks predict better? It's scored on value over the rest of the season and on the player's market rank next May.</p>
+    <p class="hint"><b>Why these three.</b> A <a href="https://github.com/JamesYouL2/data/blob/career-value/career_value/analysis/variable_screen.py">screen on seasons
+      through 2020</a>, with no KTC or FantasyCalc price, picked production and injury status for the rest of the season. Rest-of-season ranks only start in 2019, so
+      they're on the list after two promising seasons in 1QB. Age, position, draft round, last season's numbers, career totals, body size, team changes and efficiency
+      didn't pass. Expected points passed but added nothing once production was in.</p>
+    <p class="hint"><b>What counts as a pass.</b> In all four columns below, the signal has to remove error and beat all 10 copies of itself with its values
+      shuffled between players. One season can't change a call. A pass goes on to 2027 and a league simulation; a fail comes off the list for that outcome.</p>
+    <div id="test-results"></div>
+    <p class="hint"><a href="https://github.com/JamesYouL2/data/blob/career-value/career_value/analysis/frozen_test_2026.py">The full test</a>.</p>
+  </details>
 </main>
 
 <footer id="foot"></footer>
