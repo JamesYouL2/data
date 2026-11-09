@@ -176,7 +176,9 @@ function playerCells(sid, fmt) {
     p.dy === D.meta.rookie ? "rookie" : null, p.rd ? `NFL R${p.rd}` : p.dy ? "UDFA" : null].filter(Boolean).map(esc).join(" · ");
   const pr = price(p, fmt);
   const m = mkt(p, fmt);
+  const tv = fmt === "sf" ? p.v2 : p.v1;
   const prc = (pr ? `FP #${pr} <span class="meta">${esc(p.p)}${posPrice(p, fmt)}</span>` : `<span class="meta">FP unranked</span>`) +
+    (pr && tv != null && tv !== pr ? `<div class="meta">in-season #${tv}</div>` : "") +
     (m ? `<div class="meta">market #${m[0]}${trend(m)}<br>${esc(pickLabel(m[1], fmt))}</div>` : D.meta.market ? `<div class="meta">no market value</div>` : "");
   let prod = p.ppg != null ? `${p.ppg.toFixed(1)} <span class="meta">${p.prk ? esc(p.p) + p.prk : ""} · ${p.g}g</span>` : `<span class="meta">${p.prkl ? `${D.meta.last}: ${esc(p.p)}${p.prkl}` : "–"}</span>`;
   const now = [];
@@ -306,9 +308,11 @@ $("foot").innerHTML = `Prices: FantasyPros dynasty rankings via <a href="https:/
   `Ages are as of September ${m.next}. Price bands: FantasyPros rank 1-50, 51-100, 101-200, 201-300; past 300 is waiver level. ` +
   `The calls come from backtests of 2018-2025 rankings against later VORP; players 30+ use 1999-${m.last} history. ` +
   (m.market ? `Trade market: <a href="https://fantasycalc.com">FantasyCalc</a> dynasty values (12 teams, PPR), with "≈ pick" labels from its ${m.picks?.sf_year ?? ""} pick values. ` : "") +
-  (m.ros ? `Rest of season (ROS) and next game: FantasyPros ROS PPR and weekly rankings via DynastyProcess, ${esc(m.fp_date)}; the ROS overall rank is 1QB. ` : "") +
+  (m.ros ? `Rest of season (ROS) and next game: FantasyPros ROS PPR and weekly rankings via DynastyProcess, ${esc(m.fp_date)}; the ROS overall rank is 1QB. ` +
+    `In season the calls use the "in-season" rank: the FantasyPros dynasty rank tilted slightly toward the ROS rank (a player whose ROS positional rank is half his dynasty one moves up about 7%). ` : "") +
   `Injuries: <a href="https://sleeper.com">Sleeper</a>. ` +
   `The market, injury and rest-of-season adjustments (the notes under each call, and the Stash, Buy low and Sell when healthy calls) are judgment calls, not backtested. ` +
+  `The exception is the notes on rank moves since the preseason and on rest-of-season ranks well above dynasty ranks: those sells and buys, shown from week 5 to week 14, come from a league simulation on the same seasons that suggested them. ` +
   `<a href="https://github.com/JamesYouL2/data/tree/career-value/pages">Source and method</a>.`;
 
 (function init() {

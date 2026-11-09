@@ -16,6 +16,7 @@ RAW_DIR holds the downloaded inputs (build/fetch.sh):
   sleeper_players.json                Sleeper player database: injury status, current team
   sleeper_state.json                  Sleeper's current week
   db_fpecr_latest.csv                 DynastyProcess FP rankings scrape: rest-of-season (PPR) ranks in season
+  db_fpecr.parquet                    DynastyProcess FP rankings history: this season's preseason ranks (rules.signals)
   fp_latest_weekly.csv                DynastyProcess FP weekly ranks: opponent, projected PPR points
 The market, injury, ROS and weekly files are optional: the build runs without them.
 """
@@ -28,7 +29,7 @@ import pandas as pd
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from rules import classify, situational  # noqa: E402
+from rules import classify, ros_tilt, situational  # noqa: E402
 
 RAW, OUT = Path(sys.argv[1]), Path(sys.argv[2])
 POS = ["QB", "RB", "WR", "TE"]
@@ -131,6 +132,32 @@ p["team"] = steam.where(steam.notna() | p.sleeper_id.isin(sp.keys()), p.team)   
 
 state = load_json("sleeper_state.json") or {}
 WEEK = state.get("week") if state.get("season_type") == "regular" else None
+ctx["WEEK"] = WEEK
+
+
+# FantasyPros ranks at the last scrape before week 1 and at the latest one, from one list so the two compare (rules.signals)
+def fp_moves():
+    for key in ("do", "dsf", "ro"):
+        p[f"{key}_pre"] = p[f"{key}_now"] = float("nan")
+    f, start = RAW / "db_fpecr.parquet", state.get("season_start_date")
+    if not f.exists() or not start or not WEEK:
+        print("note: no FP rank history or season start, skipping the signals that need a preseason rank")
+        return
+    e = pd.read_parquet(f, columns=["page_type", "ecr_type", "scrape_date", "id", "pos", "ecr"],
+                        filters=[("scrape_date", ">=", f"{CUR}-08-15"), ("ecr_type", "in", ["do", "dsf", "ro"])])
+    e = e[e.pos.isin(POS)].assign(id=lambda d: pd.to_numeric(d.id, errors="coerce"))
+    for key, pages in (("do", ["dynasty-overall", "dynasty-offense"]), ("dsf", ["dynasty-op"]),
+                       ("ro", ["redraft-overall", "redraft-offense"])):
+        x = e[(e.ecr_type == key) & e.page_type.isin(pages)]
+        dates = x.scrape_date[x.scrape_date < start]
+        if dates.empty:
+            continue
+        for tag, d in (("pre", dates.max()), ("now", x.scrape_date.max())):
+            y = x[x.scrape_date == d].dropna(subset=["ecr"]).sort_values("page_type").drop_duplicates("id")
+            p[f"{key}_{tag}"] = p.fantasypros_id.map(y.set_index("id").ecr.rank(method="first"))
+
+
+fp_moves()
 
 
 # FantasyPros rest-of-season (in season, the redraft pages are ROS: PPR, 1QB) and this week's ranks, via DynastyProcess
@@ -167,6 +194,11 @@ else:
 p = p[p.r_1qb.notna() | p.g.notna() | (p.dy >= ROOKIE - 3) | p.mr_sf.notna()].copy()   # valued, playing, recent draftees
 if ROS_ON:
     p["gone"] = p.ros_r.isna()          # only matters for injured players: see rules.situational
+# in season the calls price players at the FP dynasty rank tilted toward the ROS rank (rules.ros_tilt); the page still
+# shows the FP rank, with the tilted one beside it
+for f in ("1qb", "sf"):
+    k = [ros_tilt(a, b) if ROS_ON and a == a else 1.0 for a, b in zip(p[f"pr_{f}"], p.ros_p)]
+    p[f"v_{f}"], p[f"pv_{f}"] = p[f"r_{f}"] * k, p[f"pr_{f}"] * k
 rules, rix, out = [], {}, {}
 
 
@@ -177,7 +209,8 @@ def num(z, d=1):
 for x in p.itertuples(index=False):
     c = {}
     for f in ("1qb", "sf"):
-        key = tuple(situational(x, f, classify(x, f, ctx)))
+        xv = x._replace(**{f"r_{f}": getattr(x, f"v_{f}"), f"pr_{f}": getattr(x, f"pv_{f}")})
+        key = tuple(situational(x, f, classify(xv, f, ctx), ctx))
         if key not in rix:
             rix[key] = len(rules)
             rules.append(list(key))
@@ -196,6 +229,10 @@ for x in p.itertuples(index=False):
             o["ib"] = x.inj_part
     if not pd.isna(x.ros_r):
         o["ros"] = [num(x.ros_r, 0), num(x.ros_p, 0)]
+    if ROS_ON:
+        for f, k in (("1qb", "v1"), ("sf", "v2")):
+            if not pd.isna(getattr(x, f"v_{f}")):
+                o[k] = num(getattr(x, f"v_{f}"), 0)
     if not pd.isna(x.wk_p):
         o["wk"] = [num(x.wk_p, 0), x.wk_opp if isinstance(x.wk_opp, str) else None, num(x.wk_pts)]
     out[x.sleeper_id] = o

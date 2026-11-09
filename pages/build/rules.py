@@ -54,6 +54,23 @@ LENS = {"keep3": "3-year VORP plus value three years on", "keep1": "next season'
 BUY_LENS = {"reb": "keep3", "mid": "keep1", "con": "prod1"}
 
 
+# In season, the price the calls use is the FP dynasty rank tilted a little toward FP's rest-of-season (ROS) rank:
+# rank x (ROS positional rank / dynasty positional rank) ^ ROS_TILT, off the ROS list = ROS rank 500
+# (career_value/analysis/inseason_movers.py, 2019-25: in-season dynasty ranks players by what they return better than the
+# preseason one at every week; this tilt adds a little on top for the 1-year and 3-year views, fit at 0.1 in both
+# halves and both formats; contenders use the same small tilt).
+ROS_TILT = 0.1
+ROS_OFF = 500
+
+
+def ros_tilt(pr, ros_p):
+    """factor on the FP overall and positional rank, in season (None / NaN ranks: no tilt)"""
+    if pr is None or (isinstance(pr, float) and math.isnan(pr)) or pr <= 0:
+        return 1.0
+    rp = ROS_OFF if ros_p is None or (isinstance(ros_p, float) and math.isnan(ros_p)) else ros_p
+    return (rp / pr) ** ROS_TILT
+
+
 def price_bucket(r):
     """FP overall rank -> 1-50, 51-100, 101-200, 201+ (unranked counts as 201+)"""
     if r is None or (isinstance(r, float) and math.isnan(r)):
@@ -531,12 +548,93 @@ def gap(r, m):
     return "more" if m <= r - t else "less" if m >= r + t else None
 
 
-def situational(x, f, call):
-    """Adjust the backtested calls for the trade market (FantasyCalc), injuries (Sleeper) and rest-of-season value.
+# In-season trade signals, from the league sim (career_value/analysis/inseason_sim.py, off-list players dropped; each
+# compared with the same trades made on random players). The sim traded after weeks 4, 8 and 12 at equal price:
+#   ROS rank a quarter worse than preseason: sell. Gained in both formats, every mode.
+#   Dynasty rank a quarter worse than preseason: sell, 1QB only. Superflex was marginal.
+#   Hurt with that dynasty fall: a note in superflex (a small gain); in 1QB he is a faller anyway.
+#   25 or younger, ROS positional rank a quarter better than dynasty: buy. Best gain per trade in both formats.
+#   Rookies with that gap: buy for rebuilders only. Value gained, this season's title odds didn't.
+# Players off the ROS list get no signal: mostly out for the year, and the Stash / Sell when healthy calls cover them.
+# A quarter is one place near the top of the list (#3 to #4), and small moves there had no edge: top-36 players down 5
+# ROS places or fewer kept their value like players with no signal (1 year on, 1.07 vs 1.04 in 1QB, 1.09 vs 1.02 in
+# superflex), as did 1QB fallers down 2 dynasty places or fewer. The sim didn't have these floors.
+SIG_MOVE = 4 / 3
+SIG_FLOOR_ROS, SIG_FLOOR_DYN = 6, 3             # places lost, on top of the quarter
+SIG_WEEKS = (5, 14)             # Sleeper's current week: at least 4 played, and no later than the sim's last window
+SIG_POOL = 340                  # the sim's tradeable pool
+SIG_HURT = ("IR", "PUP", "Out")
+
+
+def signals(x, f, ctx):
+    """-> what fired for this player and format: ros_down / faller (preseason rank, rank now), hurt, gap (dynasty
+    positional rank, ROS positional rank), rookie"""
+    wk = ctx.get("WEEK") if ctx else None
+    r, ros_r = getattr(x, f"r_{f}"), getattr(x, "ros_r", None)
+    if not wk or not SIG_WEEKS[0] <= wk <= SIG_WEEKS[1] or pd.isna(r) or r > SIG_POOL or ros_r is None or pd.isna(ros_r):
+        return {}
+    s = {}
+
+    def fell(a, b, floor):                           # NaN compares false: no preseason rank, no signal
+        return b / a >= SIG_MOVE and b - a >= floor
+
+    if fell(x.ro_pre, x.ro_now, SIG_FLOOR_ROS):
+        s["ros_down"] = (x.ro_pre, x.ro_now)
+    pre, now = (x.do_pre, x.do_now) if f == "1qb" else (x.dsf_pre, x.dsf_now)
+    if fell(pre, now, SIG_FLOOR_DYN):
+        s["faller"] = (pre, now)
+        s["hurt"] = x.inj in SIG_HURT
+    rookie = x.dy == ctx["ROOKIE"]
+    # the backtests' age is at the September of the season played; x.age is at next September
+    if (rookie or x.age - 1 < 26) and getattr(x, f"pr_{f}") / x.ros_p >= SIG_MOVE:
+        s["gap"], s["rookie"] = (getattr(x, f"pr_{f}"), x.ros_p), bool(rookie)
+    return s
+
+
+TAKE_BACK = {"reb": "Trade him for a younger player at his price.",
+             "con": "Trade him for a player at his price who ranks better for the rest of the season.",
+             "mid": "Trade him for a player at his price who is younger or ranks better for the rest of the season."}
+
+
+def apply_signal(act, mode, x, f, s):
+    """(action, note) for one mode. The sim's sells and buys override Hold-type calls; where one meets the opposite
+    backtested call, or a sell and a buy fire together, the player is held."""
+    sells = []
+    if "ros_down" in s:
+        sells.append(f"FantasyPros' rest-of-season rank fell from #{f0(s['ros_down'][0])} in the preseason to "
+                     f"#{f0(s['ros_down'][1])}, and dynasty prices lag that.")
+    if "faller" in s and f == "1qb":
+        sells.append(f"His dynasty rank fell from #{f0(s['faller'][0])} in the preseason to #{f0(s['faller'][1])}, and "
+                     "selling 1QB fallers gained in the league sim.")
+    gap = s.get("gap") if mode == "reb" or not s.get("rookie") else None
+    gtxt = (f"FantasyPros ranks him {x.position}{f0(gap[1])} for the rest of the season but {x.position}{f0(gap[0])} in "
+            "dynasty, and buying young players like this gained in the league sim") if gap else ""
+    k = kind(act)
+    if sells and gap:
+        return (act if k == "cut" else HOLD), " ".join(sells) + f" Still, {gtxt}: mixed signals, so hold."
+    if sells:
+        if k == "buy":
+            return HOLD, " ".join(sells) + f" The usual call is {act.lower()}, so hold and don't add more."
+        return (act if k in ("sell", "cut") else LIGHT), " ".join(sells) + " " + TAKE_BACK[mode]
+    if gap:
+        if k == "buy":
+            return act, gtxt + "."
+        if k in ("sell", "cut", "use"):
+            return HOLD, gtxt + f". The usual call is {act.lower()}, so hold rather than sell."
+        return WEAK, gtxt + ": buy at the market price, not above."
+    if s.get("hurt") and f == "sf":
+        return act, (f"Hurt, and his dynasty rank fell from #{f0(s['faller'][0])} in the preseason to "
+                     f"#{f0(s['faller'][1])}: selling players like this gained a little in the league sim.")
+    return act, ""
+
+
+def situational(x, f, call, ctx=None):
+    """Adjust the backtested calls for the trade market (FantasyCalc), injuries (Sleeper), rest-of-season value and
+    the in-season signals.
 
     Returns (group, reb action, reb why, con action, con why, reb note, con note, default action, default why,
-    default note). The notes say what moved and why; none of these adjustments come from the backtests. The default
-    call is adjusted like the contender call: both care about this season."""
+    default note). The notes say what moved and why; only the signals come from a backtest (the league sim). The
+    default call is adjusted like the contender call: both care about this season."""
     g, (ra, rw), (ca, cw), (ma, mw) = call
     r, m = getattr(x, f"r_{f}"), getattr(x, f"mr_{f}")
     rv = getattr(x, f"rv_{f}")
@@ -585,6 +683,12 @@ def situational(x, f, call):
                            f"FantasyPros ranks him only {x.position}{f0(rp)} for the rest of the season") + ": not a starter, so sell now.")
         return act, ""
     (ca, cros), (ma, mros) = ros(ca), ros(ma)
+    sig = signals(x, f, ctx)
+    ra, rsig = apply_signal(ra, "reb", x, f, sig)
+    ca0, ma0 = ca, ma
+    ca, csig = apply_signal(ca, "con", x, f, sig)
+    ma, msig = apply_signal(ma, "mid", x, f, sig)
+    cros, mros = ("" if ca != ca0 else cros), ("" if ma != ma0 else mros)   # the signal replaced the rest-of-season call
 
     def mkt_note(act):
         if gp == "more":
@@ -603,7 +707,8 @@ def situational(x, f, call):
                 return f"The trade market has already marked him down ({where}): you'll get less than the rankings suggest."
             return f"Market #{f0(m)}, FP #{f0(r)}."
         return ""
-    rn, cn, mn = mkt_note(ra), (cros + " " + mkt_note(ca)).strip(), (mros + " " + mkt_note(ma)).strip()
+    rn, cn, mn = ((a + " " + b + " " + mkt_note(c)).strip().replace("  ", " ")
+                  for a, b, c in ((rsig, "", ra), (csig, cros, ca), (msig, mros, ma)))
     if out:
         rr = getattr(x, "ros_r", None)
         tag = (f"Currently {inj}" + (f" ({x.inj_part})" if isinstance(x.inj_part, str) else "")
