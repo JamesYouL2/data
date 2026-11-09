@@ -133,6 +133,38 @@ calls, and each one shows as a note under the call:
   rest-of-season value is high for their dynasty value. Rebuilders get *sell to contenders*: their own players worth
   more this year than in dynasty terms, plus the teams likeliest to buy.
 
+## In-season signals (league simulation)
+
+From week 5 to week 14, a few rank moves change the call. Each shows as a note.
+[career_value/analysis/inseason_sim.py](../career_value/analysis/inseason_sim.py) tests them in the same league
+simulation, with one team making equal-price trades after week 4, 8 or 12, against the same trades made on random
+players. It covers the 2018-24 classes. Players off the rest-of-season list get no signal: the Stash and Sell when healthy calls
+cover them.
+
+A fall also has to cost at least 6 rest-of-season places or 3 dynasty places. Near the top of the list a quarter can be a single
+place (#3 to #4), and top-36 players with falls that small kept their value about as well as players with no signal. The
+simulation didn't have these floors, so the numbers below include those trades.
+
+| Signal | Call | Format | Modes | Title odds over 3 seasons (points) | Value 3 years on |
+|---|---|---|---|---|---|
+| Rest-of-season rank a quarter worse than the preseason | Sell | Both | All | +3 to +5 (1QB), +5 to +6 (superflex) | +88 to +151 (1QB), +96 to +114 (superflex) |
+| 25 or younger, positional rest-of-season rank a quarter better than dynasty | Buy | Both | All | +6 to +8 (1QB), +6 to +9 (superflex) | +65 to +187 (1QB), +7 to +186 (superflex) |
+| Rookie with that gap | Buy | Both | Rebuilding | +3 (1QB), +4 to +5 (superflex) | +101 to +122 (1QB), about +120 (superflex) |
+| Dynasty rank a quarter worse than the preseason | Sell | 1QB | All | +2 to +4 | +55 to +70 |
+| That dynasty fall, and hurt | Note only | Superflex | All | +1 | +8 to +19 |
+
+The ranges run across how the simulated team chose its trade partner, and superflex leaves out the 2018 class, whose
+only in-season list looks corrupt. A signal becomes **Sell: light** or **Buy: weak**. It leaves Sell and Cut calls alone and doesn't
+raise a sell to heavy or a buy to strong. A sell signal also replaces "Use, then sell", because the simulated team sold starters too. Where a signal meets the opposite call (a sell signal on a Buy, or a buy signal on a Sell, Cut or
+Use, then sell), or a sell and a buy signal fire together, the call becomes Hold. Those Hold rules are judgment calls, as is
+naming what to take back in a trade.
+
+The signals were found on these same seasons, so this is not out of sample; there are only 3-5 classes behind each
+3-year number; and the simulation assumes someone accepts every equal-price trade. It also lets a team take the best
+player within 20% of the price, which is why these numbers are measured against random players and not against
+not trading. Other signals failed or were too weak to use: buying on a better rest-of-season rank (unreliable in 1QB)
+and selling superflex RB and TE risers (lost value a year on).
+
 ## Daily data
 
 [`.github/workflows/pages.yml`](../.github/workflows/pages.yml) (at the repo root) runs every day at 11:17 UTC. It downloads the inputs,
@@ -145,6 +177,7 @@ rebuilds `data/players.js`, and deploys the site to GitHub Pages:
 | `players.parquet` (birth dates, draft round) | nflverse | daily |
 | `stats_player_reg_<season>.parquet` (this season and last) | nflverse | daily in season |
 | `db_fpecr_latest.csv` (FantasyPros rest-of-season ranks), `fp_latest_weekly.csv` | DynastyProcess | daily |
+| `db_fpecr.parquet` (FantasyPros rank history, about 40 MB: preseason ranks for the in-season signals) | DynastyProcess | weekly |
 | `fc_1qb.json`, `fc_sf.json` (trade market and rest-of-season values) | FantasyCalc API | live |
 | `sleeper_players.json` (injuries, teams), `sleeper_state.json` | Sleeper API | live |
 

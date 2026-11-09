@@ -17,6 +17,7 @@ get "$NV/stats_player/stats_player_reg_$CUR.parquet" "stats_player_reg_$CUR.parq
 
 # in-season extras; each is optional and the build skips what is missing
 get "$DP/db_fpecr_latest.csv" db_fpecr_latest.csv || echo "no FP ROS ranks"
+get "$DP/db_fpecr.parquet" db_fpecr.parquet || echo "no FP rank history, so no signals that need a preseason rank"
 get "$DP/fp_latest_weekly.csv" fp_latest_weekly.csv || echo "no FP weekly ranks"
 FC="https://api.fantasycalc.com/values/current?isDynasty=true&numTeams=12&ppr=1"
 get "$FC&numQbs=1" fc_1qb.json || echo "no FantasyCalc 1QB values"
