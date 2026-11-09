@@ -563,6 +563,10 @@ def gap(r, m):
 #   clear, and rebuilders lost value the next May (-9 to -18). Contenders still sell them: rest of season 0.36, 0.34.
 #   Superflex has no QB exemption, and default teams sell hurt young players. Titles over 3 years: QBs +0.3 to +2.6,
 #   hurt young players +1.3 to +1.4, with value 3 years on +3 to +20 and +45 to +50.
+#   Healthy players, for 1QB contenders and default teams (signal_sim.py): not selling them added 0.8 to 5.6 title points over
+#   3 years and 46 to 67 of value 3 years on, both sources. 1QB rebuilders keep these sells: without them titles fell 0.7 to 2.0.
+# Superflex rebuilders don't get the veteran buys (signal_sim.py): without them titles over 3 years rose 1.1 to 3.5 (most of it
+#   the 2022 class) and value 3 years on rose 67 to 81, both sources. They keep the rookie buys. 1QB rebuilders keep both.
 # A quarter is one place near the top of the list (#3 to #4), and small moves there had no edge: top-36 players down 5
 # ROS places or fewer kept their value like players with no signal (1 year on, 1.07 vs 1.04 in 1QB, 1.09 vs 1.02 in
 # superflex), as did 1QB fallers down 2 dynasty places or fewer. The sim didn't have these floors.
@@ -607,19 +611,22 @@ def apply_signal(act, mode, x, f, s):
     """(action, note) for one mode. The sim's sells and buys override Hold-type calls; where one meets the opposite
     backtested call, or a sell and a buy fire together, the player is held. Some players keep their usual call on a sell
     signal, except for contenders with hurt ones: 1QB QBs, and hurt players 25 or younger, apart from superflex default
-    teams, who sell them."""
+    teams, who sell them. 1QB contenders and default teams sell only hurt players. Rookie buys are for rebuilders, and
+    superflex rebuilders get no others."""
     sells = []
     if x.position == "QB":
         no_sell = f == "1qb" and not (mode == "con" and s.get("hurt"))
     else:
         no_sell = bool(s.get("hurt") and s.get("young") and mode != "con" and not (f == "sf" and mode == "mid"))
+    no_sell = no_sell or (f == "1qb" and mode != "reb" and not s.get("hurt"))
     if "ros_down" in s and not no_sell:
         sells.append(f"FantasyPros' rest-of-season rank fell from #{f0(s['ros_down'][0])} in the preseason to "
                      f"#{f0(s['ros_down'][1])}, and dynasty prices lag that.")
     if "faller" in s and f == "1qb" and not no_sell:
         sells.append(f"His dynasty rank fell from #{f0(s['faller'][0])} in the preseason to #{f0(s['faller'][1])}, and "
                      "selling 1QB fallers gained in the league sim.")
-    gap = s.get("gap") if mode == "reb" or not s.get("rookie") else None
+    buys = mode == "reb" if s.get("rookie") else not (f == "sf" and mode == "reb")
+    gap = s.get("gap") if buys else None
     gtxt = (f"FantasyPros ranks him {x.position}{f0(gap[1])} for the rest of the season but {x.position}{f0(gap[0])} in "
             "dynasty, and buying young players like this gained in the league sim") if gap else ""
     k = kind(act)

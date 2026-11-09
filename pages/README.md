@@ -151,20 +151,27 @@ Some players keep their usual call on a sell signal, from a [simulation at KTC a
   hurt ones, for this season.
 - **Hurt RBs, WRs and TEs 25 or younger**, for 1QB default teams and for rebuilders in both formats. 1QB default teams gained nothing
   clear from selling them, and rebuilders lost value the next May (9 to 18). Contenders still sell them, for this season.
+- **Healthy players, for 1QB contenders and default teams.** [At those prices](../career_value/analysis/signal_sim.py), not selling
+  them added 0.8 to 5.6 title points over 3 seasons and 46 to 67 of value 3 years on. They still sell hurt players. 1QB rebuilders
+  keep these sells: without them, titles over 3 seasons fell 0.7 to 2.0.
 
 Superflex has no QB exemption, and superflex default teams sell hurt young players. Over 3 seasons, selling those QBs added 0.3 to
 2.6 title points and selling those young players added 1.3 to 1.4, and value 3 years on rose in both cases. About half of the QB gain
 comes from selling any QB, not from the signal. These tests cover few classes (2020-22 at 3 years).
 
+Superflex rebuilders get no veteran buy signals, only rookie ones. In the same simulation, dropping the veteran buys added 1.1 to 3.5
+title points over 3 seasons, most of it from the 2022 class, and 67 to 81 of value 3 years on. 1QB rebuilders keep them: without
+them, titles over 3 seasons fell about 1.
+
 | Signal | Call | Format | Modes | Title odds over 3 seasons (points) | Value 3 years on |
 |---|---|---|---|---|---|
-| Rest-of-season rank a quarter worse than the preseason | Sell | Both | All | +3 to +5 (1QB), +5 to +6 (superflex) | +88 to +151 (1QB), +96 to +114 (superflex) |
-| 25 or younger, positional rest-of-season rank a quarter better than dynasty | Buy | Both | All | +6 to +8 (1QB), +6 to +9 (superflex) | +65 to +187 (1QB), +7 to +186 (superflex) |
+| Rest-of-season rank a quarter worse than the preseason | Sell | Both | All, but only hurt players for 1QB contenders and default teams | +3 to +5 (1QB), +5 to +6 (superflex) | +88 to +151 (1QB), +96 to +114 (superflex) |
+| 25 or younger, positional rest-of-season rank a quarter better than dynasty | Buy | Both | All except superflex rebuilders | +6 to +8 (1QB), +6 to +9 (superflex) | +65 to +187 (1QB), +7 to +186 (superflex) |
 | Rookie with that gap | Buy | Both | Rebuilding | +3 (1QB), +4 to +5 (superflex) | +101 to +122 (1QB), about +120 (superflex) |
-| Dynasty rank a quarter worse than the preseason | Sell | 1QB | All | +2 to +4 | +55 to +70 |
+| Dynasty rank a quarter worse than the preseason | Sell | 1QB | Rebuilding; hurt players only for contenders and default teams | +2 to +4 | +55 to +70 |
 | That dynasty fall, and hurt | Note only | Superflex | All | +1 | +8 to +19 |
 
-The ranges run across how the simulated team chose its trade partner, and superflex leaves out the 2018 class, whose
+The table's numbers come from the earlier simulation at FP prices and predate these limits. The ranges run across how the simulated team chose its trade partner, and superflex leaves out the 2018 class, whose
 only in-season list looks corrupt. A signal becomes **Sell: light** or **Buy: weak**. It leaves Sell and Cut calls alone and doesn't
 raise a sell to heavy or a buy to strong. A sell signal also replaces "Use, then sell", because the simulated team sold starters too. Where a signal meets the opposite call (a sell signal on a Buy, or a buy signal on a Sell, Cut or
 Use, then sell), or a sell and a buy signal fire together, the call becomes Hold. Those Hold rules are judgment calls, as is
