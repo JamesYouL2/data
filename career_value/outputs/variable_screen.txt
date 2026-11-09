@@ -1,0 +1,140 @@
+===== 1QB. Pass rule fixed before the run; see the script's docstring. drop = what all-groups skill loses without the group.
+
+-- May, MFL price, cohorts 2010-17: vorp1, 1600 rows, 559 players, test seasons [np.int64(2010), np.int64(2011), np.int64(2012), np.int64(2013), np.int64(2014), np.int64(2015), np.int64(2016), np.int64(2017)], overlap gap 1. All groups together -2.2
+      group  alone  floor seasons+  early  late  drop seasons for CI>0 PASS
+      yards    0.8   -0.6      5/8    0.3   1.3   0.2              148     
+team change   -1.0   -0.6      3/8   -1.7  -0.2   0.0                -     
+      usage   -1.0    0.2      4/8   -2.5   0.4   0.4                -     
+      draft   -1.0    0.3      3/8   -3.0   0.9  -0.0                -     
+        epa   -1.1   -0.1      3/8   -1.3  -1.0  -0.1                -     
+       body   -1.7   -0.9      3/8   -3.0  -0.4  -0.1                -     
+    pos+age   -1.7    0.3      3/8   -1.6  -1.9  -0.1                -     
+    last yr   -2.1   -0.5      1/8   -2.5  -1.7   1.0                -     
+  yr before   -2.3   -0.4      3/8   -0.4  -4.2  -0.9                -     
+     career   -3.2   -1.0      0/8   -4.1  -2.2  -0.8                -     
+
+-- May: vorp1, skill by number of training seasons (columns), mean over test seasons and 8 random picks of training seasons
+k          1    2    3    4    5    6    7
+set                                       
+all box -4.1 -4.2 -4.2 -3.8 -3.4 -2.6 -2.2
+pos+age -2.1 -2.1 -2.2 -1.7 -1.6 -1.4 -1.7
+
+-- No price at all: vorp1, box-score model vs the MFL rank on the same rows. Negative skill = worse than the price. Rows: training seasons (30 = all back to 1999)
+          train rows  skill  corr  corr price
+iters k                                      
+150   1       537.50 -17.25  0.46        0.57
+      3      1598.62 -15.45  0.49        0.57
+      5      2646.75 -13.57  0.50        0.57
+      8      4207.00 -11.50  0.50        0.57
+      30     7540.12 -11.11  0.51        0.57
+400   1       537.50 -21.77  0.45        0.57
+      3      1598.62 -18.28  0.48        0.57
+      5      2646.75 -15.85  0.49        0.57
+      8      4207.00 -14.96  0.49        0.57
+      30     7540.12 -12.16  0.51        0.57
+  seasons where it beat the price, iters 400, all history: 1 of 8
+
+-- May, MFL price, cohorts 2010-17: vorp3, 1600 rows, 559 players, test seasons [np.int64(2010), np.int64(2011), np.int64(2012), np.int64(2013), np.int64(2014), np.int64(2015), np.int64(2016), np.int64(2017)], overlap gap 3. All groups together -0.4
+      group  alone  floor seasons+  early  late  drop seasons for CI>0 PASS
+      usage    2.6   -1.0      6/8    3.2   2.0   0.5                7  yes
+      yards    1.7   -1.4      5/8    2.0   1.4   0.2               21     
+    pos+age    1.3   -1.5      4/8   -1.9   4.5   0.0               63     
+        epa   -0.5   -0.6      3/8    0.0  -1.0   0.4                -     
+team change   -0.8   -0.4      1/8   -0.9  -0.6   0.0                -     
+  yr before   -1.7   -0.6      2/8   -4.4   1.0  -0.4                -     
+      draft   -2.0    0.1      2/8   -2.6  -1.4   0.2                -     
+    last yr   -2.6   -1.2      3/8   -2.8  -2.5   0.1                -     
+     career   -4.1   -1.2      2/8   -5.9  -2.3  -2.6                -     
+       body   -6.8   -1.2      0/8   -7.8  -5.8   0.3                -     
+
+-- May: vorp3, skill by number of training seasons (columns), mean over test seasons and 8 random picks of training seasons
+k          1    2    3    4
+set                        
+all box -0.2 -1.0 -0.9 -1.9
+pos+age  2.7  2.3  1.8  1.5
+
+-- No price at all: vorp3, box-score model vs the MFL rank on the same rows. Negative skill = worse than the price. Rows: training seasons (30 = all back to 1999)
+          train rows  skill  corr  corr price
+iters k                                      
+150   1       528.38 -16.28  0.49        0.59
+      3      1576.50 -11.15  0.53        0.59
+      5      2618.00  -8.92  0.53        0.59
+      8      4170.75  -7.16  0.55        0.59
+      30     6469.88  -6.67  0.56        0.59
+400   1       528.38 -19.14  0.49        0.59
+      3      1576.50 -13.90  0.51        0.59
+      5      2618.00 -11.44  0.52        0.59
+      8      4170.75  -9.75  0.54        0.59
+      30     6469.88  -7.24  0.56        0.59
+  seasons where it beat the price, iters 400, all history: 2 of 8
+week rows: seasons {2011: 16.6, 2012: 15.2, 2013: 16.2, 2014: 15.3, 2015: 15.2, 2016: 11.8, 2017: 12.8, 2018: 16.0} | xppg known {2011: 0.96, 2012: 0.92, 2013: 0.94, 2014: 0.95, 2015: 0.94, 2016: 0.94, 2017: 0.93, 2018: 0.94} | hurt share {2011: 0.128, 2012: 0.147, 2013: 0.1, 2014: 0.102, 2015: 0.14, 2016: 0.11, 2017: 0.103, 2018: 0.098}
+
+Note: week rows use a preseason price, so in-season news is new to the baseline. A pass here can't show it beats a current market price; a fail is informative.
+
+-- In season, preseason MFL price, seasons 2011-18: ros, 4800 rows, 559 players, test seasons [np.int64(2011), np.int64(2012), np.int64(2013), np.int64(2014), np.int64(2015), np.int64(2016), np.int64(2017), np.int64(2018)], overlap gap 1. All groups together +17.7
+      group  alone  floor seasons+  early  late  drop seasons for CI>0 PASS
+       form   14.1    6.9      8/8   12.8  15.3   7.0                0  yes
+      xform    5.1   -0.4      6/8    0.7   9.6  -0.2                4  yes
+       hurt    5.0   -0.9      7/8    5.7   4.4   2.6                1  yes
+      yards    0.4   -0.4      4/8   -0.1   1.0  -0.1              395     
+      draft   -1.2   -0.7      3/8   -2.2  -0.2  -0.1                -     
+team change   -1.3   -1.2      1/8   -1.9  -0.6   0.0                -     
+        epa   -1.5   -0.4      2/8   -2.0  -0.9  -0.1                -     
+    pos+age   -1.9   -0.8      3/8   -1.5  -2.2   0.7                -     
+       body   -2.4   -0.7      1/8   -2.7  -2.0   0.2                -     
+      usage   -2.7   -0.5      2/8   -3.5  -1.9  -0.5                -     
+    last yr   -2.9   -0.4      1/8   -2.6  -3.2   0.2                -     
+     career   -3.3   -0.3      0/8   -3.6  -3.1  -0.0                -     
+  yr before   -4.4   -0.5      0/8   -3.8  -5.0  -0.1                -     
+
+-- In season, preseason MFL price, seasons 2011-18: next1, 4800 rows, 559 players, test seasons [np.int64(2011), np.int64(2012), np.int64(2013), np.int64(2014), np.int64(2015), np.int64(2016), np.int64(2017), np.int64(2018)], overlap gap 2. All groups together +1.6
+      group  alone  floor seasons+  early  late  drop seasons for CI>0 PASS
+       form    1.5   -1.5      6/8    3.1  -0.1   1.7               24     
+      yards   -0.3   -0.9      4/8   -0.2  -0.4  -0.2                -     
+      xform   -0.3   -1.0      4/8    0.6  -1.3  -0.0                -     
+        epa   -0.8   -1.3      3/8    0.6  -2.1   0.8                -     
+    pos+age   -1.0   -1.0      2/8   -3.6   1.6   0.4                -     
+       hurt   -1.8   -1.6      3/8   -1.6  -2.0   0.2                -     
+team change   -2.1   -1.8      2/8   -1.6  -2.5   0.0                -     
+      draft   -3.3   -1.0      1/8   -2.9  -3.8  -0.0                -     
+    last yr   -3.7   -0.4      2/8   -5.7  -1.7  -0.6                -     
+      usage   -4.1   -0.9      1/8   -3.3  -5.0  -0.7                -     
+  yr before   -5.4   -1.0      2/8   -7.7  -3.1  -0.9                -     
+       body   -6.0   -0.6      0/8   -4.7  -7.2   0.2                -     
+     career   -6.2   -0.9      1/8   -8.1  -4.4   0.0                -     
+
+-- In season, preseason MFL price, seasons 2011-18: next3, 4200 rows, 511 players, test seasons [np.int64(2011), np.int64(2012), np.int64(2013), np.int64(2015), np.int64(2016), np.int64(2017)], overlap gap 4. All groups together -0.5
+      group  alone  floor seasons+  early  late  drop seasons for CI>0 PASS
+    pos+age    3.7    0.3      4/6   -1.5   8.8   0.2               26     
+       form    3.0    0.0      4/6    3.7   2.4   3.2               10     
+      xform    2.9    0.3      5/6    1.8   3.9  -0.0                4  yes
+       hurt    0.5    0.3      3/6   -0.3   1.4   0.0               26     
+team change   -0.1    0.4      3/6   -1.2   0.9   0.3                -     
+  yr before   -1.0   -0.3      3/6   -4.8   2.7  -1.7                -     
+      yards   -1.1    0.2      3/6    2.2  -4.5   0.5                -     
+        epa   -1.4    0.2      2/6   -0.9  -1.9   0.5                -     
+      draft   -4.1    0.0      1/6   -2.2  -6.1  -0.2                -     
+     career   -6.6   -0.3      1/6   -7.7  -5.4  -1.6                -     
+      usage   -7.0   -0.3      0/6   -5.9  -8.2  -2.2                -     
+    last yr   -8.5    0.7      0/6   -6.2 -10.7  -1.2                -     
+       body  -14.6    0.1      0/6  -11.6 -17.7  -0.6                -     
+
+-- In season, FP dynasty rank, seasons 2019-20 ONLY (2 folds; size check): ros, 1777 rows, 408 players, test seasons [np.int64(2019), np.int64(2020)], overlap gap 1. All groups together +7.1
+       group  alone  floor seasons+  early  late  drop seasons for CI>0 PASS
+   ros ranks    4.5   -0.9      2/2    4.7   4.2   3.6                0  yes
+       xform    1.9   -2.8      2/2    1.2   2.6  -0.2                1  yes
+        form    1.2    0.2      2/2    0.0   2.5   0.2                8  yes
+        hurt    0.6   -2.2      1/2   -1.6   2.9   1.6               96     
+     pos+age   -1.9   -2.8      1/2   -4.1   0.2   0.8                -     
+       draft   -3.8   -3.1      0/2   -7.4  -0.1  -0.7                -     
+pos rank+pre   -4.1   -0.7      0/2   -4.7  -3.4   0.6                -     
+
+-- In season, FP dynasty rank, seasons 2019-20 ONLY (2 folds; size check): hold1, 1765 rows, 403 players, test seasons [np.int64(2019), np.int64(2020)], overlap gap 1. All groups together +7.1
+       group  alone  floor seasons+  early  late  drop seasons for CI>0 PASS
+     pos+age    2.7   -1.3      2/2    1.5   3.8   0.7                1  yes
+        hurt   -0.7   -1.7      0/2   -1.1  -0.2   0.4                -     
+        form   -0.7    0.4      1/2   -1.8   0.4   0.6                -     
+       draft   -0.7   -2.0      1/2   -3.5   2.1   1.8                -     
+pos rank+pre   -1.5   -1.3      0/2   -2.5  -0.5   2.3                -     
+   ros ranks   -2.4   -2.5      0/2   -0.6  -4.2   1.3                -     
+       xform   -5.1   -2.1      0/2   -9.3  -1.0  -0.4                -     
