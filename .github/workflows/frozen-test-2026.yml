@@ -1,0 +1,45 @@
+# The 2026 test's remaining steps: career_value/analysis/frozen_test_2026.py has the spec. Cron only fires from the default branch, so this file has to be
+# on master; the job runs career-value's code and commits there. Delete it after the May 2027 result.
+name: frozen-test-2026
+on:
+  schedule:
+    - cron: "0 12 5-8 12 *"    # week 12 predictions, after the Dec 4 ranks. Retries: a day's missing data just means nothing new yet
+    - cron: "0 12 13-16 1 *"   # rest-of-season result, after week 18 (Jan 10)
+    - cron: "0 12 16-19 5 *"   # next-May result, after the May 15 prices
+    - cron: "0 12 1 * *"       # GitHub turns cron off after 60 quiet days, and January to May is longer than that
+  workflow_dispatch:
+permissions:
+  contents: write              # the commit, and reading the draft release of inputs
+  actions: write               # redeploying the page, since a push from this token doesn't trigger it
+defaults:
+  run:
+    shell: bash
+jobs:
+  keepalive:
+    if: github.event.schedule == '0 12 1 * *'
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/$GITHUB_REPOSITORY/actions/workflows/frozen-test-2026.yml/enable"
+  test:
+    if: github.event.schedule != '0 12 1 * *'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: career-value
+      - uses: astral-sh/setup-uv@v6
+      - run: bash career_value/ci_frozen_test.sh
+      - name: Commit anything new and redeploy the page
+        run: |
+          git add career_value/outputs pages/build/frozen_test.json
+          if git diff --cached --quiet; then echo "nothing new"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore(career_value): update the 2026 test from its scheduled run"
+          git push origin HEAD:career-value
+          gh workflow run pages.yml --repo "$GITHUB_REPOSITORY" --ref career-value

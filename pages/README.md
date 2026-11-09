@@ -193,9 +193,11 @@ over the rest of the season (January 2027) and the market rank next May (May 202
 [screen](../career_value/analysis/variable_screen.py) that picked those variables used seasons through 2020 and no KTC or
 FantasyCalc price. One season can't change a call: a pass goes on to 2027 and a league simulation.
 
-The page shows `build/frozen_test.json`, which CI reads as is because it has no scikit-learn. To update it, run the script's `score`
-for all four cells, then `site`, and commit the file. The week 12 predictions come from `predict` once the Nov 27 ranks are out. The
-interim table on the page is a refit on the weeks played so far, not the saved predictions, and it isn't the test.
+The page shows `build/frozen_test.json`, which the page build reads as is because it has no scikit-learn.
+[frozen-test-2026.yml](../.github/workflows/frozen-test-2026.yml) does the rest on a schedule: week 12 predictions after the Dec 4 ranks,
+rest-of-season results in mid-January and next-May results in mid-May. Each run commits to `career-value` and redeploys the page. To run
+one by hand: `gh workflow run frozen-test-2026.yml --repo JamesYouL2/data`. The interim table on the page is a refit on the weeks played
+so far, not the saved predictions, and it isn't the test.
 
 ## Daily data
 
