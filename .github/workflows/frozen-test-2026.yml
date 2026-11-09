@@ -32,6 +32,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: career-value
+          fetch-depth: 0   # superflex reads old FP 2QB ranks from this repo's git history
       - uses: astral-sh/setup-uv@v6
       - run: bash career_value/ci_frozen_test.sh
       - name: Commit anything new and redeploy the page
