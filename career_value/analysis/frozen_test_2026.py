@@ -26,7 +26,9 @@ score --interim is not the test. It retrains on the rest of the season through t
 scores that. It reads outcomes the final score will also read, but the frozen predictions can't change: they were saved first.
 
 Usage: LEAGUE=sf SOURCE=ktc python analysis/frozen_test_2026.py predict | score | score --interim | site
-predict only adds snapshot weeks missing from the file, so a week 12 run leaves weeks 4 and 8 as they were.
+predict only adds snapshot weeks missing from the file, so a week 12 run leaves weeks 4 and 8 as they were. It takes only a snapshot taken at exactly
+that week (week 12 is Dec 4: Nov 27 is 11 weeks in) and refuses one more than 7 days old. score scores each outcome once, when its data is final.
+.github/workflows/frozen-test-2026.yml runs predict, score and site on a schedule, through ci_frozen_test.sh.
 Writes outputs/[sf/]frozen_test_2026_<source>.csv.gz. site collects all four cells' scores for the web page into pages/build/frozen_test.json.
 """
 import datetime as dt
@@ -48,6 +50,7 @@ from sklearn.isotonic import IsotonicRegression  # noqa: E402
 
 SF, POOL, SOURCE = mps.SF, mps.POOL, mps.SOURCE
 TEST, TARGETS, PERMS, OUTCOMES = 2026, (4, 8, 12), 10, ("ros", "mv1")
+PREDICT_WITHIN = 7                                            # days after a snapshot's date; later than this, its results have started to come in
 GROUPS = {"form": ["g", "gone", "ppg"], "hurt": ["hurt"], "ros": ["rosr", "rosp", "rospre"]}
 GROUPS["all"] = [c for g in GROUPS.values() for c in g]
 OUT = out_dir(SF) / f"frozen_test_2026_{SOURCE}.csv.gz"
@@ -64,12 +67,12 @@ def rows_2026():
     IM.SEASONS = range(TEST, TEST + 1)
     x = IM.build()
     assert x.ros.isna().all() and x.hold1.isna().all(), "a 2026 outcome reached the predict step"
-    return x[(x.w - x.target).abs() <= 1]                     # target 12 has no snapshot until week 11 or 12 is played
+    return x[x.w == x.target]                                 # snapshots() falls back to a week either side, and week 12 isn't there until Dec 4
 
 
-def fetch_market(dates):
+def fetch_market(dates, kind="simweek"):
     for d in dates:
-        f = DD / f"simweek_{d}.json"
+        f = DD / f"{kind}_{d}.json"
         if not f.exists():
             n = (dt.date.today() - dt.date.fromisoformat(d)).days
             req = urllib.request.Request(f"https://dynasty-daddy.com/api/v1/player/all/prev/{n}", headers={"User-Agent": "career-value-research/0.1"})
@@ -147,6 +150,10 @@ def predict():
     have = pd.read_csv(OUT) if OUT.exists() else None
     if have is not None:
         te = te[~te.target.isin(have.target.unique())]
+    late = te.date.astype(str).map(lambda d: (dt.date.today() - dt.date.fromisoformat(d)).days > PREDICT_WITHIN)
+    if late.any():
+        print(f"too late to predict {sorted(str(d) for d in te[late].date.unique())}: results have started to come in")
+        te = te[~late]
     if te.empty:
         print("nothing new to predict")
         return
@@ -195,27 +202,42 @@ def score_interim(res, played):
     res["interim"] = {"through": played, "rows": len(p), "snapshots": sorted(int(t) for t in p.target.unique()), "ros": table(p, "ros_i")}
 
 
+def season_complete():
+    """the schedule says week 18 is over; this says its stats have arrived. All 32 teams play it"""
+    s = pd.read_parquet(IM.NV / "stats_player_week" / f"stats_player_week_{TEST}.parquet", columns=["season_type", "week", "team"])
+    return s[(s.season_type == "REG") & (s.week == 18)].team.nunique() == 32
+
+
 def score_final(res, f, played):
-    if played >= 18:
-        s = IM.ros_vorp(actual_weekly(), f[["season", "w"]].drop_duplicates())
-        d = f.merge(s[["gsis_id", "season", "w", "ros"]], on=["gsis_id", "season", "w"], how="left")
-        res["ros"] = table(d.assign(ros=d.ros.fillna(0.0)), "ros")
-    else:
-        print(f"ros waits for the regular season: {played} weeks finished")
-    may = mps.market_ranks(pd.read_parquet(HERE / "data" / "panel.parquet")).get(f"{TEST + 1}-05-15")
-    if may is not None:
-        res["mv1"] = table(f.assign(mv1=np.maximum(0, POOL - f.gsis_id.map(may["rank"]).fillna(POOL))), "mv1")
+    """adds each outcome once its data is final, then leaves it alone so a later stat correction can't move it. True if it added one"""
+    new = False
+    if "ros" not in res:
+        if played >= 18 and season_complete():
+            s = IM.ros_vorp(actual_weekly(), f[["season", "w"]].drop_duplicates())
+            d = f.merge(s[["gsis_id", "season", "w", "ros"]], on=["gsis_id", "season", "w"], how="left")
+            res["ros"], new = table(d.assign(ros=d.ros.fillna(0.0)), "ros"), True
+        else:
+            print(f"ros waits for the regular season: {played} weeks finished")
+    day = f"{TEST + 1}-05-15"
+    if "mv1" not in res:
+        if str(dt.date.today()) > day:
+            fetch_market([day], "snapshot")
+            may = mps.market_ranks(pd.read_parquet(HERE / "data" / "panel.parquet"))[day]
+            res["mv1"], new = table(f.assign(mv1=np.maximum(0, POOL - f.gsis_id.map(may["rank"]).fillna(POOL))), "mv1"), True
+        else:
+            print(f"mv1 waits for {day}")
+    return new
 
 
 def score(interim=False):
     f, played = pd.read_csv(OUT), weeks_done()
     p = out_dir(SF) / f"frozen_test_2026_{SOURCE}_score.json"
     res = json.loads(p.read_text()) if p.exists() else {}
-    res.update({"format": "sf" if SF else "1qb", "source": SOURCE, "played": played, "snapshots": sorted(int(t) for t in f.target.unique())})
     if interim:
         score_interim(res, played)
-    else:
-        score_final(res, f, played)
+    elif not score_final(res, f, played):
+        return
+    res.update({"format": "sf" if SF else "1qb", "source": SOURCE, "played": played, "snapshots": sorted(int(t) for t in f.target.unique())})
     print(json.dumps(res, indent=1))
     p.write_text(json.dumps(res, indent=1) + "\n")
 
