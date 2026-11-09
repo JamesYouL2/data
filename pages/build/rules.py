@@ -556,11 +556,13 @@ def gap(r, m):
 #   25 or younger, ROS positional rank a quarter better than dynasty: buy. Best gain per trade in both formats.
 #   Rookies with that gap: buy for rebuilders only. Value gained, this season's title odds didn't.
 # Players off the ROS list get no signal: mostly out for the year, and the Stash / Sell when healthy calls cover them.
-# Two groups don't get the sells (inseason_movers.csv, off-list dropped, value kept vs the price; not simmed on their own):
-#   QBs beat their price with the signal too: all, 1 / 3 years on, 1.07 / 1.34 in 1QB, 1.03 / 1.16 in superflex (non-QBs 0.83 /
-#   0.78, 0.85 / 0.79). Contenders still sell hurt ones, for this season: rest of season 0.33, 0.47.
-#   Hurt RB / WR / TE 25 or younger are about fairly priced: 0.91 / 0.92 in 1QB, 0.97 / 1.01 in superflex (26+: 0.59 /
-#   0.59, 0.54 / 0.51). Contenders still sell them: rest of season 0.36, 0.34.
+# Some players don't get the sells (market_price_sim.py, with trades at KTC and FantasyCalc prices, covers all of these):
+#   1QB QBs: selling them lost value 3 years on in every mode (-5 to -56), for titles within noise. Contenders still sell
+#   hurt ones, for this season: rest of season 0.33, 0.47 of the price (inseason_movers.csv).
+#   Hurt RB / WR / TE 25 or younger, for 1QB default teams and rebuilders in both formats. 1QB default teams gained nothing
+#   clear, and rebuilders lost value the next May (-9 to -18). Contenders still sell them: rest of season 0.36, 0.34.
+#   Superflex has no QB exemption, and default teams sell hurt young players. Titles over 3 years: QBs +0.3 to +2.6,
+#   hurt young players +1.3 to +1.4, with value 3 years on +3 to +20 and +45 to +50.
 # A quarter is one place near the top of the list (#3 to #4), and small moves there had no edge: top-36 players down 5
 # ROS places or fewer kept their value like players with no signal (1 year on, 1.07 vs 1.04 in 1QB, 1.09 vs 1.02 in
 # superflex), as did 1QB fallers down 2 dynasty places or fewer. The sim didn't have these floors.
@@ -603,13 +605,14 @@ TAKE_BACK = {"reb": "Trade him for a younger player at his price.",
 
 def apply_signal(act, mode, x, f, s):
     """(action, note) for one mode. The sim's sells and buys override Hold-type calls; where one meets the opposite
-    backtested call, or a sell and a buy fire together, the player is held. QBs, and hurt players 25 or younger, keep
-    their usual call on a sell signal, except for contenders with hurt ones."""
+    backtested call, or a sell and a buy fire together, the player is held. Some players keep their usual call on a sell
+    signal, except for contenders with hurt ones: 1QB QBs, and hurt players 25 or younger, apart from superflex default
+    teams, who sell them."""
     sells = []
     if x.position == "QB":
-        no_sell = not (mode == "con" and s.get("hurt"))
+        no_sell = f == "1qb" and not (mode == "con" and s.get("hurt"))
     else:
-        no_sell = bool(s.get("hurt") and s.get("young") and mode != "con")
+        no_sell = bool(s.get("hurt") and s.get("young") and mode != "con" and not (f == "sf" and mode == "mid"))
     if "ros_down" in s and not no_sell:
         sells.append(f"FantasyPros' rest-of-season rank fell from #{f0(s['ros_down'][0])} in the preseason to "
                      f"#{f0(s['ros_down'][1])}, and dynasty prices lag that.")

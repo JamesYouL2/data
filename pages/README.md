@@ -145,10 +145,16 @@ A fall also has to cost at least 6 rest-of-season places or 3 dynasty places. Ne
 place (#3 to #4), and top-36 players with falls that small kept their value about as well as players with no signal. The
 simulation didn't have these floors, so the numbers below include those trades.
 
-Two groups keep their usual call on a sell signal, except that contenders still sell the hurt ones, for this season. QBs held their
-price with the signal (1.07 of it a year on and 1.34 three years on in 1QB, 1.03 and 1.16 in superflex). Hurt RBs, WRs and TEs 25
-or younger were about fairly priced (0.91 and 0.92 in 1QB, 0.97 and 1.01 in superflex). These come from the
-[in-season rank data](../career_value/analysis/inseason_movers.py), not the simulation, and the groups are small.
+Some players keep their usual call on a sell signal, from a [simulation at KTC and FantasyCalc prices](../career_value/analysis/market_price_sim.py):
+
+- **QBs in 1QB.** Selling them lost value 3 years on in every mode (5 to 56) without a clear gain in titles. Contenders still sell
+  hurt ones, for this season.
+- **Hurt RBs, WRs and TEs 25 or younger**, for 1QB default teams and for rebuilders in both formats. 1QB default teams gained nothing
+  clear from selling them, and rebuilders lost value the next May (9 to 18). Contenders still sell them, for this season.
+
+Superflex has no QB exemption, and superflex default teams sell hurt young players. Over 3 seasons, selling those QBs added 0.3 to
+2.6 title points and selling those young players added 1.3 to 1.4, and value 3 years on rose in both cases. About half of the QB gain
+comes from selling any QB, not from the signal. These tests cover few classes (2020-22 at 3 years).
 
 | Signal | Call | Format | Modes | Title odds over 3 seasons (points) | Value 3 years on |
 |---|---|---|---|---|---|
@@ -167,7 +173,7 @@ naming what to take back in a trade.
 The signals were found on these same seasons, so this is not out of sample; there are only 3-5 classes behind each
 3-year number; and the simulation assumes someone accepts every equal-price trade. It also lets a team take the best
 player within 20% of the price, which is why these numbers are measured against random players and not against
-not trading. Other signals failed or were too weak to use: buying on a better rest-of-season rank (unreliable in 1QB)
+not trading. These numbers also clear trades at the FP rank. [At KTC and FantasyCalc prices](../career_value/analysis/market_price_sim.py), the calls' 3-year title gain against not trading falls by about half or more, and the signals add titles for contenders but little or no value. Other signals failed or were too weak to use: buying on a better rest-of-season rank (unreliable in 1QB)
 and selling superflex RB and TE risers (lost value a year on).
 
 ## Daily data
