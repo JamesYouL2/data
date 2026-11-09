@@ -145,6 +145,11 @@ A fall also has to cost at least 6 rest-of-season places or 3 dynasty places. Ne
 place (#3 to #4), and top-36 players with falls that small kept their value about as well as players with no signal. The
 simulation didn't have these floors, so the numbers below include those trades.
 
+Two groups keep their usual call on a sell signal, except that contenders still sell the hurt ones, for this season. QBs held their
+price with the signal (1.07 of it a year on and 1.34 three years on in 1QB, 1.03 and 1.16 in superflex). Hurt RBs, WRs and TEs 25
+or younger were about fairly priced (0.91 and 0.92 in 1QB, 0.97 and 1.01 in superflex). These come from the
+[in-season rank data](../career_value/analysis/inseason_movers.py), not the simulation, and the groups are small.
+
 | Signal | Call | Format | Modes | Title odds over 3 seasons (points) | Value 3 years on |
 |---|---|---|---|---|---|
 | Rest-of-season rank a quarter worse than the preseason | Sell | Both | All | +3 to +5 (1QB), +5 to +6 (superflex) | +88 to +151 (1QB), +96 to +114 (superflex) |
