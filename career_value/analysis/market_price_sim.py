@@ -24,6 +24,7 @@ the site):
 Caveats: the rules were fit on FP May ranks over these cohorts, which favours FP-input arms. Few cohorts: value 3 years on
 exists for 3 cohorts at market ranks and 2 at FP ranks; 3-year titles for 3. Market lists are shorter than 340 in the early
 years (FantasyCalc about 300 in 2022), so fewer trades clear there.
+The committed outputs ran on the sell exemptions from before they were cut back in superflex (rules.apply_signal).
 Writes outputs/[sf/]market_price_sim_<source>.csv.gz. LEAGUE=sf for superflex; REPS (default 10), WEEKS (default 4,8,12), JOBS.
 """
 import json
@@ -56,6 +57,7 @@ RANDOM = ("live", "mall")
 KIND = ("noqbx", "noyoungx")
 LENS = {"1-3": ("con", [1, 2, 3]), "4-8": ("mid", range(4, 9)), "9-12": ("reb", range(9, 13))}
 COHORTS = range(2020, 2025)
+OUT = "market_price_sim"
 UNLISTED = 500          # preseason rank of a player off the market's Sept 1 list, as in inseason_movers.py
 
 
@@ -75,13 +77,8 @@ def market_ranks(panel):
     return out
 
 
-def snapshot_calls(q, last, w, mk, mkpre):
-    """(arm, mode) -> {gsis_id: kind}; market rows mk and preseason mkpre are indexed by gsis_id"""
-    rows, inputs = rs.features(q, last)
-    has = q.ros_rank.notna().any()
-    y = int(q.season.iloc[0])
-    base = {"ROOKIE": y, "LOOK": rs.LOOK, "EARLY": False}
-    live = {**base, "WEEK": w + 1}
+def market_rows(q, rows, mk, mkpre):
+    """feature rows with the market rank as mr; and with the market rank in place of every dynasty rank"""
     mr = q.gsis_id.map(mk["rank"]).to_numpy(float)
     mp = q.gsis_id.map(mk["prank"]).to_numpy(float)
     pr = q.gsis_id.map(mkpre["rank"]).fillna(UNLISTED).to_numpy(float)
@@ -91,6 +88,17 @@ def snapshot_calls(q, last, w, mk, mkpre):
         if a == a:
             x = x._replace(**{f"r_{F}": a, f"pr_{F}": b, "do_now": a, "dsf_now": a, "do_pre": c, "dsf_pre": c})
         mx.append(x)
+    return rows, mx
+
+
+def snapshot_calls(q, last, w, mk, mkpre):
+    """(arm, mode) -> {gsis_id: kind}; market rows mk and preseason mkpre are indexed by gsis_id"""
+    rows, inputs = rs.features(q, last)
+    has = q.ros_rank.notna().any()
+    y = int(q.season.iloc[0])
+    base = {"ROOKIE": y, "LOOK": rs.LOOK, "EARLY": False}
+    live = {**base, "WEEK": w + 1}
+    rows, mx = market_rows(q, rows, mk, mkpre)
     mtilt = [x._replace(**{f"r_{F}": getattr(x, f"r_{F}") * k, f"pr_{F}": getattr(x, f"pr_{F}") * k}) for x, k in
              zip(mx, (R.ros_tilt(getattr(x, f"pr_{F}"), x.ros_p) if has else 1.0 for x in mx))]
     spec = {"live": (inputs["tilt"], rows, live, "live"), "nosig": (inputs["tilt"], rows, base, "live"),
@@ -260,7 +268,7 @@ def main():
     cols = (["t", "rep", "wk", "rank", "arm", "mode"] + [f"p{k}" for k in range(1, H + 1)]
             + ["val1", "val3", "mval1", "mval3", "sell", "later", "buy"])
     df = pd.DataFrame([r for part in res for r in part], columns=cols)
-    df.round(5).to_csv(out_dir(SF) / f"market_price_sim_{SOURCE}.csv.gz", index=False)
+    df.round(5).to_csv(out_dir(SF) / f"{OUT}_{SOURCE}.csv.gz", index=False)
     summarize(df)
 
 
