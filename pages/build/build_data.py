@@ -247,7 +247,8 @@ for s_, z in sp.items():          # Sleeper is current: its name and team win, a
 meta = {"built": str(TODAY.date()), "values_date": str(SCRAPE.date()), "season": CUR, "next": NEXT,
         "rookie": ROOKIE, "games": int(cs.games.max()) if len(cs) else 0, "last": CUR - 1,
         "market": bool(market), "picks": picks, "week": WEEK, "ros": bool(ROS_ON),
-        "fp_date": None if ecr is None else str(ecr.scrape_date.max())}
+        "fp_date": None if ecr is None else str(ecr.scrape_date.max()),
+        "test": json.loads((HERE / "frozen_test.json").read_text())}   # career_value/analysis/frozen_test_2026.py site; CI has no sklearn
 OUT.parent.mkdir(parents=True, exist_ok=True)
 js = "window.DATA = " + json.dumps({"meta": meta, "rules": rules, "players": out, "names": names}, separators=(",", ":")) + ";\n"
 OUT.write_text(js)

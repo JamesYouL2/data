@@ -183,6 +183,20 @@ player within 20% of the price, which is why these numbers are measured against 
 not trading. These numbers also clear trades at the FP rank. [At KTC and FantasyCalc prices](../career_value/analysis/market_price_sim.py), the calls' 3-year title gain against not trading falls by about half or more, and the signals add titles for contenders but little or no value. Other signals failed or were too weak to use: buying on a better rest-of-season rank (unreliable in 1QB)
 and selling superflex RB and TE risers (lost value a year on).
 
+## The 2026 test
+
+The backtests above use seasons that helped build them. The test in
+[frozen_test_2026.py](../career_value/analysis/frozen_test_2026.py) doesn't: its spec and predictions were committed
+([ec155b1](https://github.com/JamesYouL2/data/commit/ec155b1)) before any 2026 result was scored. It asks whether production to
+date, injury status or FantasyPros rest-of-season ranks add to the current KTC or FantasyCalc rank, in 1QB and superflex, on value
+over the rest of the season (January 2027) and the market rank next May (May 2027). The
+[screen](../career_value/analysis/variable_screen.py) that picked those variables used seasons through 2020 and no KTC or
+FantasyCalc price. One season can't change a call: a pass goes on to 2027 and a league simulation.
+
+The page shows `build/frozen_test.json`, which CI reads as is because it has no scikit-learn. To update it, run the script's `score`
+for all four cells, then `site`, and commit the file. The week 12 predictions come from `predict` once the Nov 27 ranks are out. The
+interim table on the page is a refit on the weeks played so far, not the saved predictions, and it isn't the test.
+
 ## Daily data
 
 [`.github/workflows/pages.yml`](../.github/workflows/pages.yml) (at the repo root) runs every day at 11:17 UTC. It downloads the inputs,

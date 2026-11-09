@@ -1,0 +1,42 @@
+{
+ "format": "1qb",
+ "source": "ktc",
+ "played": 8,
+ "snapshots": [
+  4,
+  8
+ ],
+ "interim": {
+  "through": 8,
+  "rows": 307,
+  "snapshots": [
+   4
+  ],
+  "ros": [
+   {
+    "group": "form",
+    "skill": -3.8,
+    "floor": -1.4,
+    "ok": false
+   },
+   {
+    "group": "hurt",
+    "skill": 7.2,
+    "floor": -0.9,
+    "ok": true
+   },
+   {
+    "group": "ros",
+    "skill": 1.6,
+    "floor": 1.0,
+    "ok": true
+   },
+   {
+    "group": "all",
+    "skill": 5.1,
+    "floor": 0.1,
+    "ok": true
+   }
+  ]
+ }
+}

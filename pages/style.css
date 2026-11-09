@@ -58,8 +58,10 @@ button { cursor: pointer; border-radius: 6px; padding: 8px 14px; border: 1px sol
 .b.none { color: var(--mute); background: transparent; border: 1px dashed var(--line); }
 .other { color: var(--mute); font-size: 12px; margin-top: 4px; white-space: nowrap; }
 .tag { font-size: 11px; color: var(--mute); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; margin-left: 4px; }
-details#legend { margin: 32px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; }
-details#legend summary { cursor: pointer; font-weight: 600; }
+details#legend, details#test { margin: 32px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; }
+details#legend summary, details#test summary { cursor: pointer; font-weight: 600; }
+details#test .hint { margin-top: 10px; }
+details#test h4 { margin: 16px 0 6px; font-size: 13px; }
 dl { display: grid; grid-template-columns: max-content 1fr; gap: 8px 14px; margin: 12px 0 4px; }
 dd { margin: 0; }
 footer { color: var(--mute); font-size: 12px; padding-bottom: 40px; }
