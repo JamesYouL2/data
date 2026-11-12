@@ -1,0 +1,18 @@
+# Keeps master an exact copy of dynastyprocess/data's master. Nothing of ours goes on master: the code and the workflows live on career-value, the
+# default branch (cron only fires from there).
+name: sync-upstream
+on:
+  schedule:
+    - cron: "47 10 * * *"   # daily, 10:47 UTC, after upstream's morning FantasyPros scrape
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      # Fast-forward only, so it fails if master ever gets a commit of its own. It also fails when upstream changes a file under .github/workflows,
+      # which this token can't push: run `gh repo sync JamesYouL2/data --branch master` by hand then.
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh repo sync "$GITHUB_REPOSITORY" --branch master

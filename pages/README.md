@@ -202,7 +202,10 @@ so far, not the saved predictions, and it isn't the test.
 ## Daily data
 
 [`.github/workflows/pages.yml`](../.github/workflows/pages.yml) (at the repo root) runs every day at 11:17 UTC. It downloads the inputs,
-rebuilds `data/players.js`, and deploys the site to GitHub Pages:
+rebuilds `data/players.js`, and deploys the site to GitHub Pages. A schedule only fires from the default branch, so `career-value` is
+the default. `master` holds nothing of ours: [`sync-upstream.yml`](../.github/workflows/sync-upstream.yml) fast-forwards it to
+[dynastyprocess/data](https://github.com/dynastyprocess/data) every day at 10:47 UTC. The page doesn't read `master`; merge it into
+`career-value` when the analyses need newer `files/`. The page's inputs:
 
 | Input | Source | Updated |
 |---|---|---|
@@ -217,8 +220,11 @@ rebuilds `data/players.js`, and deploys the site to GitHub Pages:
 
 The last three rows are optional. If a download fails, the site builds without that data.
 
+If upstream changes a file under `.github/workflows`, the sync fails because the workflow's token can't push workflow files. Run
+`gh repo sync JamesYouL2/data --branch master` by hand then.
+
 GitHub turns off scheduled workflows in a repository that has had no activity for 60 days. If that happens, re-enable
-the workflow from the Actions tab.
+the workflows from the Actions tab.
 
 ## Running it locally
 
