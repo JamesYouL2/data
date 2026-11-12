@@ -15,7 +15,8 @@ One team makes one trade, other side priced within x0.8-1.25 of the pick's rank:
           oldest; rand: a random one
 rand is the control: what swapping a pick for any player at its price does. Outcomes against the same league with no trade
 (common random numbers): change in P(title) in season 1, seasons 1-3 and seasons 2-3, and dynasty value held at the Mays 1 and 3
-years on (sum of POOL - market rank, rookies included).
+years on (sum of POOL - market rank, rookies included; and the sum of the market's own values, which unlike ranks are worth
+far more at the top, as a % of the pick's price).
 Caveats: May trades only, where the site is used in season. Few cohorts: 3-year results have 2020-22 only. Picks two or more years
 out aren't modelled, and neither is anything a team does with a pick besides using it. Rosters are otherwise frozen and bench
 players score nothing, so a rookie only counts once he makes a lineup.
@@ -54,12 +55,14 @@ def tier(rank):
 
 
 def run_cohort(args):
-    t, g, rk, pickrank, P, mk1, mk3, seed = args
+    t, g, rk, pickrank, P, mk1, mk3, u1, u3, seed = args
     rng = np.random.default_rng(seed)
     n = len(g)
     pos = np.concatenate([g.position.to_numpy(), rk.position.to_numpy()])
     age, pj, price = g.age.to_numpy(), g.proj.to_numpy(), g.mrank.to_numpy(float)
     ok = ~np.isnan(price)
+    price_units = {str(r): np.mean([v for (rr, _), v in pickrank["units"].items() if rr == r]) for r in ROUNDS}
+    pickrank = pickrank["rank"]
     out = []
 
     def lu(ids):
@@ -91,8 +94,12 @@ def run_cohort(args):
         def val(T, col, r, i):
             return np.nansum(np.maximum(0, POOL - r[T[:, col] == i])) if r is not None else np.nan
 
+        def units(T, col, u, i):
+            return np.nansum(u[T[:, col] == i]) if u is not None else np.nan
+
         def row(T, i, arm, taste, done):
-            return (t, rep, rkk[i], arm, taste, *evaluate(T)[:, i], val(T, 1, mk1, i), val(T, 2, mk3, i), done)
+            return (t, rep, rkk[i], arm, taste, *evaluate(T)[:, i], val(T, 1, mk1, i), val(T, 2, mk3, i), units(T, 1, u1, i),
+                    units(T, 2, u3, i), price_units.get(arm[-1:], np.nan), done)
 
         own0 = np.tile(np.arange(su.TEAMS), (4, 1))
         T0 = build(team, own0)
@@ -139,6 +146,7 @@ def main():
     v["rank"] = v.groupby("t").mkt.rank(method="first")
     v = v.merge(panel[["gsis_id", "t", "row_type"]], on=["gsis_id", "t"], how="left")
     mrank = {t: z.set_index("gsis_id")["rank"] for t, z in v.groupby("t")}
+    munits = {t: z.set_index("gsis_id")["value"] for t, z in v.groupby("t")}
     pk = PK.pick_prices()
     pk = pk[pk.market == f"dd_{SOURCE}"]
     d = mm.pool()
@@ -153,7 +161,8 @@ def main():
         if q.empty or vt.empty or len(rk) < NR:
             print(f"cohort {t}: skipped ({len(q)} pick prices, {len(vt)} players priced, {len(rk)} rookies)")
             continue
-        pickrank = {(int(r["round"]), r.tier): 1 + int((vt.value > r.value).sum()) for _, r in q.iterrows()}
+        pickrank = {"rank": {(int(r["round"]), r.tier): 1 + int((vt.value > r.value).sum()) for _, r in q.iterrows()},
+                    "units": {(int(r["round"]), r.tier): r.value for _, r in q.iterrows()}}
         g = d[d.t == t].reset_index(drop=True)
         g["mkt_rank"] = g.mkt_rank.rank(method="first")
         g["proj"] = proj(g)
@@ -165,15 +174,17 @@ def main():
         P[len(g):, 0] = 0                                                # next year's class isn't on a roster in season 1
         mk1 = ids.map(mrank[t + 1]).to_numpy(float) if t + 1 in mrank else None
         mk3 = ids.map(mrank[t + 3]).to_numpy(float) if t + 3 in mrank else None
+        u1 = ids.map(munits[t + 1]).to_numpy(float) if t + 1 in munits else None
+        u3 = ids.map(munits[t + 3]).to_numpy(float) if t + 3 in munits else None
         info.append({"t": t, "priced": int(g.mrank.notna().sum()),
-                     **{f"{r}{tr[0]}": pickrank.get((r, tr)) for r in (1, 2, 3, 4) for tr in ("early", "mid", "late")}})
-        jobs.append((t, g, rk[["gsis_id", "position"]].reset_index(drop=True), pickrank, P, mk1, mk3, int(rng.integers(1 << 31))))
+                     **{f"{r}{tr[0]}": pickrank["rank"].get((r, tr)) for r in (1, 2, 3, 4) for tr in ("early", "mid", "late")}})
+        jobs.append((t, g, rk[["gsis_id", "position"]].reset_index(drop=True), pickrank, P, mk1, mk3, u1, u3, int(rng.integers(1 << 31))))
     print(f"== {'Superflex' if SF else '1QB'}, {SOURCE}: market rank of next year's picks at each May (e / m / l = early / mid / late), "
           f"and how many of the FP top {POOL} the market prices")
     print(pd.DataFrame(info).to_string(index=False))
     with Pool(JOBS) as pool:
         res = pool.map(run_cohort, jobs)
-    cols = ["t", "rep", "rank", "arm", "taste"] + [f"p{k}" for k in range(1, H + 1)] + ["val1", "val3", "done"]
+    cols = ["t", "rep", "rank", "arm", "taste"] + [f"p{k}" for k in range(1, H + 1)] + ["val1", "val3", "u1", "u3", "pick_units", "done"]
     df = pd.DataFrame([r for part in res for r in part], columns=cols)
     df.round(5).to_csv(out_dir(SF) / f"pick_sim_{SOURCE}.csv.gz", index=False)
     summarize(df)
@@ -182,14 +193,15 @@ def main():
 def summarize(df):
     key = ["t", "rep", "rank"]
     pc = [f"p{k}" for k in range(1, H + 1)]
-    base = df[df.arm == "none"].set_index(key)[pc + ["val1", "val3"]].add_suffix("_0")
+    base = df[df.arm == "none"].set_index(key)[pc + ["val1", "val3", "u1", "u3"]].add_suffix("_0")
     z = df[df.arm != "none"].join(base, on=key)
     z["yr1"] = (z.p1 - z.p1_0) * 100
     z["yrs2-3"] = np.where(z.t + 3 <= su.LAST, sum(z[f"p{k}"] - z[f"p{k}_0"] for k in (2, 3)) * 100, np.nan)
     z["yrs1-3"] = z.yr1 + z["yrs2-3"]
     z["v1"], z["v3"] = z.val1 - z.val1_0, z.val3 - z.val3_0
+    z["u1%"], z["u3%"] = (z.u1 - z.u1_0) / z.pick_units * 100, (z.u3 - z.u3_0) / z.pick_units * 100
     z["grp"] = pd.cut(z["rank"], [0, 3, 8, 12], labels=list(OWN)).astype(str)
-    mets = ["yr1", "yrs2-3", "yrs1-3", "v1", "v3"]
+    mets = ["yr1", "yrs2-3", "yrs1-3", "v1", "v3", "u1%", "u3%"]
     pd.set_option("display.width", 250, "display.max_rows", 400)
 
     def cell(q, c):
@@ -212,7 +224,8 @@ def summarize(df):
         print(pd.DataFrame(rows).to_string(index=False))
 
     print(f"\n== {'Superflex' if SF else '1QB'}, {SOURCE}, cohorts {sorted(z.t.unique())}, {z.rep.nunique()} reps. One pick trade against no "
-          "trade: mean ± 95% CI, cohorts above zero / cohorts. Titles in points; v1, v3 = dynasty value at the May 1 and 3 years on. "
+          "trade: mean ± 95% CI, cohorts above zero / cohorts. Titles in points; v1, v3 = dynasty value at the May 1 and 3 years on; u1%, u3% = the same in the market's own value units, as a % of the "
+          "round's pick price. "
           "Teams that found no trade count as 0")
     table("each team's own taste (contenders and middle teams: lineup; rebuilders: age)", lambda grp, a: OWN[grp][a])
     table("control: a random player at the pick's price", lambda grp, a: "rand")
