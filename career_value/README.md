@@ -304,6 +304,28 @@ KTC, round level, 1QB / superflex:
 - **Future picks gain value as their draft approaches.** A 1st two years out cost 0.56× (1QB) / 0.67× (superflex) of the price its rookies carried once drafted; one year out, 0.87× / 0.93×. Most of the rise is in FantasyCalc (0.51–0.64×); KTC one year out is already about 1.0×.
 - **For production inside 3 years, future picks lose almost every time** (0% of class-years beat their price for 1sts and 2nds). That is mostly the wait. Whether they pay off at 5–10 years can't be tested yet: only the 2022 and 2023 classes have 5-year windows.
 
+### 6a. Who should sell or buy next year's picks? (`analysis/pick_sim.py`)
+
+The league simulation behind the site's three modes (`analysis/middle_mode.py`), with next year's 1st-4th added: after season 1 each pick becomes the rookie the market ranked at that slot, in reverse order of the real season. One team trades one pick in May at its market rank, against no trade. Sellers take the player who most helps their projected lineup (teams projected 1st-8th) or the youngest (9th-12th); buyers give the player who costs their lineup least, or their oldest. 40 leagues a cohort; KTC has cohorts 2020-24 and FantasyCalc 2021-23, and the 3-year numbers rest on 3 and 2 of them. Ranges run across KTC and FantasyCalc, 1QB and superflex. Title odds in points; value is the sum of 340 − market rank over the roster.
+
+| Team (projected rank) | Trade | Title odds, season 1 | Title odds, seasons 1-3 | Value 1 year on | Value 3 years on |
+|---|---|---|---|---|---|
+| Contender (1-3) | Sell 1st | +4.2 to +8.6 | +5.4 to +16.0 | −45 to −98 | −63 to −102 |
+| Contender (1-3) | Sell 2nd | +1.9 to +3.7 | +1.7 to +4.3 | −43 to −94 | −52 to −108 |
+| Middle (4-8) | Sell 1st | +4.4 to +9.8 | +2.5 to +10.8 | −48 to −106 | −100 to −125 |
+| Middle (4-8) | Sell 2nd | +2.3 to +4.9 | +2.4 to +6.2 | −52 to −91 | −61 to −128 |
+| Rebuilder (9-12) | Buy 1st | −0.9 to −1.2 | −0.8 to +1.7 | +35 to +89 | +68 to +138 |
+| Rebuilder (9-12) | Buy 2nd | −0.6 to −0.7 | −0.9 to +0.2 | +57 to +131 | +84 to +114 |
+| Rebuilder (9-12) | Buy 3rd | −0.3 to −0.6 | −1.0 to −0.2 | +85 to +116 | +64 to +99 |
+
+- **A pick trade is titles against value, in every cohort.** Selling a pick raised season-1 title odds in every cohort and lowered value a year on in every cohort, for every kind of team; buying did the reverse.
+- **Contenders and middle teams gain the most titles from selling a 1st.** About two thirds of that comes from choosing a player who fits the lineup: a random player at the same price added 1.5 to 3.4 points in season 1. A middle team gets about the same season-1 gain as a contender and less over three seasons.
+- **Rebuilders buying picks give up almost no titles** (about 1 point in season 1 and nothing clear over three) and gain value at both dates in every cohort. Giving the oldest player at the price beat giving a random one for 2nds and 3rds.
+- **A rebuilder selling its own 1st for a young player is unclear.** KTC shows +8 to +9 title points over three seasons, most of it from the 2022 cohort; FantasyCalc shows −0.7 to −1.8 and a value loss of 47 to 126.
+- **3rds barely move titles** (under 2.5 points either way), but buying one still gained value.
+
+Caveats: these are May trades, and the site is used in season; picks two or more years out aren't modelled; only one team trades; and value counts a rookie at his market rank the May he is drafted, when rookies are priced highest (section 10). Outputs: `pick_sim_<source>.csv.gz`.
+
 ## 7. Old vs young superflex QBs, old vs young 1QB WRs, and elite studs
 
 Dynasty markets pooled (FP, KTC, FantasyCalc, DP; 2019–2024 snapshots). The 5-year column has 2 cohorts; "bridge" is `youth_premium.py`'s MFL-based estimate across the four markets.
