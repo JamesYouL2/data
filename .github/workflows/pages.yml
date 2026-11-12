@@ -2,10 +2,10 @@ name: Build and deploy pages
 
 on:
   schedule:
-    - cron: "17 11 * * *"   # daily, 11:17 UTC (after nflverse's overnight stats update); runs from the default branch only
+    - cron: "17 11 * * *"   # daily, 11:17 UTC (after nflverse's overnight stats update). Cron only fires from the default branch, which is career-value
   workflow_dispatch:
   push:
-    branches: [master, career-value]
+    branches: [career-value]
     paths: ["pages/**", ".github/workflows/pages.yml"]
 
 permissions:

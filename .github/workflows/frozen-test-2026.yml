@@ -1,5 +1,5 @@
-# The 2026 test's remaining steps: career_value/analysis/frozen_test_2026.py has the spec. Cron only fires from the default branch, so this file has to be
-# on master; the job runs career-value's code and commits there. Delete it after the May 2027 result.
+# The 2026 test's remaining steps: career_value/analysis/frozen_test_2026.py has the spec. Cron only fires from the default branch, which is
+# career-value; the job commits there. Delete it after the May 2027 result.
 name: frozen-test-2026
 on:
   schedule:
