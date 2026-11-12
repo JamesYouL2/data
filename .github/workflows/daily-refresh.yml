@@ -1,0 +1,48 @@
+# Every day: merge dynastyprocess/data into this fork's master and career-value, then rebuild the page. Cron only fires from the default branch, so this
+# file has to be on master; the page itself is built by career-value's pages.yml.
+name: daily-refresh
+on:
+  schedule:
+    - cron: "17 11 * * *"   # 11:17 UTC, after nflverse's overnight stats update and upstream's morning FantasyPros scrape
+  workflow_dispatch:
+permissions:
+  contents: write            # pushing the merges
+  actions: write             # starting pages.yml
+concurrency:
+  group: daily-refresh
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          filter: blob:none  # the history is several GB of data files; the merge only needs the few that changed
+      - name: Merge upstream into master and career-value
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add upstream https://github.com/dynastyprocess/data.git
+          git fetch --filter=blob:none upstream master
+          failed=0
+          for b in master career-value; do
+            git checkout -q -B "$b" "origin/$b"
+            if git merge --no-edit -m "chore: merge dynastyprocess/data into $b" upstream/master && git push origin "$b"; then
+              echo "$b is up to date with upstream"
+            else
+              # A conflict, a push that raced another one, or an upstream change to .github/workflows (this token can't push those: merge it by hand)
+              echo "::error::could not merge upstream into $b"
+              git merge --abort 2>/dev/null || true
+              failed=1
+            fi
+          done
+          exit $failed
+  page:
+    needs: sync
+    if: ${{ !cancelled() }}   # the page downloads its data itself, so a failed merge shouldn't stop it
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --repo "$GITHUB_REPOSITORY" --ref career-value
