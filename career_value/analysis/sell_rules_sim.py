@@ -19,7 +19,13 @@ The bar is 2 for every type. Section 30 had 1.5 a little ahead for Contending an
 kind of team (middle_mode.py), so a rule that departs from Default has to clear the stricter bar.
 Caveats: FP prices and the best player in a price window, so levels are inflated; leagues in a cohort share players, so z is too
 large; one rule at a time, and rules interact (section 28); the bars come from section 30.
-Writes outputs/[sf/]sell_rules_sim.csv.gz. LEAGUE=sf for superflex; REPS (default 20), JOBS. `table` reprints from the file.
+SIDE=buy runs buys the same way: every player of one class on another team is a Buy, and the team buys up to 3 of them (middle_mode.py:
+the biggest lineup gain for Contending and Default, the youngest for Rebuilding, giving the player it values least in the price window).
+Its control marks as many random players of that price band on other teams as Buys.
+The table also lists where Default stands apart: a rule both Contending and Rebuilding keep and Default doesn't, and Default on a second
+test (value 1 year on at the bar, with no title measure at z <= -2).
+Writes outputs/[sf/]sell_rules_sim.csv.gz (buy_rules_sim.csv.gz with SIDE=buy). LEAGUE=sf for superflex; REPS (default 20), JOBS. `table`
+reprints from the file.
 """
 import os
 import pathlib
@@ -38,6 +44,7 @@ from common import HERE, out_dir  # noqa: E402
 R, SF = cs.R, cs.SF
 REPS = int(os.environ.get("REPS", 20))
 JOBS = int(os.environ.get("JOBS", 6))
+SIDE = os.environ.get("SIDE", "sell")              # "buy": one buy rule at a time, written to buy_rules_sim.csv.gz
 TYPE = {**{r: "contend" for r in (1, 2, 3)}, **{r: "middle" for r in range(4, 10)}, **{r: "rebuild" for r in range(10, 13)}}
 NAME = {"contend": "Contending (1-3)", "middle": "Default (4-9)", "rebuild": "Rebuilding (10-12)"}
 GOAL = {"contend": ("yrs2", 2.0, "yrs3", 2.0), "middle": ("yrs3", 2.0, "v1", 2.0), "rebuild": ("v1", 2.0, None, None)}
@@ -68,6 +75,22 @@ def run_cohort(args):
             m = TYPE[rkk[i]]
             v1, v3 = val(T0, i, 1, rk1), val(T0, i, 2, rk3)
             out.append((t, rep, rkk[i], m, "none", "-", *p0[:3, i], v1, v3, 0, 0))
+            if SIDE == "buy":
+                oth = (team >= 0) & (team != i)
+                for c in sorted(set(cls)):
+                    tg = np.flatnonzero(oth & (cls == c))
+                    band = c.split(" | ")[1]
+                    pool_ = np.flatnonzero(oth & (bands == band))
+                    for name, pick in ((c, tg), ("ctl:" + c, rng.choice(pool_, size=min(len(tg), len(pool_)), replace=False) if len(tg) else tg)):
+                        if not len(pick):
+                            out.append((t, rep, rkk[i], m, name, "buy", *p0[:3, i], v1, v3, 0, 0))
+                            continue
+                        act = np.full(len(team), "Hold", dtype=object)
+                        act[pick] = "Buy"
+                        T, n = mm.policy(i, m, team, g, {m: act}, nxt1, rng)
+                        p = mm.season_titles(T, P, pos, seeds)[:, i] if sum(n) else p0[:, i]
+                        out.append((t, rep, rkk[i], m, name, "buy", *p[:3], val(T, i, 1, rk1), val(T, i, 2, rk3), sum(n), len(pick)))
+                continue
             mine = cls[team == i]
             for (c, how), a in acts.items():
                 held = int((mine == c).sum())
@@ -120,7 +143,7 @@ def main():
         res = pool.map(run_cohort, jobs)
     cols = ["t", "rep", "rank", "mode", "cls", "how", "p1", "p2", "p3", "val1", "val3", "n", "held"]
     df = pd.DataFrame([r for part in res for r in part], columns=cols)
-    df.round(5).to_csv(out_dir(SF) / "sell_rules_sim.csv.gz", index=False)
+    df.round(5).to_csv(out_dir(SF) / f"{SIDE}_rules_sim.csv.gz", index=False)
     summarize(df)
 
 
@@ -134,20 +157,28 @@ def summarize(df):
     z["v1"] = np.where(z.t + 1 <= 2024, z.val1, np.nan)
     z["v3"] = np.where(z.t + 3 <= 2024, z.val3, np.nan)
     base = z[z.cls == "none"].set_index(key)[METS]
-    ctl = z[z.cls.str.startswith("random")].copy()
-    ctl["k"], ctl["band"] = ctl.cls.str.split().str[1].astype(int), ctl.cls.str.split(" | ", regex=False).str[1]
-    ctl = ctl.set_index(key + ["how", "band", "k"])[METS]
+    buy = (z.how == "buy").any()
+    if buy:
+        ctl = z[z.cls.str.startswith("ctl:")].assign(cls=lambda x: x.cls.str[4:]).set_index(key + ["cls"])[METS]
+    else:
+        ctl = z[z.cls.str.startswith("random")].copy()
+        ctl["k"], ctl["band"] = ctl.cls.str.split().str[1].astype(int), ctl.cls.str.split(" | ", regex=False).str[1]
+        ctl = ctl.set_index(key + ["how", "band", "k"])[METS]
     rows = []
-    for (m, c, how), q in z[~z.cls.str.startswith(("none", "random"))].groupby(["mode", "cls", "how"]):
+    for (m, c, how), q in z[~z.cls.str.startswith(("none", "random", "ctl:"))].groupby(["mode", "cls", "how"]):
         band = c.split(" | ")[1]
         q = q.set_index(key)
-        k = q.held.clip(1, 3).to_numpy()
-        ref = ctl.reindex(pd.MultiIndex.from_arrays([q.index.get_level_values(0), q.index.get_level_values(1), q.index.get_level_values(2),
-                                                     [how] * len(q), [band] * len(q), k])).to_numpy()
-        ref = np.where((q.held.to_numpy() > 0)[:, None], ref, base.loc[q.index].to_numpy())       # holds none: the control is no trade too
+        if buy:
+            ref = ctl.reindex(pd.MultiIndex.from_arrays([q.index.get_level_values(0), q.index.get_level_values(1), q.index.get_level_values(2),
+                                                         [c] * len(q)])).to_numpy()
+        else:
+            k = q.held.clip(1, 3).to_numpy()
+            ref = ctl.reindex(pd.MultiIndex.from_arrays([q.index.get_level_values(0), q.index.get_level_values(1), q.index.get_level_values(2),
+                                                         [how] * len(q), [band] * len(q), k])).to_numpy()
+            ref = np.where((q.held.to_numpy() > 0)[:, None], ref, base.loc[q.index].to_numpy())   # holds none: the control is no trade too
         d = pd.DataFrame(q[METS].to_numpy() - ref, index=q.index, columns=METS)
         raw = q[METS] - base.loc[q.index]
-        r = {"team": m, "class": c, "when": how, "sold a team": round(q.n.mean(), 2)}
+        r = {"team": m, "class": c, "when": how, "sold a team": round(q.n.mean(), 2)}   # traded a team, for buys
         st = {}
         for kk in METS:
             v = d[kk].dropna()
@@ -159,6 +190,7 @@ def summarize(df):
         ok = st[g][1] >= bar and st[g][2] >= st[g][3] - 1 and not (guard and st[guard][1] <= -gbar)
         r["vs no trade"] = f"{raw[g].mean():+.1f}"
         r["keep"], r["_z"], r["_gain"] = ("KEEP" if ok else ""), st[g][1], st[g][0]
+        r["_value"] = st["v1"][1] >= 2 and st["v1"][2] >= st["v1"][3] - 1 and min(st[x][1] for x in ("yr1", "yrs2", "yrs3")) > -2
         rows.append(r)
     t = pd.DataFrame(rows)
     print(f"== {'Superflex' if SF else '1QB'}: one sell rule less its control (as many random players of that price band sold the same way), by team type. "
@@ -167,12 +199,20 @@ def summarize(df):
         g, bar, guard, gbar = GOAL[m]
         q = t[(t.team == m) & (t["sold a team"] >= 0.05)].sort_values("_z", ascending=False)
         print(f"\n-- {NAME[m]}: objective {g} at a bar of {bar}" + (f", guard {guard}" if guard else "") + "; sorted by the objective's z")
-        print(q.drop(columns=["team", "_z", "_gain"]).to_string(index=False))
+        print(q.drop(columns=["team", "_z", "_gain", "_value"]).to_string(index=False))
     k = t[t.keep == "KEEP"].sort_values("_gain", ascending=False)
     best = k.groupby(["team", "class"]).head(1)
     print("\n== the sells kept, the better of now / later for each class")
     w = best.pivot(index="class", columns="team", values="when").reindex(columns=["contend", "middle", "rebuild"]).fillna("")
     print(w.rename(columns=NAME).to_string())
+    both = set(k[k.team == "contend"]["class"]) & set(k[k.team == "rebuild"]["class"])
+    mid = t[t.team == "middle"]
+    print("\n== Default apart from its neighbours: classes both Contending and Rebuilding keep, and what Default got")
+    print(mid[mid["class"].isin(both)].drop(columns=["team", "_z", "_gain", "_value"]).to_string(index=False) if both else "(none)")
+    print("\n== Default on a second test: value 1 year on at 2 standard errors, no title measure at z <= -2")
+    print(mid[mid._value & (mid["sold a team"] >= 0.05)].sort_values("_gain", ascending=False).drop(columns=["team", "_z", "_gain", "_value"]).to_string(index=False))
+    if buy:
+        return
     c = z[z.cls.str.startswith("random")].set_index(key)
     cd = c[METS] - base.loc[c.index]
     print("\n== the controls against no trade (what selling anyone does here)")
@@ -181,6 +221,6 @@ def summarize(df):
 
 if __name__ == "__main__":
     if sys.argv[1:] == ["table"]:
-        summarize(pd.read_csv(out_dir(SF) / "sell_rules_sim.csv.gz"))
+        summarize(pd.read_csv(out_dir(SF) / f"{SIDE}_rules_sim.csv.gz"))
     else:
         main()

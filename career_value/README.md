@@ -58,7 +58,7 @@ Follow-up analyses for sections 3b and 7–12 are in `analysis/`. Run them from 
 | `simple_rules_sim.py` | 28 (also `LEAGUE=sf`, `SOURCE=fantasycalc`; `table` prints the verdicts; writes `outputs/simple_rules_sim_<source>.csv.gz`) |
 | `rule_audit.py` | 29 (also `LEAGUE=sf`; prints only) |
 | `threshold_sim.py` | 30 (also `LEAGUE=sf`; `table` reprints; writes `outputs/threshold_sim.csv.gz`) |
-| `sell_rules_sim.py` | 31 (also `LEAGUE=sf`; `table` reprints; writes `outputs/sell_rules_sim.csv.gz`) |
+| `sell_rules_sim.py` | 31, 33 (also `LEAGUE=sf`; `SIDE=buy` for buys; `table` reprints; writes `outputs/sell_rules_sim.csv.gz` or `buy_rules_sim.csv.gz`) |
 | `sell_timing_sim.py` | 32 (also `LEAGUE=sf`; `table` reprints; writes `outputs/sell_timing_sim.csv.gz`) |
 
 `common.py` holds shared loaders. Sections 13 and 16 also run for superflex if `outputs/sf/` exists.
@@ -1443,6 +1443,8 @@ Experiments, not on the site. Team types by the projection for the coming season
 - **Timing:** nearly every sell that holds is a sell now, not a "use, then sell".
 - **Class matters for value, not for titles.** Against the control no rule moved title odds by more than about 1.5 points; the Rebuilding rules moved value by 18 to 63 each.
 
+**Default between its neighbours.** One sell is kept by both Contending and Rebuilding and not by Default: RBs 26–29 priced 101+ in 1QB, where Default gained +0.9 title points over three seasons (z 2.0, 3 of 5 cohorts, so the cohort check failed it) and +71 of value a year on (z 9.5, 6 of 6). That is the test's miss, not the rule's. Judged on value a year on at the bar with no title measure at z ≤ −2, Default also sells, now: RBs 26–29 priced 101+ (+71 / +62), WRs 26–29 priced 101+ (+46 / +37), RBs 30+ priced 101+ (+12 / +14), and in superflex QBs 30+ and TEs 30+ priced 101+ (+22, +9); and after the season, RBs 26–29 in the top 100 (+3 / +4 a year on, +51 / +33 three years on, no title cost, where selling them now cost −1.0 / −1.1 title points this season). So the lists nest: Contending's sells are in Default's, and Default's in Rebuilding's.
+
 Caveats: FP prices and the best player in a price window; leagues in a cohort share players, so z is too large; one rule at a time, and rules interact (section 28); classes are coarser than the site's call groups.
 
 ## 32. When to sell a producing older player (`analysis/sell_timing_sim.py`)
@@ -1469,6 +1471,29 @@ An experiment, not on the site. Producing = inside his position's starter line b
 - **Rebuilding sells now in every class:** value is highest then and titles don't fall.
 
 Caveats: few real players a class, so each row is a handful of careers replayed; FP prices; one partner rule; a player who has left the top 340 can't be sold, which is the risk of waiting and is in the numbers.
+
+## 33. Which buys belong to which kind of team? (`analysis/sell_rules_sim.py`, `SIDE=buy`)
+
+An experiment, not on the site. Section 31's design for buys: every player of one class on another team is a Buy and the team buys up to 3 (the biggest lineup gain for Contending and Default, the youngest for Rebuilding), against a control that marks as many random players of that price band. Objectives, team types and the bar of 2 as section 31. Gain on the objective less the control, z in brackets; 1QB / superflex.
+
+| Buy | Contending: title odds, seasons 1–2 | Default: title odds, seasons 1–3 | Rebuilding: value 1 year on |
+|---|---|---|---|
+| TEs 30+ in the top 100 | **+5.8 (7.1) / +5.6 (7.3)**, 5 of 5 cohorts | **+4.0 (5.3) / +5.7 (7.4)** | +21 (3.4) in superflex, 3 of 5 cohorts |
+| RBs 30+ in the top 100 | **+12.6 / +14.6**, one cohort with two seasons | +15.9 / +13.9 over two seasons, no third season yet | **+26 / +54**, one cohort |
+| Rookie WRs in the top 100 | no (season 1 −0.7 in superflex) | **+8.3 (6.8) / +8.5 (5.1)**; value +109 / +120; season 1 −1.6 / −1.0 | **+102 (10.5) / +96 (11.7)**; +201 / +253 three years on |
+| Rookie RBs | no | priced 101+: **+1.7 (2.8)** / +2.7 (3.3) on 2 of 5 cohorts; season 1 −1.7 / −1.8 | top 100: **+41 (3.6)** / +40, 4 of 6 cohorts |
+| Rookie TEs | no | no on titles; priced 101+ +178 of value in 1QB | **+53 to +81 (7.8 to 8.8)**, title odds −1.3 to −2.6 over three seasons |
+| Rookie QBs | no | no | **1QB +67 and +109; superflex top 100 +33** |
+| QBs 26–29 priced 101+ | +1.3 (2.2) / +3.0 (3.5), 4 of 6 cohorts | +2.2 (3.3) / +3.1 (3.3), 3 of 5 cohorts | no |
+| RBs, WRs and QBs 30+ priced 101+ | no: value −50 to −160 | no: the same | no |
+
+- **Two families, not a nested list.** Old producers in the top 100 (TEs 30+, and RBs 30+ on one cohort) are buys for Contending and Default; rookies are buys for Rebuilding, and of the rookies only WRs in the top 100 (and RBs priced 101+ in 1QB) also clear for Default.
+- **The contender's buy is the producing 30+ TE**, worth about 6 title points over two seasons beyond the control in every cohort, with no value lost. It is the mirror of section 32: the players a contender shouldn't sell are the ones it should buy.
+- **Rookie WRs in the top 100 are the one buy that gains both titles over three seasons and value**, for Default and Rebuilding; they cost a point or so in season 1.
+- **Old players priced outside the top 100 are not buys for anyone:** no title gain beyond the control and 50 to 160 of value lost.
+- **Near misses on the cohort check:** QBs 26–29 priced 101+ (title odds up 1 to 3 points for Contending and Default in both formats, +158 of value three years on in 1QB).
+
+Caveats as section 31; RBs 30+ in the top 100 exist in two cohorts.
 
 ## Caveats
 
