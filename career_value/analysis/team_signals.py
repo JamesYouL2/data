@@ -486,6 +486,144 @@ def modes():
     print(pd.DataFrame(rows).to_string(index=False))
 
 
+def sell_old_trade(i, team, price, age):
+    """up to NTRADE swaps: team i's oldest tradeable player for the youngest one elsewhere within x0.8-1.25 of his price"""
+    cur, moved, n = team.copy(), np.zeros(len(team), bool), 0
+    ok = ~np.isnan(price)
+    for _ in range(NTRADE):
+        mine = np.flatnonzero((cur == i) & ok & ~moved)
+        for j in mine[np.argsort(-age[mine])]:
+            c = np.flatnonzero((cur >= 0) & (cur != i) & ~moved & ok & (price >= price[j] * 0.8) & (price <= price[j] * 1.25) & (age < age[j] - 2))
+            if len(c):
+                x = c[np.lexsort((price[c], age[c]))[0]]
+                cur[j], cur[x] = cur[x], i
+                moved[[j, x]] = True
+                n += 1
+                break
+        else:
+            break
+    return cur, n
+
+
+def bye_cohort(args):
+    t, g, snaps, wkp, pts, rank_at, proj_by_w, seed = args
+    rng = np.random.default_rng(seed)
+    Y = t + 1
+    pos, age = g.position.to_numpy(), g.age.to_numpy(float)
+    yrs = [y for y in (Y + 1, Y + 2) if y <= su.LAST]
+    P = np.stack([g.gsis_id.map(pts.get(y, {})).fillna(0).to_numpy() for y in yrs], 1) if yrs else np.zeros((len(g), 0))
+    rk1 = g.gsis_id.map(rank_at[t + 1]).to_numpy(float) if t + 1 in rank_at else None
+    out = []
+
+    def lus(vals, T):
+        return np.array([su.lineup(vals[T == k], pos[T == k]) for k in range(su.TEAMS)])
+    m = snaps.get(12)
+    if m is None:
+        return out
+    w = min(int(m.w.dropna().iloc[0]), REG - 1)
+    wk = wkp[Y]
+    pre = g.gsis_id.map(wk.loc[:, wk.columns <= w].sum(axis=1)).fillna(0).to_numpy()
+    post = g.gsis_id.map(wk.loc[:, (wk.columns > w) & (wk.columns <= LAST_WK)].sum(axis=1)).fillna(0).to_numpy()
+    price, pj = m["rank"].to_numpy(float), proj_by_w[12]
+    wgt = np.nan_to_num(np.exp(-price / DECAY))
+    for rep in range(REPS * 3):
+        team = su.draft(g, "ADP", -1, np.random.default_rng(rng.integers(1 << 31)))
+        Lpre = lus(pre, team) / w
+        sd = wn.SD * (Lpre.mean() * w + lus(post, team).mean()) / LAST_WK
+        ros = lus(pj, team)
+        young = np.array([wgt[(team == k) & (age <= 25)].sum() / wgt[team == k].sum() for k in range(su.TEAMS)])
+        seeds = rng.integers(1 << 31, size=3)
+
+        def later(T):
+            p = mm.season_titles(np.repeat(T[:, None], P.shape[1], 1), P, pos, seeds[1:]) if P.shape[1] else np.zeros((0, su.TEAMS))
+            return np.pad(p, ((0, 2 - len(p)), (0, 0)), constant_values=np.nan)
+
+        def val1(T, i):
+            return np.nansum(np.maximum(0, POOL - rk1[T == i])) if rk1 is not None else np.nan
+        Lpost0, late0 = lus(post, team) / (LAST_WK - w), later(team)
+        arms = []
+        for i in range(su.TEAMS):
+            a = []
+            for T, n in (win_now_trade(i, team, price, pj, pos), sell_old_trade(i, team, price, age)):
+                a.append((lus(post, T) / (LAST_WK - w), later(T)[:, i] if n else late0[:, i], val1(T, i) - val1(team, i), n))
+            arms.append(a)
+        for d in range(DRAWS):
+            w0, pf0 = play(np.zeros((1, su.TEAMS)), np.zeros((1, su.TEAMS)), Lpre, w, sd, rng)
+            sdn = (-(w0[0] * 1e4 + pf0[0])).argsort().argsort() + 1
+            s_ = int(rng.integers(1 << 31))
+            p0 = finish(w0[0], pf0[0], Lpost0, w, sd, np.random.default_rng(s_))
+            for i in range(su.TEAMS):
+                if sdn[i] > 6:                                  # playoff seeds only
+                    continue
+                r = [t, rep, d, i, sdn[i], w0[0, i], ros[i], (-ros).argsort().argsort()[i] + 1, young[i], young.argsort().argsort()[i] + 1,
+                     p0[i], *late0[:, i]]
+                for Lp, late, dv, n in arms[i]:
+                    r += [finish(w0[0], pf0[0], Lp, w, sd, np.random.default_rng(s_))[i] if n else p0[i], *late, dv, n]
+                out.append(tuple(r))
+    print(f"cohort {t} done", flush=True)
+    return out
+
+
+def bye():
+    """After week 12: a team seeded 1st or 2nd on its record (a first-round bye as things stand), by rest-of-season strength and by how
+    old its value is (share of top-heavy value in players 25 or under; rank 1 = oldest). Title odds this season and the next two with
+    no trade, after the win-now trade (buy), and after selling its oldest players for the youngest at their price (sell old)."""
+    import inseason_movers as im
+    x = pd.read_csv(out_dir(SF) / "inseason_movers.csv")
+    wk = im.weekly()
+    wkp = {y: z.pivot_table(index="gsis_id", columns="week", values="ppr", aggfunc="sum").fillna(0) for y, z in wk.groupby("season")}
+    proj = ins.ros_projector(x, wk)
+    s = pd.read_parquet(HERE / "data" / "player_seasons.parquet")
+    pts = {y: z.set_index("gsis_id").ppr.to_dict() for y, z in s.groupby("season")}
+    d = mm.pool()
+    rank_at = {t: z.set_index("gsis_id").mkt_rank for t, z in d.groupby("t")}
+    d = d[d.t <= 2024]
+    pproj = mm.projector(pts, d)
+    rng = np.random.default_rng(47)
+    jobs = []
+    for t in range(2019 if SF else 2018, 2025):
+        g = d[d.t == t].reset_index(drop=True)
+        g["mkt_rank"] = g.mkt_rank.rank(method="first")
+        g["proj"] = pproj(g)
+        q = x[(x.season == t + 1) & (x.target == 12)]
+        if q.empty or int(q.w.iloc[0]) >= LAST_WK:
+            continue
+        m = g[["gsis_id", "position"]].merge(q.drop(columns="position"), on="gsis_id", how="left")
+        m["w"] = int(q.w.iloc[0])
+        jobs.append((t, g, {12: m}, wkp, pts, rank_at, {12: proj(m)}, int(rng.integers(1 << 31))))
+    with Pool(JOBS) as pool:
+        res = pool.map(bye_cohort, jobs)
+    cols = ["t", "rep", "draw", "team", "seed", "wins", "ros", "ros_rank", "young", "old_rank", "now0", "y2_0", "y3_0"]
+    for a in ("buy", "sell"):
+        cols += [f"now_{a}", f"y2_{a}", f"y3_{a}", f"dval_{a}", f"n_{a}"]
+    z = pd.DataFrame([r for part in res for r in part], columns=cols)
+    pd.set_option("display.width", 250, "display.max_rows", 200)
+    z["strength"] = pd.cut(z.ros_rank, [0, 4, 8, 12], labels=["strong (1-4)", "mediocre (5-8)", "weak (9-12)"])
+    z["age"] = pd.cut(z.old_rank, [0, 4, 8, 12], labels=["old", "middle", "young"])
+    z["slot"] = np.where(z.seed <= 2, "bye (seeds 1-2)", "seeds 3-6")
+    z["lg"] = z.t * 1000 + z.rep
+    for a in ("buy", "sell"):
+        z[f"d_now_{a}"] = (z[f"now_{a}"] - z.now0) * 100
+        z[f"d_next2_{a}"] = (z[f"y2_{a}"] + z[f"y3_{a}"] - z.y2_0 - z.y3_0) * 100
+    z["now"], z["next2"] = z.now0 * 100, (z.y2_0 + z.y3_0) * 100
+
+    def cell(q, c):
+        v = q.dropna(subset=[c])
+        if v.lg.nunique() < 5:
+            return ""
+        lg, by = v.groupby("lg")[c].mean(), v.groupby("t")[c].mean()
+        return f"{lg.mean():+6.1f} ±{1.96 * lg.std(ddof=1) / np.sqrt(len(lg)):4.1f} {int((by > 0).sum())}/{len(by)}"
+    rows = []
+    for (slot, st, ag), q in z.groupby(["slot", "strength", "age"], observed=True):
+        rows.append({"slot": slot, "strength": st, "age of value": ag, "team-records": len(q), "rosters": q.groupby(["t", "rep", "team"]).ngroups,
+                     "title odds now": round(q.now.mean(), 1), "next 2 seasons": round(q.next2.mean(), 1),
+                     "buy: now": cell(q, "d_now_buy"), "buy: next 2": cell(q, "d_next2_buy"), "buy: value": cell(q, "dval_buy"),
+                     "sell old: now": cell(q, "d_now_sell"), "sell old: next 2": cell(q, "d_next2_sell"), "sell old: value": cell(q, "dval_sell")})
+    print(f"== {'Superflex' if SF else '1QB'}, after week 12, playoff seeds as things stand. Title odds in points; changes are mean ± 95% CI over leagues, "
+          "cohorts above zero / cohorts; value = sum of 340 - FP rank next May")
+    print(pd.DataFrame(rows).to_string(index=False))
+
+
 if __name__ == "__main__":
     if sys.argv[1:] == ["may"]:
         may()
@@ -495,6 +633,8 @@ if __name__ == "__main__":
         decay()
     elif sys.argv[1:] == ["splits"]:
         may(scan="splits")
+    elif sys.argv[1:] == ["bye"]:
+        bye()
     elif len(sys.argv) > 1:
         summarize(pd.read_csv(out_dir(SF) / "team_signals.csv.gz"))
     else:

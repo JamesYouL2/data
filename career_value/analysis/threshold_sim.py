@@ -38,6 +38,20 @@ BARS = (0.5, 1.0, 1.5, 2.0, 2.5, 3.0)
 LENS = {"rebuild": "keep3", "middle": "keep1", "contend": "prod1"}
 TYPE = {**{r: "contend" for r in (1, 2, 3)}, **{r: "middle" for r in range(4, 9)}, **{r: "rebuild" for r in range(9, 13)}}
 MIN_N, FIRST = 15, {"wf": 2021, "loco": 2018}
+# Contending on other measures (C_BARS only): 1 season plus value after, 2 seasons of VORP, 2 seasons plus value, 3 seasons plus value
+C_LENS, C_BARS = ("keep1", "prod2", "keep2", "keep3"), (1.5, 2.0)
+LENS_OF = {"keep3": (3, "hold", "fair"), "keep2": (2, "hold", "fair"), "keep1": (1, "hold", "fair"), "prod1": (1, "vorp1", "v1fair"),
+           "prod2": (2, "vorp2", "v2fair")}
+
+
+def test(q, num, den):
+    """rule_audit.test on any pair of columns: z of the ratio of sums against 1, a player's seasons as one cluster"""
+    if len(q) < MIN_N or q[den].sum() <= 0:
+        return None
+    r = q[num].sum() / q[den].sum()
+    e = (q[num] - r * q[den]).groupby(q.gsis_id).sum()
+    se = np.sqrt((e ** 2).sum()) / q[den].sum()
+    return (r - 1) / se if se > 0 else 0.0
 
 
 def keys(pos, a, pb):
@@ -46,16 +60,17 @@ def keys(pos, a, pb):
 
 def tables(H, cohorts, lens):
     """pool key -> z, from the rows of `cohorts`"""
-    x = H[ra.LENS_H[lens]]
+    h, num, den = LENS_OF[lens]
+    x = H[h]
     x = x[x.t.isin(cohorts)]
     out = {}
     groups = [(("pap", p, a, pb), q) for (p, a, pb), q in x.groupby(["position", "acls", "pb"])]
     groups += [(("pa", p, a), q) for (p, a), q in x.groupby(["position", "acls"])]
     groups += [(("a", a), q) for a, q in x[x.position != "QB"].groupby("acls")]
     for k, q in groups:
-        s = ra.test(q, lens)
-        if s is not None and s["n"] >= MIN_N:
-            out[k] = s["z"]
+        z = test(q, num, den)
+        if z is not None:
+            out[k] = z
     return out
 
 
@@ -86,6 +101,8 @@ def run_cohort(args):
             m = TYPE[rkk[i]]
             out.append((t, rep, rkk[i], m, "none", *p0[:, i], val(T0, i, 1, rk1), val(T0, i, 2, rk3), 0))
             for arm, a in act.items():
+                if m not in a:                                # a Contending-only arm
+                    continue
                 T, n = mm.policy(i, "random" if arm == "random" else m, team, g, a, nxt1, rng)
                 p = mm.season_titles(T, P, pos, seeds)[:, i] if sum(n) else p0[:, i]
                 out.append((t, rep, rkk[i], m, arm, *p, val(T, i, 1, rk1), val(T, i, 2, rk3), sum(n)))
@@ -94,9 +111,11 @@ def run_cohort(args):
 
 
 def main():
-    H = cs.horizons()
+    H = cs.horizons(hs=(1, 2, 3))
     H[1] = cs.calls(H[1])
-    H[3] = H[3].join(H[1].set_index(["gsis_id", "t"])[["grp", "reb", "con", "mid", "band", "pb", "acls"]], on=["gsis_id", "t"])
+    for h in (2, 3):
+        H[h] = H[h].join(H[1].set_index(["gsis_id", "t"])[["grp", "reb", "con", "mid", "band", "pb", "acls"]], on=["gsis_id", "t"])
+    H[2]["v2fair"] = cs.iso(H[2].mkt_rank, H[2].vorp2).predict(np.log(H[2].mkt_rank))
     s = pd.read_parquet(HERE / "data" / "player_seasons.parquet")
     pts = {y: z.set_index("gsis_id").ppr.to_dict() for y, z in s.groupby("season")}
     pr = mm.prod_ranks(s)
@@ -121,11 +140,14 @@ def main():
         for how in ("wf", "loco"):
             if t < FIRST[how]:
                 continue
-            tabs = {}
-            for m, lens in LENS.items():
-                h = ra.LENS_H[lens]
-                coh = [c for c in H[h].t.unique() if (c + h <= t if how == "wf" else c != t)]
-                tabs[m] = tables(H, coh, lens)
+            def tab(lens):
+                h = LENS_OF[lens][0]
+                return tables(H, [c for c in H[h].t.unique() if (c + h <= t if how == "wf" else c != t)], lens)
+            tabs = {m: tab(lens) for m, lens in LENS.items()}
+            for lens in C_LENS:
+                tc = tab(lens)
+                for bar in C_BARS:
+                    act[f"{how}_{bar}_c:{lens}"] = {"contend": np.array([call(tc, *c, bar) for c in cls], dtype=object)}
             for bar in BARS:
                 a = {m: np.array([call(tabs[m], *c, bar) for c in cls], dtype=object) for m in LENS}
                 act[f"{how}_{bar}"] = a
@@ -153,29 +175,52 @@ def summarize(df):
     key = ["t", "rep", "rank"]
     z = df.copy()
     z["yr1"] = z.p1 * 100
+    z["yrs2"] = np.where(z.t + 2 <= su.LAST, (z.p1 + z.p2) * 100, np.nan)
     z["yrs3"] = np.where(z.t + 3 <= su.LAST, (z.p1 + z.p2 + z.p3) * 100, np.nan)
     z["v1"] = np.where(z.t + 1 <= 2024, z.val1, np.nan)
     z["v3"] = np.where(z.t + 3 <= 2024, z.val3, np.nan)
-    base = z[z.arm == "none"].set_index(key)[["yr1", "yrs3", "v1", "v3"]]
-    mets = ["yr1", "yrs3", "v1", "v3"]
+    mets = ["yr1", "yrs2", "yrs3", "v1", "v3"]
+    base = z[z.arm == "none"].set_index(key)[mets]
+
+    def cells(d):
+        r = {}
+        for c in mets:
+            v = d[c].dropna()
+            if v.empty:
+                r[c] = ""
+                continue
+            lg, by = v.groupby(level=["t", "rep"]).mean(), v.groupby(level="t").mean()
+            se = lg.std(ddof=1) / np.sqrt(len(lg))
+            r[c] = f"{lg.mean():+7.1f} z{lg.mean() / se if se > 0 else 0:+5.1f} {int((by > 0).sum())}/{len(by)}"
+        return r
+
+    def arm(a, m, first):
+        return z[(z.arm == a) & (z["mode"] == m) & (z.t >= first)].set_index(key)
     for how, first in FIRST.items():
-        arms = ["live", "random"] + [f"{how}_{b}" for b in BARS]
         rows = []
         for m in ("contend", "middle", "rebuild"):
-            for arm in arms:
-                q = z[(z.arm == arm) & (z["mode"] == m) & (z.t >= first)].set_index(key)
-                d = q[mets] - base.loc[q.index]
-                r = {"team": m, "arm": arm.replace(how + "_", "bar "), "trades": round(q.n.mean(), 1)}
-                for c in mets:
-                    v = d[c].dropna()
-                    if v.empty:
-                        r[c] = ""
-                        continue
-                    lg, by = v.groupby(level=["t", "rep"]).mean(), v.groupby(level="t").mean()
-                    se = lg.std(ddof=1) / np.sqrt(len(lg))
-                    r[c] = f"{lg.mean():+7.1f} z{lg.mean() / se:+5.1f} {int((by > 0).sum())}/{len(by)}"
-                rows.append(r)
-        print(f"\n== {'Superflex' if SF else '1QB'}, training {how}, cohorts {first}-2024, against no trades: mean, z, cohorts above zero / cohorts")
+            for a in ["live", "random"] + [f"{how}_{b}" for b in BARS]:
+                q = arm(a, m, first)
+                rows.append({"team": m, "arm": a.replace(how + "_", "bar "), "trades": round(q.n.mean(), 1), **cells(q[mets] - base.loc[q.index])})
+        print(f"\n== {'Superflex' if SF else '1QB'}, training {how}, cohorts {first}-2024, against no trades: mean, z (leagues as clusters), cohorts above zero / cohorts")
+        print(pd.DataFrame(rows).to_string(index=False))
+        rows = []
+        for m in ("contend", "middle", "rebuild"):
+            for a, b in ((1.5, 2.0), (1.0, 1.5), (2.0, 2.5)):
+                qa, qb = arm(f"{how}_{a}", m, first), arm(f"{how}_{b}", m, first)
+                rows.append({"team": m, "bars": f"{a} less {b}", **cells(qa[mets] - qb.loc[qa.index, mets])})
+        print(f"-- paired, same leagues: one bar less the next ({how})")
+        print(pd.DataFrame(rows).to_string(index=False))
+        rows = []
+        for b in C_BARS:
+            for lens in ("prod1",) + C_LENS:
+                a = f"{how}_{b}" if lens == "prod1" else f"{how}_{b}_c:{lens}"
+                q = arm(a, "contend", first)
+                if len(q):
+                    rows.append({"bar": b, "Contending reads": lens, "trades": round(q.n.mean(), 1), **cells(q[mets] - base.loc[q.index])})
+        q = arm("live", "contend", first)
+        rows.append({"bar": "", "Contending reads": "the site's calls", "trades": round(q.n.mean(), 1), **cells(q[mets] - base.loc[q.index])})
+        print(f"-- Contending teams on other measures, against no trades ({how})")
         print(pd.DataFrame(rows).to_string(index=False))
 
 

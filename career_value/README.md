@@ -50,7 +50,7 @@ Follow-up analyses for sections 3b and 7–12 are in `analysis/`. Run them from 
 | `rb_long.py` | 20 (also `LEAGUE=sf`) |
 | `startup.py` | 21 (also `LEAGUE=sf`; writes `outputs/startup_sim.csv`) |
 | `startup_fp.py` | 22 (also `LEAGUE=sf`; writes `outputs/startup_fp_sim.csv`) |
-| `team_signals.py` | 23 (also `LEAGUE=sf`; writes `outputs/team_signals.csv.gz`; `may`, `decay`, `splits` and `modes` arguments print only) |
+| `team_signals.py` | 23 (also `LEAGUE=sf`; writes `outputs/team_signals.csv.gz`; `may`, `decay`, `splits`, `bye` and `modes` arguments print only) |
 | `rank_gaps.py` | 24 (also `LEAGUE=sf`; `REDRAFT=fp` for FP redraft ECR; prints only) |
 | `redraft_age.py` | 25 (also `LEAGUE=sf`; prints only) |
 | `gap_model_sim.py` | 26 (also `LEAGUE=sf`, `SOURCE=fantasycalc`; `check` and `ablate` print only; writes `outputs/gap_model_sim_<source>.csv.gz`) |
@@ -1068,6 +1068,18 @@ Experiments, not used by the site. Three runs in the league simulation of sectio
 - Frozen rosters understate value, which can't be traded or turned into rookies here. Seasons 4 and 5 have 4 and 3 cohorts.
 - **The decay of 60 is fitted to titles** (`decay`). Value's correlation with title odds over seasons 2–5 peaks at a decay of 45–60 in 1QB (0.26, against 0.15 for the rank sum) and 60–90 in superflex (0.25–0.26, against 0.17), and is flat across that range. Trade markets are less top-heavy: an exponential fitted to May values gives a decay of 73–99 for FantasyCalc and 106–196 for KTC, rising each year.
 
+**A mediocre, old team with a first-round bye** (`bye`). After week 12, teams seeded 1st or 2nd on their record, in the middle third by rest-of-season strength and the oldest third by where their value sits (1QB / superflex):
+
+| | Title odds this season | Next two seasons | Value next May |
+|---|---|---|---|
+| No trade (title odds) | 15.7 / 16.0 | 20.6 / 14.6 | |
+| Buy: the win-now trade | +10.6 / +11.5 | +8.3 / +9.5 | −3 / +19 |
+| Sell old: the oldest players for the youngest at their price | −3.3 / −3.0 | −4.6 / −0.4 | +55 / +42 |
+
+- **Buy.** It raised this season's title odds in every cohort; selling old players lowered them in every cohort, and in 1QB over the next two seasons as well.
+- **The bye is worth about 6 points to this team** (9.5 as a 3rd to 6th seed) and buying adds more with it (+10.6) than without (+8.8). The age of the roster barely moves the buy's gain (+10 to +11 for old, middling and young).
+- The buy here costs nothing, as above, so this says to use the bye, not what a real buy should cost.
+
 **What the value is made of** (`splits`). Shares of a roster's top-heavy value, per 1 SD, with strength this season and total top-heavy value held fixed (1QB / superflex):
 
 | Share of value in | Season 1 | Seasons 2–3 | Seasons 4–5 |
@@ -1347,6 +1359,36 @@ Players called (1QB): 116 buys and 207 sells of 340 at a bar of 0.5 for rebuilde
 - **For Contending the bar is not the problem, the measure is.** Rules read on next season's VORP win more this season the looser they are (+16 at a bar of 1), and at every bar they give up the title odds of seasons 2–3 and 100 to 640 of value. The site's calls, which sell on three seasons of value, win less this season and far more after.
 - **Against the site's calls:** pools at a bar of 2 match them for Default in 1QB, beat them for Default in superflex (+21.6 against +13.4 over three seasons, and more value), and trail them for Rebuilding in 1QB. On finished seasons only, the site's calls lead in 1QB for every team type and trail for superflex Default.
 - **For the in-season signals** (section 28) a bar of 2 would add one rule, the dynasty-fall sell for superflex Contending (+1.7 / +1.3, z 3.3 / 2.3).
+
+**1.5 against 2, in the same leagues** (1.5 less 2; all cohorts / finished seasons only):
+
+| Team | 1QB | Superflex |
+|---|---|---|
+| Contending, title odds seasons 1–2 | +9.3 / +12.1 | +1.4 / +0.1 |
+| Contending, value 1 year on | +45 / +42 | −13 / −59 |
+| Default, title odds seasons 1–3 | −3.0 / −3.9 | +0.3 / −6.2 |
+| Default, value 1 year on | +48 / +8 | +76 / +132 |
+| Rebuilding, value 1 year on | +71 / +10 | +9 / −2 |
+| Rebuilding, value 3 years on | +166 / +115 | −29 / 0 |
+
+- **Neither wins everywhere.** 1.5 is better for Contending and Rebuilding in 1QB; 2 is better for Default's titles in both formats, where 1.5 buys value with them; superflex Contending and Rebuilding are a wash.
+
+**What should Contending be judged on?** Contending teams on pools read five ways, and the site's calls (all cohorts; 1QB / superflex; the bar is 1.5 for the two production measures and 2 for the rest, each measure's better one):
+
+| Contending reads | Title odds, season 1 | Seasons 1–2 | Seasons 1–3 | Value 3 years on |
+|---|---|---|---|---|
+| Next season's VORP | +13.1 / +10.1 | +14.1 / +11.0 | +4.7 / +7.3 | −412 / −543 |
+| Two seasons of VORP | +9.6 / +4.5 | +9.6 / +2.1 | +7.4 / −1.1 | −52 / −227 |
+| 1 season plus value after | +1.0 / +1.2 | +7.1 / +6.6 | +14.7 / +19.9 | +687 / +735 |
+| 2 seasons plus value after | +0.6 / +1.6 | +8.3 / +11.2 | +19.2 / +27.4 | +640 / +772 |
+| 3 seasons plus value after | +0.3 / +0.3 | +7.9 / +10.0 | +18.3 / +27.4 | +529 / +901 |
+| The site's Contending calls | +7.7 / +4.5 | +10.4 / +6.8 | +17.1 / +7.6 | +395 / +164 |
+
+- **Production measures are short-sighted, two seasons of it included.** They win seasons 1 and 2 and give most of it back in season 3, with value lost.
+- **Measures with value after win nothing in season 1** and the most by season 3.
+- **The site's 1QB Contending calls already sit between the two:** most of the production rules' season-1 gain, as much over two seasons as anything but next-season VORP at a loose bar, and close to the value measures over three. They sell on three seasons of value and keep whoever is starting through the playoffs (`rules.classify`).
+- **The site's superflex Contending calls are the short-sighted ones:** +7.6 over three seasons against +27 for the value measures, which also match or beat them over two (+10 to +11 against +6.8). On finished seasons only the value measures trail over two seasons (−2.5 against +9.2) and lead over three (+23.6 against +9.4), on 2 to 3 cohorts.
+- **Judging Contending on seasons 1–2 picks the same calls in 1QB** and points away from production-only rules; it doesn't separate the site's calls from the value measures in superflex as clearly as three seasons does.
 
 Caveats: FP prices, where the sim takes the best player in a price window, so levels are inflated and the standard errors (leagues as clusters) are far too small: read the order of the rows. Training on every other cohort lets a neighbouring cohort's seasons in; the finished-seasons version has 4 test cohorts, and 2 for three-season results. The bar itself is chosen on these cohorts.
 
