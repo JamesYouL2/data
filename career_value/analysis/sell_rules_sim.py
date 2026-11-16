@@ -11,10 +11,10 @@ the best lineup fit gains in this sim, so every number is the rule less its cont
 Outcomes: title odds in season 1, seasons 1-2 and seasons 1-3, and value (sum of 340 - FP rank) 1 and 3 years on; mean, z with leagues
 as clusters, cohorts above zero / cohorts.
 A sell is kept for a team type if it clears that type's bar on its objective at a z of BAR and is above zero in every cohort but one:
-  Contending   title odds over seasons 1-2, and no loss over seasons 1-3 at z <= -2
-  Default      title odds over seasons 1-3, and no loss of value 1 year on at z <= -2
+  Contending   title odds over seasons 1-2, and no loss over seasons 1-3 at z <= -BAR
+  Default      title odds over seasons 1-3, and no loss of value 1 year on at z <= -BAR
   Rebuilding   value 1 year on
-The bar is 2 for every type. Section 30 had 1.5 a little ahead for Contending and Rebuilding within their type, but a team projected
+and the objective has at least 3 cohorts. The bar is BAR (default 2) for every type. Section 30 had 1.5 a little ahead for Contending and Rebuilding within their type, but a team projected
 1st-3rd finishes there 45% of the time (team_signals.py persist), and Default's calls do as well or better over three seasons for every
 kind of team (middle_mode.py), so a rule that departs from Default has to clear the stricter bar.
 Caveats: FP prices and the best player in a price window, so levels are inflated; leagues in a cohort share players, so z is too
@@ -47,7 +47,9 @@ JOBS = int(os.environ.get("JOBS", 6))
 SIDE = os.environ.get("SIDE", "sell")              # "buy": one buy rule at a time, written to buy_rules_sim.csv.gz
 TYPE = {**{r: "contend" for r in (1, 2, 3)}, **{r: "middle" for r in range(4, 10)}, **{r: "rebuild" for r in range(10, 13)}}
 NAME = {"contend": "Contending (1-3)", "middle": "Default (4-9)", "rebuild": "Rebuilding (10-12)"}
-GOAL = {"contend": ("yrs2", 2.0, "yrs3", 2.0), "middle": ("yrs3", 2.0, "v1", 2.0), "rebuild": ("v1", 2.0, None, None)}
+BAR = float(os.environ.get("BAR", 2.0))
+GOAL = {"contend": ("yrs2", "yrs3"), "middle": ("yrs3", "v1"), "rebuild": ("v1", None)}     # objective, guard
+MIN_COHORTS = 3
 METS = ["yr1", "yrs2", "yrs3", "v1", "v3"]
 
 
@@ -147,8 +149,9 @@ def main():
     summarize(df)
 
 
-def summarize(df):
-    pd.set_option("display.width", 280, "display.max_rows", 600)
+def verdicts(df, bar=None, cohort_check=True):
+    """one row per team type, class and date: the rule less its control on every measure, and whether it is kept at `bar`"""
+    bar = BAR if bar is None else bar
     key = ["t", "rep", "rank"]
     z = df.copy()
     z["yr1"] = z.p1 * 100
@@ -186,20 +189,41 @@ def summarize(df):
             se = lg.std(ddof=1) / np.sqrt(len(lg))
             st[kk] = (lg.mean(), lg.mean() / se if se > 0 else 0.0, int((by > 0).sum()), len(by))
             r[kk] = f"{st[kk][0]:+6.1f} z{st[kk][1]:+5.1f} {st[kk][2]}/{st[kk][3]}"
-        g, bar, guard, gbar = GOAL[m]
-        ok = st[g][1] >= bar and st[g][2] >= st[g][3] - 1 and not (guard and st[guard][1] <= -gbar)
+        g, guard = GOAL[m]
+        agree = (lambda x: st[x][2] >= st[x][3] - 1) if cohort_check else (lambda x: True)
+        ok = (st[g][1] >= bar and agree(g) and st[g][3] >= MIN_COHORTS and not (guard and st[guard][1] <= -bar))
         r["vs no trade"] = f"{raw[g].mean():+.1f}"
         r["keep"], r["_z"], r["_gain"] = ("KEEP" if ok else ""), st[g][1], st[g][0]
-        r["_value"] = st["v1"][1] >= 2 and st["v1"][2] >= st["v1"][3] - 1 and min(st[x][1] for x in ("yr1", "yrs2", "yrs3")) > -2
+        r["_value"] = (st["v1"][1] >= bar and agree("v1") and st["v1"][3] >= MIN_COHORTS
+                       and min(st[x][1] for x in ("yr1", "yrs2", "yrs3")) > -bar)
+        r["_v1"] = st["v1"][0]
         rows.append(r)
-    t = pd.DataFrame(rows)
+    return pd.DataFrame(rows), z, base, buy
+
+
+def kept(df, bar, cohort_check=True):
+    """team -> {class: 'now' | 'later' | 'buy'} at `bar`; Default also takes rules that pass on value with no title cost"""
+    t = verdicts(df, bar, cohort_check)[0]
+    t = t[t["sold a team"] >= 0.05]
+    out = {}
+    for m in GOAL:
+        q = t[(t.team == m) & ((t.keep == "KEEP") | ((m == "middle") & t._value))]
+        q = q.assign(score=np.where(q.keep == "KEEP", q._z, 0.0)).sort_values(["score", "_v1"], ascending=False)
+        out[m] = q.groupby("class").head(1).set_index("class").when.to_dict()
+    return out
+
+
+def summarize(df):
+    pd.set_option("display.width", 280, "display.max_rows", 600)
+    key = ["t", "rep", "rank"]
+    t, z, base, buy = verdicts(df)
     print(f"== {'Superflex' if SF else '1QB'}: one sell rule less its control (as many random players of that price band sold the same way), by team type. "
           "mean, z (leagues as clusters), cohorts above zero / cohorts; vs no trade = the objective against not trading")
     for m in ("contend", "middle", "rebuild"):
-        g, bar, guard, gbar = GOAL[m]
+        g, guard = GOAL[m]
         q = t[(t.team == m) & (t["sold a team"] >= 0.05)].sort_values("_z", ascending=False)
-        print(f"\n-- {NAME[m]}: objective {g} at a bar of {bar}" + (f", guard {guard}" if guard else "") + "; sorted by the objective's z")
-        print(q.drop(columns=["team", "_z", "_gain", "_value"]).to_string(index=False))
+        print(f"\n-- {NAME[m]}: objective {g} at a bar of {BAR}" + (f", guard {guard}" if guard else "") + "; sorted by the objective's z")
+        print(q.drop(columns=["team", "_z", "_gain", "_value", "_v1"]).to_string(index=False))
     k = t[t.keep == "KEEP"].sort_values("_gain", ascending=False)
     best = k.groupby(["team", "class"]).head(1)
     print("\n== the sells kept, the better of now / later for each class")
@@ -208,9 +232,9 @@ def summarize(df):
     both = set(k[k.team == "contend"]["class"]) & set(k[k.team == "rebuild"]["class"])
     mid = t[t.team == "middle"]
     print("\n== Default apart from its neighbours: classes both Contending and Rebuilding keep, and what Default got")
-    print(mid[mid["class"].isin(both)].drop(columns=["team", "_z", "_gain", "_value"]).to_string(index=False) if both else "(none)")
+    print(mid[mid["class"].isin(both)].drop(columns=["team", "_z", "_gain", "_value", "_v1"]).to_string(index=False) if both else "(none)")
     print("\n== Default on a second test: value 1 year on at 2 standard errors, no title measure at z <= -2")
-    print(mid[mid._value & (mid["sold a team"] >= 0.05)].sort_values("_gain", ascending=False).drop(columns=["team", "_z", "_gain", "_value"]).to_string(index=False))
+    print(mid[mid._value & (mid["sold a team"] >= 0.05)].sort_values("_gain", ascending=False).drop(columns=["team", "_z", "_gain", "_value", "_v1"]).to_string(index=False))
     if buy:
         return
     c = z[z.cls.str.startswith("random")].set_index(key)

@@ -1542,6 +1542,27 @@ Caveats as section 31; RBs 30+ in the top 100 exist in two cohorts.
 - **Adding the sale dates helps every team type**: "timing" is ahead of "core" on titles over three seasons and on value in all six cells.
 - So the bar of 2 is right for adding a rule to a set (section 30) and for the in-season signals; it is not a reason to cut the calls down to the rules that clear it one at a time. The finer calls carry real gains that single-rule tests against a control can't see.
 
+**The same at 1.5, and what the bar really does.** At 1.5 the in-season signals add one rule to the table above: the dynasty-fall sell for superflex Contending (+2.3 / +1.5 title points over two seasons, z 2.5 / 1.6; left out of the set it cost 0.4 to 0.7 title points this season on 0.1 trades a team). It is not on the site.
+
+For the calls, lowering the bar from 2 to 1.5 changes the class lists by one rule: what keeps rules out is the every-cohort-but-one check, not the bar. Without that check the lists are two to three times as long, and read on all cohorts such a set looks far better than the site's calls (1QB Default +19.6 title points over three seasons, superflex Contending +18.8). That is the lists fitting the cohorts they were read on. With each cohort's rules read from the other cohorts only, the sets with the timing dates, less the site's calls (1QB / superflex):
+
+| Team | Bar, no cohort check | Title odds, season 1 | Seasons 1–3 | Value 1 year on | Value 3 years on |
+|---|---|---|---|---|---|
+| Contending | 1 | −2.1 / −0.5 | −10.8 / +5.6 | −95 / −103 | −230 / +49 |
+| Contending | 1.5 | −2.8 / −0.4 | −13.0 / +5.1 | −214 / −130 | −281 / +10 |
+| Contending | 2 | −3.9 / −1.3 | −15.3 / +0.8 | −273 / −165 | −339 / −54 |
+| Default | 1 | −2.4 / −0.8 | −7.2 / +5.8 | +16 / +90 | −85 / +106 |
+| Default | 1.5 | −1.5 / −1.2 | +4.5 / +5.7 | +54 / +127 | +71 / +150 |
+| Default | 2 | −2.4 / −0.3 | +1.9 / +6.7 | +54 / +168 | −76 / +263 |
+| Rebuilding | 1 | −0.4 / −0.8 | −1.2 / −7.6 | +11 / −31 | +67 / +93 |
+| Rebuilding | 1.5 | −0.3 / −0.5 | −3.7 / −8.9 | +33 / −73 | +75 / −23 |
+| Rebuilding | 2 | −0.3 / −0.4 | −5.4 / −8.9 | −12 / −103 | +11 / −53 |
+
+- **1.5 is at least as good as 2 in most cells**, and 1 is no better than 1.5: the gain from loosening stops at about 1.5, as section 30 found.
+- **No bar makes a class rule set that beats the site's calls for Contending in 1QB or for Rebuilding in superflex**, and for 1QB Default and Rebuilding the 1.5 set is about level (a few title points and 30 to 75 of value either way).
+- **Superflex Default is better at every bar**, on title odds over three seasons (+5.7 to +6.7) and on value (+90 to +263), for about a point of title odds this season. It is the one place the evidence supports replacing the site's calls.
+- The in-sample gain of +19.6 for 1QB Default became +4.5 out of cohort: about three quarters of what a loose bar seems to add is fit to the sample.
+
 Caveats: the rule lists were found on these cohorts, which favours them; FP prices; in this sim more trades gain more whatever is traded, though random swaps (6 a team) gained nothing here.
 
 ## Caveats

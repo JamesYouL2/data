@@ -14,6 +14,10 @@ or 101-340. Everyone not named is a Hold.
   timing   core plus section 32's dates for producing players (inside the starter line by points per game the season before):
              Contending and Default  after the season: RBs 26-27, WRs 28-29. Now: RBs 28-29, WRs 30+. Default also now: RBs 30+, TEs 29+
              Rebuilding              now: RBs 26+, WRs 28+, TEs 29+ (superflex: QBs 32+)
+  barB     the lists read mechanically off sell_rules_sim.py's saved runs at a bar of B, a class that is both a sell and a buy left a
+           Hold; zB the same without the every-cohort-but-one check; "+t" adds the timing dates
+  x:...    the same lists with each cohort's rules read from the other cohorts only, which is the fair test of a bar: a loose bar picks
+           up rules that only fit the cohorts it was read on
   live     the site's calls (rules.classify)          random   middle_mode.py's random swaps
 Against no trades: title odds in season 1, seasons 1-2 and seasons 1-3, value (sum of 340 - FP rank) 1 and 3 years on; then each set
 less live in the same leagues. mean, z with leagues as clusters, cohorts above zero / cohorts.
@@ -73,6 +77,28 @@ def timing(m, pos, age, prod, base):
     return base
 
 
+RUNS = {}
+
+
+def from_tests(bar, cohort_check=True, without=None):
+    """mode -> {class tuple: call}, read off sell_rules_sim.py's saved runs at `bar`; a class that is both a sell and a buy is left a Hold.
+    without = a cohort to leave out of the runs, so a cohort's rules never come from that cohort"""
+    import sell_rules_sim as srs
+    if not RUNS:
+        RUNS.update({side: pd.read_csv(out_dir(SF) / f"{side}_rules_sim.csv.gz") for side in ("sell", "buy")})
+    sells = srs.kept(RUNS["sell"][RUNS["sell"].t != without], bar, cohort_check)
+    buys = srs.kept(RUNS["buy"][RUNS["buy"].t != without], bar, cohort_check)
+    out = {}
+    for m in NAME:
+        d = {}
+        for c, when in sells[m].items():
+            d[c] = "Sell" if when == "now" else R.USE
+        for c in buys[m]:
+            d[c] = "Hold" if c in d else "Buy"
+        out[m] = {tuple(x.strip() for x in c.replace(" | ", " ").split(" ", 2)): a for c, a in d.items()}
+    return out
+
+
 def run_cohort(args):
     t, g, P, act, rk1, rk3, nxt1, seed = args
     rng = np.random.default_rng(seed)
@@ -99,7 +125,15 @@ def run_cohort(args):
     return out
 
 
+TESTS, ARMS = {}, ["live", "core", "timing"]
+LOCO = {"x:z1": (1.0, False), "x:z1.5": (1.5, False), "x:z2": (2.0, False), "x:bar1.5": (1.5, True)}     # rules from the other cohorts only
+
+
 def main():
+    TESTS.update({"bar1.5": from_tests(1.5), "z1.5": from_tests(1.5, False)})
+    ARMS.extend(x for n in list(TESTS) + list(LOCO) for x in (n, n + "+t"))
+    for n, tab in TESTS.items():
+        print(n, {m: {a: sum(v == a for v in d.values()) for a in ("Sell", R.USE, "Buy")} for m, d in tab.items()})
     s = pd.read_parquet(HERE / "data" / "player_seasons.parquet")
     pts = {y: z.set_index("gsis_id").ppr.to_dict() for y, z in s.groupby("season")}
     pr = mm.prod_ranks(s)
@@ -125,7 +159,13 @@ def main():
         prod = np.array([r <= R.START[F][p] for r, p in zip(prk, g.position)])
         act["core"] = {m: np.array([core(m, c) for c in cls], dtype=object) for m in NAME}
         act["timing"] = {m: np.array([timing(m, p, a, pd_, b) for p, a, pd_, b in zip(g.position, g.age, prod, act["core"][m])], dtype=object) for m in NAME}
-        for arm in ("live", "core", "timing"):
+        for name, (bar, chk) in LOCO.items():
+            TESTS[name] = from_tests(bar, chk, without=t)
+        for name, tab in TESTS.items():
+            act[name] = {m: np.array([tab[m].get(c, "Hold") for c in cls], dtype=object) for m in NAME}
+            act[name + "+t"] = {m: np.array([timing(m, p, a, pd_, b) for p, a, pd_, b in zip(g.position, g.age, prod, act[name][m])], dtype=object)
+                                for m in NAME}
+        for arm in ARMS:
             counts.append({"t": t, "arm": arm, **{f"{m[:3]} {k[:4]}": int(sum(R.kind(x) == k for x in act[arm][m])) for m in NAME for k in ("buy", "sell", "use")}})
         yrs = [y for y in range(t + 1, t + 1 + mm.H) if y <= su.LAST]
         P = np.stack([g.gsis_id.map(pts.get(y, {})).fillna(0).to_numpy() for y in yrs], 1)
@@ -169,10 +209,10 @@ def summarize(df):
     for m in NAME:
         q0 = z[z["mode"] == m]
         live = q0[q0.arm == "live"].set_index(key)
-        for arm in ("live", "core", "timing", "random"):
+        for arm in [a for a in z.arm.unique() if a != "none"]:
             q = q0[q0.arm == arm].set_index(key)
             rows.append({"team": NAME[m], "arm": arm, "trades": round((q.sold + q.later + q.bought).mean(), 1), **cells(q[mets] - base.loc[q.index])})
-            if arm in ("core", "timing"):
+            if arm not in ("live", "random"):
                 rows2.append({"team": NAME[m], "arm": f"{arm} less live", **cells(q[mets] - live.loc[q.index, mets])})
     print(f"\n== {'Superflex' if SF else '1QB'}: each set against no trades. mean, z (leagues as clusters), cohorts above zero / cohorts")
     print(pd.DataFrame(rows).to_string(index=False))
