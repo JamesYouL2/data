@@ -624,6 +624,78 @@ def bye():
     print(pd.DataFrame(rows).to_string(index=False))
 
 
+def persist_cohort(args):
+    t, g, P, seed = args
+    rng = np.random.default_rng(seed)
+    pos, pj = g.position.to_numpy(), g.proj.to_numpy()
+    out = []
+    for rep in range(REPS * 4):
+        team = su.draft(g, "ADP", -1, np.random.default_rng(rng.integers(1 << 31)))
+        proj = np.array([su.lineup(pj[team == k], pos[team == k]) for k in range(su.TEAMS)])
+        pts = np.array([[su.lineup(P[team == k, y], pos[team == k]) for k in range(su.TEAMS)] for y in range(P.shape[1])])
+        r0 = (-proj).argsort().argsort() + 1
+        rk = (-pts).argsort(axis=1).argsort(axis=1) + 1
+        for k in range(su.TEAMS):
+            out.append((t, rep, k, r0[k], *np.pad(rk[:, k].astype(float), (0, mm.H - P.shape[1]), constant_values=np.nan)))
+    return out
+
+
+def persist():
+    """How fast do standings change? The league of section 6a with rosters frozen (no trades, waivers or rookies): each team's rank by
+    real lineup points in each of the next five seasons, against its May projection and against the season before."""
+    s = pd.read_parquet(HERE / "data" / "player_seasons.parquet")
+    pts = {y: z.set_index("gsis_id").ppr.to_dict() for y, z in s.groupby("season")}
+    d = mm.pool()
+    d = d[d.t <= 2024]
+    proj = mm.projector(pts, d)
+    rng = np.random.default_rng(53)
+    jobs = []
+    for t in range(2018, 2025):
+        g = d[d.t == t].reset_index(drop=True)
+        g["mkt_rank"] = g.mkt_rank.rank(method="first")
+        g["proj"] = proj(g)
+        yrs = [y for y in range(t + 1, t + 1 + mm.H) if y <= su.LAST]
+        jobs.append((t, g, np.stack([g.gsis_id.map(pts[y]).fillna(0).to_numpy() for y in yrs], 1), int(rng.integers(1 << 31))))
+    with Pool(JOBS) as pool:
+        res = pool.map(persist_cohort, jobs)
+    z = pd.DataFrame([r for part in res for r in part], columns=["t", "rep", "team", "proj"] + [f"s{k}" for k in range(1, mm.H + 1)])
+    pd.set_option("display.width", 220)
+
+    def typ(r):
+        return pd.cut(r, [0, 3, 9, 12], labels=["1st-3rd", "4th-9th", "10th-12th"])
+
+    def corr(a, b):
+        q = z.dropna(subset=[a, b])
+        by = q.groupby("t").apply(lambda x: x[a].corr(x[b], method="spearman"), include_groups=False)
+        return f"{by.mean():.2f} ({by.min():.2f} to {by.max():.2f}, {len(by)} cohorts)"
+    print(f"== {'Superflex' if SF else '1QB'}, frozen rosters: rank correlation of a team's finish (by lineup points), mean over cohorts (range)")
+    rows = [{"from": "May projection", **{f"season {k}": corr("proj", f"s{k}") for k in (1, 2, 3)}},
+            {"from": "season 1 finish", **{f"season {k}": corr("s1", f"s{k}") for k in (2, 3)}},
+            {"from": "season 2 finish", "season 3": corr("s2", "s3")}]
+    print(pd.DataFrame(rows).fillna("").to_string(index=False))
+    for a, b, name in (("proj", "s1", "May projection -> season 1 finish"), ("s1", "s2", "season 1 finish -> season 2 finish"),
+                       ("proj", "s2", "May projection -> season 2 finish"), ("s1", "s3", "season 1 finish -> season 3 finish")):
+        q = z.dropna(subset=[a, b])
+        print(f"\n-- {name}: % of teams of each kind (rows) that finish as each kind (columns); by chance 25 / 50 / 25")
+        print((pd.crosstab(typ(q[a]), typ(q[b]), normalize="index") * 100).round(0).to_string())
+    print("\n-- by seasons since: teams that finished 1st-3rd against teams that finished 10th-12th (season 1 finish, or the May projection for 'proj')")
+    rows = []
+    for a0, ks in (("s1", (2, 3, 4, 5)), ("proj", (1, 2, 3, 4, 5))):
+        for k in ks:
+            q = z.dropna(subset=[a0, f"s{k}"])
+            top, bot = q[q[a0] <= 3], q[q[a0] >= 10]
+            by = q.groupby("t").apply(lambda x: x[x[a0] >= 10][f"s{k}"].mean() - x[x[a0] <= 3][f"s{k}"].mean(), include_groups=False)
+            rows.append({"from": a0, "seasons later": k - (1 if a0 == "s1" else 0), "cohorts": q.t.nunique(),
+                         "mean finish, top 3": round(top[f"s{k}"].mean(), 2), "mean finish, bottom 3": round(bot[f"s{k}"].mean(), 2),
+                         "gap in places": round(by.mean(), 2), "gap by cohort": " ".join(f"{v:.1f}" for v in by),
+                         "top 3 again %": round((top[f"s{k}"] <= 3).mean() * 100), "bottom 3 reach top 3 %": round((bot[f"s{k}"] <= 3).mean() * 100),
+                         "rank corr": round(q.groupby("t").apply(lambda x: x[a0].corr(x[f"s{k}"], method="spearman"), include_groups=False).mean(), 2)})
+    print(pd.DataFrame(rows).to_string(index=False))
+    q = z.dropna(subset=["s1", "s2"])
+    print("\nchance a top-3 finisher is top-3 the next season, by cohort:",
+          (q[q.s1 <= 3].groupby("t").s2.apply(lambda x: (x <= 3).mean()) * 100).round(0).to_dict())
+
+
 if __name__ == "__main__":
     if sys.argv[1:] == ["may"]:
         may()
@@ -635,6 +707,8 @@ if __name__ == "__main__":
         may(scan="splits")
     elif sys.argv[1:] == ["bye"]:
         bye()
+    elif sys.argv[1:] == ["persist"]:
+        persist()
     elif len(sys.argv) > 1:
         summarize(pd.read_csv(out_dir(SF) / "team_signals.csv.gz"))
     else:

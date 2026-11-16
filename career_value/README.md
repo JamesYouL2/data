@@ -50,7 +50,7 @@ Follow-up analyses for sections 3b and 7–12 are in `analysis/`. Run them from 
 | `rb_long.py` | 20 (also `LEAGUE=sf`) |
 | `startup.py` | 21 (also `LEAGUE=sf`; writes `outputs/startup_sim.csv`) |
 | `startup_fp.py` | 22 (also `LEAGUE=sf`; writes `outputs/startup_fp_sim.csv`) |
-| `team_signals.py` | 23 (also `LEAGUE=sf`; writes `outputs/team_signals.csv.gz`; `may`, `decay`, `splits`, `bye` and `modes` arguments print only) |
+| `team_signals.py` | 23 (also `LEAGUE=sf`; writes `outputs/team_signals.csv.gz`; `may`, `decay`, `splits`, `bye`, `persist` and `modes` arguments print only) |
 | `rank_gaps.py` | 24 (also `LEAGUE=sf`; `REDRAFT=fp` for FP redraft ECR; prints only) |
 | `redraft_age.py` | 25 (also `LEAGUE=sf`; prints only) |
 | `gap_model_sim.py` | 26 (also `LEAGUE=sf`, `SOURCE=fantasycalc`; `check` and `ablate` print only; writes `outputs/gap_model_sim_<source>.csv.gz`) |
@@ -58,6 +58,7 @@ Follow-up analyses for sections 3b and 7–12 are in `analysis/`. Run them from 
 | `simple_rules_sim.py` | 28 (also `LEAGUE=sf`, `SOURCE=fantasycalc`; `table` prints the verdicts; writes `outputs/simple_rules_sim_<source>.csv.gz`) |
 | `rule_audit.py` | 29 (also `LEAGUE=sf`; prints only) |
 | `threshold_sim.py` | 30 (also `LEAGUE=sf`; `table` reprints; writes `outputs/threshold_sim.csv.gz`) |
+| `sell_rules_sim.py` | 31 (also `LEAGUE=sf`; `table` reprints; writes `outputs/sell_rules_sim.csv.gz`) |
 
 `common.py` holds shared loaders. Sections 13 and 16 also run for superflex if `outputs/sf/` exists.
 
@@ -1391,6 +1392,57 @@ Players called (1QB): 116 buys and 207 sells of 340 at a bar of 0.5 for rebuilde
 - **Judging Contending on seasons 1–2 picks the same calls in 1QB** and points away from production-only rules; it doesn't separate the site's calls from the value measures in superflex as clearly as three seasons does.
 
 Caveats: FP prices, where the sim takes the best player in a price window, so levels are inflated and the standard errors (leagues as clusters) are far too small: read the order of the rows. Training on every other cohort lets a neighbouring cohort's seasons in; the finished-seasons version has 4 test cohorts, and 2 for three-season results. The bar itself is chosen on these cohorts.
+
+## 31. Which sells belong to which kind of team? (`analysis/sell_rules_sim.py`, `team_signals.py persist`)
+
+Experiments, not on the site. Team types by the projection for the coming season: Contending 1st–3rd, Default 4th–9th, Rebuilding 10th–12th. 1QB / superflex.
+
+**How long does a team stay what it is?** (`persist`: the league of section 6a, rosters frozen, finish by real lineup points.)
+
+| | That season | 1 season later | 2 later | 3 later | 4 later |
+|---|---|---|---|---|---|
+| Projected 1st–3rd in May: finishes 1st–3rd | 45% / 45% | 40% / 35% | 38% / 33% | 32% / 32% | 34% / 29% |
+| Finished 1st–3rd: finishes 1st–3rd | | 41% / 42% | 39% / 38% | 39% / 41% | 39% / 39% |
+| Finished 10th–12th: finishes 1st–3rd | | 11% / 12% | 14% / 13% | 15% / 12% | 16% / 15% |
+| Gap in places, top 3 against bottom 3 finishers | 9 | 3.3 / 3.4 | 2.6 / 2.8 | 2.8 / 2.9 | 2.6 / 2.7 |
+| Rank correlation with the finish | | 0.36 / 0.38 | 0.29 / 0.29 | 0.31 / 0.30 | 0.30 / 0.29 |
+
+- **A team projected top 3 finishes there under half the time**, and a top-3 finisher repeats 41–42% of the time (34% to 50% by cohort; 25% by chance).
+- **Two thirds of the gap between top-3 and bottom-3 finishers closes in one season, and then it stalls** at 2.6 to 2.9 places through four seasons. A projection's gap keeps fading (1.2 to 1.5 places five seasons on).
+- Frozen rosters have no rookie draft, which would help the bottom close faster, and no difference in managers, which would hold the gap open.
+
+**Default's calls for every kind of team** (`middle_mode.py`'s saved run; each mode's calls less Default's, for the team type the mode is named for):
+
+| | Title odds, season 1 | Seasons 1–3 | Value 1 year on | Value 3 years on |
+|---|---|---|---|---|
+| Projected 1st–3rd: Contending less Default | +2.3 / +3.9 | −1.4 / −0.4 | −134 / −233 | −241 / −411 |
+| Projected 10th–12th: Rebuilding less Default | −7.2 / −4.6 | −7.5 / −1.5 | +20 / −81 | +289 / +143 |
+
+- **Default has the most title odds over three seasons for every kind of team.** Contending buys a top-3 team 2 to 4 points this season for 240 to 410 of value three years on (0 of 4 cohorts above zero); Rebuilding costs a bottom-3 team titles in every window for 140 to 290 of value three years on and none a year on.
+- With the persistence above, a rule that departs from Default has to clear the stricter bar: **2 standard errors for every team type**, not the 1.5 section 30 had slightly ahead for Contending and Rebuilding within their type.
+
+**One sell rule at a time.** A team sells every player it holds in one class (position x rookie / 25 and under / 26–29 / 30+ x FP rank 1–100 or 101–340), in May or after the season, against a control: as many of its players in that price band, picked at random, sold the same way. Selling anyone for the best lineup fit gains in this sim (three random top-100 sells gave a contender about 8 title points), so the control is what a rule has to beat. Objectives: Contending, title odds over seasons 1–2 with no loss over seasons 1–3; Default, title odds over seasons 1–3 with no loss of value a year on; Rebuilding, value a year on. A rule is kept at 2 standard errors, above zero in every cohort but one.
+
+| Sell | Contending | Default | Rebuilding |
+|---|---|---|---|
+| RBs 26–29 priced 101+ | **1QB: +0.8 titles (2.0), value +70** / superflex no | +0.9 (2.0), 3 of 5 cohorts / no | **+63 (8.2) / +53 (5.8)** |
+| WRs 26–29 priced 101+ | no / +0.9 (1.7) | **+1.1 (2.6) / +1.5 (3.4), value +46 / +37** | **+43 (5.1) / +31 (4.6)** |
+| WRs 30+ priced 101+ | no | no | **+34 (6.0) / +19 (4.0)** |
+| RBs 26–29 priced 1–100 | no | no | **+18 (4.7) / kept** |
+| RBs 30+, TEs 30+ priced 101+ | no | no | **kept / kept** (+11 to +14) |
+| RBs 25 and under | no | no | **1QB top 100: +25 (4.2) / superflex 101+: +22 (2.5)** |
+| QBs 30+ | **1QB top 100: +1.1 (2.5), 0.2 a team / superflex 101+: +0.8 (2.6), value +36** | no | superflex top 100 kept |
+
+(Gain on the objective less the control, z in brackets; "no" = did not clear the bar.)
+
+- **A top-3 team keeps almost none of the sells.** Past the control, only RBs 26–29 priced outside the top 100 (1QB) and QBs 30+ (superflex, outside the top 100) clear the bar, each worth about a title point over two seasons with value gained as well. The one top-100 sell that cleared is QBs 30+ in 1QB, on 0.2 players a team. A few "sell after the season" rules on rookies also cleared, by under a point on few players; with about 30 tests a team type, one or two of those are expected by chance.
+- **Selling a top-100 RB aged 26–29 costs a contender title odds this season:** −2.6 / −1.9 against the control (z −5.1 / −4.0), and −1.0 / −1.1 for Default. It gains value for all three (+12 to +18 a year on, +50 to +76 three years on), so it is a Rebuilding sell only.
+- **Default keeps one sell:** WRs 26–29 priced outside the top 100, in both formats.
+- **Rebuilding keeps the broad list**, all sold now: RBs 26–29 at any price, RBs 30+, WRs 26–29 and 30+ and TEs 30+ priced outside the top 100, and young RBs.
+- **Timing:** nearly every sell that holds is a sell now, not a "use, then sell".
+- **Class matters for value, not for titles.** Against the control no rule moved title odds by more than about 1.5 points; the Rebuilding rules moved value by 18 to 63 each.
+
+Caveats: FP prices and the best player in a price window; leagues in a cohort share players, so z is too large; one rule at a time, and rules interact (section 28); classes are coarser than the site's call groups.
 
 ## Caveats
 
