@@ -50,7 +50,7 @@ Follow-up analyses for sections 3b and 7–12 are in `analysis/`. Run them from 
 | `rb_long.py` | 20 (also `LEAGUE=sf`) |
 | `startup.py` | 21 (also `LEAGUE=sf`; writes `outputs/startup_sim.csv`) |
 | `startup_fp.py` | 22 (also `LEAGUE=sf`; writes `outputs/startup_fp_sim.csv`) |
-| `team_signals.py` | 23 (also `LEAGUE=sf`; writes `outputs/team_signals.csv.gz`; `may` and `modes` arguments print only) |
+| `team_signals.py` | 23 (also `LEAGUE=sf`; writes `outputs/team_signals.csv.gz`; `may`, `decay` and `modes` arguments print only) |
 
 `common.py` holds shared loaders. Sections 13 and 16 also run for superflex if `outputs/sf/` exists.
 
@@ -1059,6 +1059,7 @@ Experiments, not used by the site. Three runs in the league simulation of sectio
 - **This season's strength is the better guide through season 2.** Top-heavy value draws level at season 3 and leads from season 4 (3 of 4 cohorts in both formats). The rank sum never leads.
 - **Value adds most for strong teams:** in the top third by strength, bottom-third to top-third value took title odds over seasons 2–3 from about 17 to 27.
 - Frozen rosters understate value, which can't be traded or turned into rookies here. Seasons 4 and 5 have 4 and 3 cohorts.
+- **The decay of 60 is fitted to titles** (`decay`). Value's correlation with title odds over seasons 2–5 peaks at a decay of 45–60 in 1QB (0.26, against 0.15 for the rank sum) and 60–90 in superflex (0.25–0.26, against 0.17), and is flat across that range. Trade markets are less top-heavy: an exponential fitted to May values gives a decay of 73–99 for FantasyCalc and 106–196 for KTC, rising each year.
 
 **Does a top-heavy measure change the modes' value results?** (`modes`) The trades of section 6a's modes, value against no trades as a % of the roster, 3 years on (4 cohorts):
 
@@ -1072,6 +1073,21 @@ Experiments, not used by the site. Three runs in the league simulation of sectio
 - **No rebuilder move changes sign, and the order of the modes is the same.** The rebuilder calls gain more under the top-heavy measure, in every cohort at both dates.
 - **Rebuilders buying picks (section 6a) still gain** in the market's own value units, which are top-heavy: +15% to +123% of the pick's price a year on across rounds, sources and formats.
 - Superflex contending is the weak one: positive in 4 of 6 cohorts a year on and 2 to 3 of 4 at three years, top-heavy.
+
+**A middle team with the league's best dynasty value.** Teams projected 4th–8th this season and 1st–2nd in top-heavy value: title odds with no trades, and each mode's change (1QB / superflex; seasons 4–5 have 3 cohorts).
+
+| | Season 1 | Seasons 2–3 | Seasons 4–5 | Top-heavy value 3 years on |
+|---|---|---|---|---|
+| No trades (title odds) | 9.8 / 10.4 | 23.7 / 27.3 | 19.0 / 28.7 | |
+| Contending | +10.6 / +7.1 | +10.5 / −2.1 | +8.3 / +1.6 | +19% / +4% |
+| Default | +9.1 / +2.2 | +13.9 / +8.7 | +20.8 / +20.5 | +30% / +31% |
+| Rebuilding | −3.2 / −5.2 | +12.3 / +12.5 | +36.1 / +35.7 | +48% / +42% |
+| Random swaps | +0.8 / +0.2 | −0.7 / −3.8 | +0.9 / −1.9 | 0% / −3% |
+
+- **Default is the call for this team.** In 1QB it gets most of Contending's gain this season and more in every later window. In superflex Contending's extra 5 points this season cost about 11 over seasons 2–3 and 19 over seasons 4–5.
+- **These teams do become the strongest:** without trades their title odds over seasons 2–3 are 24–27 points, against 17 for mid-value teams of the same strength.
+- The size of every gain is inflated by FP prices and by taking the best player in a price window (section 6a's market-price runs halve them); compare the rows, not the levels.
+
 
 ## Caveats
 

@@ -42,6 +42,8 @@ DRAWS = int(os.environ.get("DRAWS", 6))
 NTRADE = int(os.environ.get("NTRADE", 3))
 POOL, REG, LAST_WK, WIN = mm.POOL, ins.REG, ins.LAST_WK, ins.WIN
 MEAS = ["record", "ros", "value"]
+DECAY = float(os.environ.get("DECAY", 60))                 # top-heavy dynasty value: sum of exp(-rank / DECAY); see decay()
+TAUS = (10, 15, 20, 30, 45, 60, 90, 120, 180, 300)
 
 
 def play(wins, pf, m, weeks, sd, rng):
@@ -257,14 +259,15 @@ def may_cohort(args):
         p = mm.season_titles(np.repeat(team[:, None], P.shape[1], 1), P, pos, rng.integers(1 << 31, size=P.shape[1]))
         for i in range(su.TEAMS):
             m = team == i
-            out.append((t, rep, i, su.lineup(pj[m], pos[m]), np.maximum(0, POOL - rk[m]).sum(), np.exp(-rk[m] / 60).sum(),
+            out.append((t, rep, i, su.lineup(pj[m], pos[m]), np.maximum(0, POOL - rk[m]).sum(), np.exp(-rk[m] / DECAY).sum(),
+                        *[np.exp(-rk[m] / tau).sum() for tau in TAUS],
                         *np.pad(p[:, i], (0, mm.H - P.shape[1]), constant_values=np.nan)))
     return out
 
 
-def may():
+def may(scan=False):
     """May of t + 1, no trades: title odds in seasons 1..5 on projected lineup points this season (redraft ADP) and dynasty value
-    (sum of POOL - FP rank; and a top-heavy sum of exp(-rank / 60)), z-scores within the league, both in one OLS."""
+    (sum of POOL - FP rank; and a top-heavy sum of exp(-rank / DECAY)), z-scores within the league, both in one OLS."""
     s = pd.read_parquet(HERE / "data" / "player_seasons.parquet")
     pts = {y: z.set_index("gsis_id").ppr.to_dict() for y, z in s.groupby("season")}
     d = mm.pool()
@@ -281,11 +284,25 @@ def may():
     with Pool(JOBS) as pool:
         res = pool.map(may_cohort, jobs)
     pc = [f"p{k}" for k in range(1, mm.H + 1)]
-    z = pd.DataFrame([r for part in res for r in part], columns=["t", "rep", "team", "redraft", "value", "value_top"] + pc)
-    for c in ("redraft", "value", "value_top"):
+    z = pd.DataFrame([r for part in res for r in part], columns=["t", "rep", "team", "redraft", "value", "value_top"] + [f"tau{x}" for x in TAUS] + pc)
+    for c in ["redraft", "value", "value_top"] + [f"tau{x}" for x in TAUS]:
         gb = z.groupby(["t", "rep"])[c]
         z[c] = (z[c] - gb.transform("mean")) / gb.transform("std")
     z["lgid"] = z.t * 1000 + z.rep
+    if scan:
+        z["s1"], z["s23"], z["s45"], z["s25"] = z.p1, z.p2 + z.p3, z.p4 + z.p5, z.p2 + z.p3 + z.p4 + z.p5
+        rows = []
+        for c in ["value"] + [f"tau{x}" for x in TAUS]:
+            r = {"measure": "rank sum" if c == "value" else f"decay {c[3:]}"}
+            for y in ("s1", "s23", "s45", "s25"):
+                q = z.dropna(subset=[y])
+                by = q.groupby("t").apply(lambda a: a[c].corr(a[y]), include_groups=False)
+                r[y] = round(by.mean(), 3)
+            rows.append(r)
+        print(f"== {'Superflex' if SF else '1QB'}, May: correlation of dynasty value with title odds (mean over cohorts), by decay. "
+              "s1 = season 1, s23 = seasons 2-3, s45 = 4-5, s25 = 2-5")
+        print(pd.DataFrame(rows).to_string(index=False))
+        return
     print(f"== {'Superflex' if SF else '1QB'}, May, {REPS * 4} leagues a cohort, rosters frozen. Title odds (points) per 1 SD, both in the model "
           "[95% CI over leagues] cohorts with that sign. corr(redraft, value) = "
           f"{z.redraft.corr(z.value):.2f}, corr(redraft, value_top) = {z.redraft.corr(z.value_top):.2f}")
@@ -316,9 +333,31 @@ def may():
     print(z.pivot_table(index="rd3", columns="v3", values=["s1", "s23", "s45"], observed=True).round(1).to_string())
 
 
+def decay():
+    """What decay do trade markets use, and which predicts titles best? Fits value = a * exp(-rank / decay) to each May list of KTC
+    and FantasyCalc values (top POOL players, least squares on the value's share of the #1 player), then scans decays in may()."""
+    import market_residuals as M
+    from scipy.optimize import curve_fit
+    panel = pd.read_parquet(HERE / "data" / "panel.parquet")
+    rows = []
+    for src in ("ktc", "fantasycalc"):
+        v = M.dd_markets(panel)[f"dd_{src}"]
+        for t, q in v.groupby("t"):
+            val = np.sort(-q.mkt.to_numpy())[::-1][:POOL]
+            val, r = val / val[0], np.arange(1, len(val[:POOL]) + 1)
+            (a, tau), _ = curve_fit(lambda r, a, tau: a * np.exp(-r / tau), r, val, p0=(1, 60))
+            fit = a * np.exp(-r / tau)
+            rows.append({"source": src, "May": t + 1, "players": len(r), "decay": round(tau, 1),
+                         "R2": round(1 - ((val - fit) ** 2).sum() / ((val - val.mean()) ** 2).sum(), 3),
+                         **{f"#{k} / #1": round(val[k - 1], 2) for k in (12, 60, 120, 200) if k <= len(r)}})
+    print(f"== {'Superflex' if SF else '1QB'}: exponential fit to market values by rank")
+    print(pd.DataFrame(rows).to_string(index=False))
+    may(scan=True)
+
+
 def modes():
     """middle_mode.py's trades for each of the site's modes (and its random-swap control), with the dynasty value held 1 and 3
-    years on scored two ways: the site's rank sum (POOL - FP rank) and the top-heavy sum of exp(-rank / 60), each as a % of the
+    years on scored two ways: the site's rank sum (POOL - FP rank) and the top-heavy sum of exp(-rank / DECAY), each as a % of the
     no-trade roster's value. Does a top-heavy measure change which moves gain value?"""
     import json
     s = pd.read_parquet(HERE / "data" / "player_seasons.parquet")
@@ -341,25 +380,37 @@ def modes():
         pos = g.position.to_numpy()
         nxt1 = g.gsis_id.map(rank_at.get(t + 1, pd.Series(dtype=float))).to_numpy(float)
         rks = [g.gsis_id.map(rank_at[y]).to_numpy(float) if y in rank_at else None for y in (t + 1, t + 3)]
+        yrs = [y for y in range(t + 1, t + 1 + mm.H) if y <= su.LAST]
+        P = np.stack([g.gsis_id.map(pts.get(y, {})).fillna(0).to_numpy() for y in yrs], 1)
+        now = g.mkt_rank.to_numpy(float)
 
         def vals(T, i):
             r = []
             for col, rk in zip((1, 2), rks):
                 x = rk[T[:, col] == i] if rk is not None else None
-                r += [np.nan, np.nan] if x is None else [np.nansum(np.maximum(0, POOL - x)), np.nansum(np.exp(-x / 60))]
+                r += [np.nan, np.nan] if x is None else [np.nansum(np.maximum(0, POOL - x)), np.nansum(np.exp(-x / DECAY))]
             return r
         for rep in range(REPS * 2):
             team = su.draft(g, "ADP", -1, np.random.default_rng(rng.integers(1 << 31)))
             strength = np.array([su.lineup(g.proj.to_numpy()[team == i], pos[team == i]) for i in range(su.TEAMS)])
             rkk = (-strength).argsort().argsort() + 1
             T0 = np.repeat(team[:, None], mm.H, 1)
+            top = np.array([np.exp(-now[team == i] / DECAY).sum() for i in range(su.TEAMS)])
+            vrk = (-top).argsort().argsort() + 1
+            seeds = rng.integers(1 << 31, size=mm.H)
+            p0 = mm.season_titles(T0[:, :len(yrs)], P, pos, seeds)
+
+            def pad(x):
+                return np.pad(x * 100, (0, mm.H - len(x)), constant_values=np.nan)
             for i in range(su.TEAMS):
                 v0 = vals(T0, i)
                 for m in ("rebuild", "middle", "contend", "random"):
                     T, _ = mm.policy(i, m, team, g, act, nxt1, rng)
-                    out.append((t, rkk[i], m, *v0, *vals(T, i)))
+                    pm = mm.season_titles(T[:, :len(yrs)], P, pos, seeds)[:, i]
+                    out.append((t, rkk[i], vrk[i], m, *v0, *vals(T, i), *pad(p0[:, i]), *pad(pm)))
     c = ["lin1", "top1", "lin3", "top3"]
-    z = pd.DataFrame(out, columns=["t", "rank", "mode"] + [x + "_0" for x in c] + c)
+    z = pd.DataFrame(out, columns=["t", "rank", "vrank", "mode"] + [x + "_0" for x in c] + c + [f"b{k}" for k in range(1, 6)]
+                     + [f"p{k}" for k in range(1, 6)])
     z["grp"] = pd.cut(z["rank"], [0, 3, 8, 12], labels=["1-3", "4-8", "9-12"])
     rows = []
     for (grp, m), q in z.groupby(["grp", "mode"], observed=True):
@@ -373,12 +424,31 @@ def modes():
           "lin = rank sum, top = top-heavy; 1 and 3 years on")
     print(pd.DataFrame(rows).to_string(index=False))
 
+    print("\n-- teams projected 4th-8th this season, by rank in top-heavy dynasty value: title odds with no trades (base) and each mode's "
+          "change, season 1 / seasons 2-3 / seasons 4-5 (points; cohorts with a gain), and top-heavy value 3 years on")
+    z["vg"] = pd.cut(z.vrank, [0, 2, 6, 12], labels=["value 1-2", "value 3-6", "value 7-12"])
+    rows = []
+    for (vg, m), q in z[z.grp == "4-8"].groupby(["vg", "mode"], observed=True):
+        r = {"value rank": vg, "mode": m, "teams": len(q)}
+        for name, ks in (("s1", (1,)), ("s23", (2, 3)), ("s45", (4, 5))):
+            qq = q.dropna(subset=[f"p{k}" for k in ks])
+            d = sum(qq[f"p{k}"] - qq[f"b{k}"] for k in ks)
+            by = d.groupby(qq.t).mean()
+            r[name + " base"] = round(sum(qq[f"b{k}"] for k in ks).mean(), 1)
+            r[name] = f"{d.mean():+5.1f} {int((by > 0).sum())}/{len(by)}"
+        qq = q.dropna(subset=["top3"])
+        r["top3"] = f"{(qq.top3.mean() / qq.top3_0.mean() - 1) * 100:+5.1f}%"
+        rows.append(r)
+    print(pd.DataFrame(rows).to_string(index=False))
+
 
 if __name__ == "__main__":
     if sys.argv[1:] == ["may"]:
         may()
     elif sys.argv[1:] == ["modes"]:
         modes()
+    elif sys.argv[1:] == ["decay"]:
+        decay()
     elif len(sys.argv) > 1:
         summarize(pd.read_csv(out_dir(SF) / "team_signals.csv.gz"))
     else:
