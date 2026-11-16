@@ -50,6 +50,7 @@ Follow-up analyses for sections 3b and 7–12 are in `analysis/`. Run them from 
 | `rb_long.py` | 20 (also `LEAGUE=sf`) |
 | `startup.py` | 21 (also `LEAGUE=sf`; writes `outputs/startup_sim.csv`) |
 | `startup_fp.py` | 22 (also `LEAGUE=sf`; writes `outputs/startup_fp_sim.csv`) |
+| `team_signals.py` | 23 (also `LEAGUE=sf`; writes `outputs/team_signals.csv.gz`; `may` and `modes` arguments print only) |
 
 `common.py` holds shared loaders. Sections 13 and 16 also run for superflex if `outputs/sf/` exists.
 
@@ -1026,6 +1027,51 @@ Single pieces on the FP board in an FP room (years 1–3, noise 0.2 / 0.35): you
 - 5–6 drafts: treat differences under about 0.05 titles as noise.
 - Veterans only, as in section 21, so FP's rookie ranks are not tested.
 - MFL's superflex ADP may be a weak superflex board, which flatters FP's QB pricing in the SF columns.
+
+## 23. Experiments: record, this-season strength or dynasty value? (`analysis/team_signals.py`)
+
+Experiments, not used by the site. Three runs in the league simulation of section 6a (12 teams draft the FP top 340, real PPR scoring, rosters frozen, FP prices). Title odds in points; 1QB / superflex.
+
+**In season: which measure says to buy?** After week 4, 8 or 12 each team has a record (its first weeks replayed six times with the title model's weekly noise), a projected rest-of-season lineup (from FP rest-of-season ranks) and a dynasty value (sum of 340 − FP rank). The table is the change per 1 SD of each, the other two held fixed. The win-now trade is up to three swaps, each for the player who most raises the projected lineup, priced level with or up to 20% below the one given.
+
+| Outcome | Record | Rest-of-season strength | Dynasty value |
+|---|---|---|---|
+| Title odds this season | +4.0 / +4.0 | +4.7 / +5.0 | +0.6 / +0.8 |
+| Title odds, next two seasons | +0.5 / +1.0 | +4.8 / +7.1 | +1.5 / +2.2 |
+| Win-now trade's gain, this season | +2.9 / +3.0 | +0.1 / +0.6 | +0.4 / +1.0 |
+| Win-now trade's gain, three seasons | +3.6 / +2.5 | −1.1 / +1.1 | +2.1 / +2.0 |
+
+- **The gain from buying follows the record.** In 1QB, top-third records gained about 10 points this season at every level of rest-of-season strength; bottom-third records gained 3 to 5. Positive in every cohort.
+- **Record counts for more late:** +2.8 on this season's odds after week 4, +5.4 after week 12. Strength stays at +4.3 to +5.1.
+- **Record says little about later seasons;** rest-of-season strength says the most.
+- **The trade here has no cost:** it also gained titles in later seasons and lost no dynasty value, as any pick of the best player in a price window does in this simulation. The run shows who gains from buying, not what buying costs.
+
+**In May: strength this season or dynasty value, by season** (`may`). Projected lineup points from redraft ADP, and dynasty value two ways: the rank sum above, and a top-heavy sum of exp(−rank / 60), which counts the #1 player about 2.7 times the #60 and 7 times the #120 (the rank sum: 1.2 and 1.5 times). Each pair of columns is one model.
+
+| Season | Strength | Top-heavy value | Strength | Rank-sum value |
+|---|---|---|---|---|
+| 1 | +4.2 / +4.0 | +1.2 / +0.8 | +4.6 / +4.1 | +0.7 / +1.0 |
+| 2 | +2.7 / +2.5 | +1.7 / +1.6 | +3.2 / +2.9 | +1.3 / +1.3 |
+| 3 | +2.0 / +1.8 | +1.8 / +1.9 | +2.6 / +2.4 | +1.1 / +1.5 |
+| 4 | +1.8 / +1.4 | +2.4 / +2.2 | +2.6 / +2.1 | +1.4 / +1.5 |
+| 5 | +1.6 / +0.7 | +2.3 / +2.6 | +2.5 / +1.7 | +0.9 / +1.3 |
+
+- **This season's strength is the better guide through season 2.** Top-heavy value draws level at season 3 and leads from season 4 (3 of 4 cohorts in both formats). The rank sum never leads.
+- **Value adds most for strong teams:** in the top third by strength, bottom-third to top-third value took title odds over seasons 2–3 from about 17 to 27.
+- Frozen rosters understate value, which can't be traded or turned into rookies here. Seasons 4 and 5 have 4 and 3 cohorts.
+
+**Does a top-heavy measure change the modes' value results?** (`modes`) The trades of section 6a's modes, value against no trades as a % of the roster, 3 years on (4 cohorts):
+
+| Mode | Rank sum | Top-heavy |
+|---|---|---|
+| Rebuilding | +33% to +38% / +25% to +29% | +53% to +55% / +49% to +55% |
+| Default | +24% to +26% / +22% to +26% | +32% to +34% / +33% to +37% |
+| Contending | +13% to +15% / +5% to +6% | +16% to +20% / +6% to +9% |
+| Random swaps | −1% to +1% | −2% to +1% |
+
+- **No rebuilder move changes sign, and the order of the modes is the same.** The rebuilder calls gain more under the top-heavy measure, in every cohort at both dates.
+- **Rebuilders buying picks (section 6a) still gain** in the market's own value units, which are top-heavy: +15% to +123% of the pick's price a year on across rounds, sources and formats.
+- Superflex contending is the weak one: positive in 4 of 6 cohorts a year on and 2 to 3 of 4 at three years, top-heavy.
 
 ## Caveats
 
