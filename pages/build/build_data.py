@@ -42,10 +42,7 @@ NEXT = CUR + 1                                                        # the seas
 ROOKIE = TODAY.year if TODAY.month >= 5 else TODAY.year - 1          # latest rookie class (post-draft)
 AGE_AT = pd.Timestamp(f"{NEXT}-09-01")                                # age entering next season, as in the backtests
 
-look = {}
-for r in json.loads((HERE / "old_lookup.json").read_text())["rows"]:
-    look[(r["f"], r["pos"], r["ab"], r["tier"])] = (r["v3"], r["v5"], r["y5"], r["n"])
-ctx = {"ROOKIE": ROOKIE, "LOOK": look}
+ctx = {"ROOKIE": ROOKIE}
 
 # ---------- players ----------
 ids = pd.read_csv(RAW / "db_playerids.csv", dtype={"sleeper_id": str, "gsis_id": str})

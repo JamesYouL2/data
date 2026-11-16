@@ -44,6 +44,7 @@ import win_now as wn  # noqa: E402  (sets su.NOISE from NOISE, default 0.5)
 
 sys.path.insert(0, str(HERE.parent / "pages" / "build"))
 import rules as R  # noqa: E402
+import rules_before_seven as OLD  # noqa: E402  (the calls before the seven rules; contend_old is its contender call)
 
 REPS = int(os.environ.get("REPS", 20))
 POOL = int(os.environ.get("POOL", 300))
@@ -120,7 +121,7 @@ def calls(g, t, pr, look):
         out["rebuild"].append(ra)
         out["contend"].append(ca)
         out["middle"].append(ma)
-        out["contend_old"].append(R.base_calls(row, F, ctx)[2][0])
+        out["contend_old"].append(OLD.base_calls(row, F, ctx)[2][0])
     return {m: np.array(v, dtype=object) for m, v in out.items()}
 
 

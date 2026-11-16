@@ -35,7 +35,7 @@ from common import HERE, out_dir  # noqa: E402
 from long_horizon import SF  # noqa: E402
 
 sys.path.insert(0, str(HERE.parent / "pages" / "build"))
-import rules as R  # noqa: E402
+import rules_before_seven as R  # noqa: E402  (these analyses score the calls the seven rules replaced)
 
 F = "sf" if SF else "1qb"
 POS = ["QB", "RB", "WR", "TE"]
@@ -43,7 +43,7 @@ POOL = 340
 MIN_N = 8
 BUY_LENS = {"reb": "keep3", "mid": "keep1", "con": "prod1"}
 NAME = {"reb": "Rebuilding", "mid": "Default", "con": "Contending"}
-JSON = HERE.parent / "pages" / "build" / "strength.json"
+JSON = pathlib.Path(__file__).with_name("strength_before_seven.json")     # was pages/build/strength.json while the site used it
 
 
 def iso(x, y):

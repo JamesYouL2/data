@@ -67,44 +67,44 @@
     <p class="hint" id="nowHint"></p>
     <div id="now"></div>
     <h2>Buy targets on other teams</h2>
-    <p class="hint">Players the backtests say to buy for your situation: strong buys first, then cheapest first.</p>
+    <p class="hint">Players the rules say to buy for your situation, cheapest first.</p>
     <div id="targets"></div>
     <h2>Free agents worth a roster spot</h2>
-    <p class="hint">Unrostered players with a buy, hold or lottery call.</p>
+    <p class="hint">Unrostered players with a buy or hold call.</p>
     <div id="fa"></div>
   </section>
 
   <details id="legend">
     <summary>What the calls mean</summary>
     <dl>
-      <dt><span class="b buy">Buy: strong</span></dt><dd>Players like this returned at least 1.5 times what the average player at their price did, even without the best one, and at least 1 in 4 beat their price. Pay the market price, or a little more.</dd>
-      <dt><span class="b buy">Buy: weak</span></dt><dd>Players like this returned about their price or somewhat more, or a lot more only because of one hit. Buy at the market price or below, not above.</dd>
-      <dt><span class="b hold">Hold</span></dt><dd>Price and production roughly agree. Keep it unless an offer beats the price.</dd>
-      <dt><span class="b hold">Hold to February</span></dt><dd>Rookies whose price tends to rise through the offseason.</dd>
-      <dt><span class="b use">Use, then sell</span></dt><dd>A starter whose long-term value is fading: play him through your playoffs, then sell.</dd>
-      <dt><span class="b sell">Sell: heavy</span></dt><dd>Players like this returned under 65% of what the average player at their price did over three years (points above replacement plus what they were worth then). Take any reasonable offer, even below market.</dd>
-      <dt><span class="b sell">Sell: light</span></dt><dd>Players like this returned somewhat less than their price, or about the same. Sell at the market price. If no one pays it, holding costs little.</dd>
-      <dt><span class="b sell">Sell high now</span></dt><dd>Rookie RBs whose price peaks in November. Move them while it's worth something.</dd>
-      <dt><span class="b lotto">Lottery ticket</span></dt><dd>Cheap, mostly returns nothing, occasionally hits. Keep if you have the roster spot.</dd>
+      <dt><span class="b buy">Buy</span></dt><dd>One of the rules says players like this gained for a team like yours. Buy at the market price, not above.</dd>
+      <dt><span class="b hold">Hold</span></dt><dd>No rule says to move him. Keep him unless an offer beats his price.</dd>
+      <dt><span class="b use">Use, then sell</span></dt><dd>He is starting for you and his price will last: play him through your playoffs, then sell.</dd>
+      <dt><span class="b sell">Sell</span></dt><dd>One of the rules says players like this lose value from here. Sell at the market price.</dd>
       <dt><span class="b hold">Stash</span></dt><dd>Out for the season (injured and off the FantasyPros rest-of-season rankings) but worth keeping: a contender can't use him this year, and selling now takes an injury discount.</dd>
       <dt><span class="b buy">Buy low (injured)</span></dt><dd>Out for the season, and the trade market has marked him well below his dynasty ranking. Contenders are the natural sellers.</dd>
-      <dt><span class="b sell">Sell when healthy</span></dt><dd>The long-term call is to sell, but he's out for the season: wait until he's playing and the injury discount is gone.</dd>
-      <dt><span class="b cut">Cut</span></dt><dd>Players like this returned close to nothing. Free the roster spot.</dd>
+      <dt><span class="b sell">Sell when healthy</span></dt><dd>The call is to sell, but he's out for the season: wait until he's playing and the injury discount is gone.</dd>
+      <dt><span class="b cut">Cut</span></dt><dd>Past 300 in the rankings is waiver level. Free the roster spot.</dd>
     </dl>
-    <p class="hint"><b>Strong, weak, heavy, light.</b> Each call's note says what players like it, at the same price (FantasyPros rank 1-50, 51-100, 101-200
-      or 201+), returned against the average player at that price (top 340, 2018 on). Buys are judged by what each mode plays for:
-      Rebuilding by three seasons of points plus what the player was worth after them, Default by next season plus his
-      value a year on, Contending by next season's points. A buy that didn't pay off by that measure becomes Hold. Sells
-      use the three-year measure in every mode. Small groups borrow the record of similar players (same position and
-      age, then any price, then same age), and the note says so.</p>
-    <p class="hint"><b>Default, Contending, Rebuilding.</b> Rebuilding is the long-term call: sell what loses value, even if
-      he starts for you. Default keeps a player while he's starting for you (top 12 QB, or 24 in superflex; top 24 RB, 30 WR, 12 TE by
-      points per game, or by the FantasyPros rest-of-season rank) and sells him once he isn't. Where rebuilders sell and
-      contenders buy, it holds. Contending is Default plus the contender's buys. In a league simulation (12 teams, real
-      scoring 2019-2025), Default and Contending won more titles over the next three seasons than the old contender
-      calls, which held fading players who weren't starting. Contending won the most titles in season 1; Default won about
-      as many over three seasons and kept far more dynasty value. Rebuilding kept the most dynasty value. That makes it the
-      call for a team playing for year four and later.</p>
+    <p class="hint"><b>The seven rules.</b> Every call comes from one of seven rules by position, age, price and whether the player is
+      producing (points per game inside the starter line: top 12 QB, or 24 in superflex; top 24 RB, 30 WR, 12 TE). They are the same in 1QB
+      and superflex. Age is his age next September.</p>
+    <ol class="hint">
+      <li>Sell RBs and WRs 26 or older, and TEs 30 or older, priced outside the top 100.</li>
+      <li>Sell a producing veteran when his price allows: after the season for RBs 26-27 and WRs 28-29 (a rebuilding team sells now); now
+        for RBs 28-29 and WRs 30+, whose price doesn't last a year; now for RBs 30+ and TEs 29+, except that a contender holds them.</li>
+      <li>A top-100 RB at 26-29 who isn't producing: Contending holds, Default sells after the season, Rebuilding sells now.</li>
+      <li>Buy top-100 rookie WRs (Default, Rebuilding), rookie TEs (Rebuilding) and top-100 TEs 30 or older (Contending, Default).</li>
+      <li>Sell anyone priced outside the top 200 who isn't a rookie or a QB.</li>
+      <li>Sell RBs 25 or under who aren't producing.</li>
+      <li>QBs: buy at 26-29 priced outside the top 100; sell at 33 or older.</li>
+    </ol>
+    <p class="hint"><b>Default, Contending, Rebuilding.</b> Contending is a team projected to finish 1st to 3rd, Rebuilding 10th to 12th,
+      Default everyone between. The rules never push a player out harder for a contender than for a rebuilder, and Default's call is always
+      between the other two. In a league simulation (12 teams, real scoring 2019-2025) these seven rules beat the longer list of calls
+      this page used before on dynasty value for every kind of team in both formats, and on titles over three seasons for Default. They
+      cost Contending and Default about 2 title points in the first season in 1QB. A team projected in the top three finished there
+      45% of the time, so Default is the right setting for most teams.</p>
     <p class="hint"><b>Price</b> is the FantasyPros dynasty rank the calls are built on. <b>Market</b> is the FantasyCalc rank from real trades,
       with the rookie pick of similar value; ▲/▼ marks a 10%+ move in 30 days. A note under a call says when the market is well above or below the
       rankings (by 12+ spots, or 25%). <b>Now</b> shows the FantasyPros rest-of-season (ROS) positional and overall rank, and next week's positional rank,
