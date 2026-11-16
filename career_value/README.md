@@ -55,6 +55,8 @@ Follow-up analyses for sections 3b and 7–12 are in `analysis/`. Run them from 
 | `redraft_age.py` | 25 (also `LEAGUE=sf`; prints only) |
 | `gap_model_sim.py` | 26 (also `LEAGUE=sf`, `SOURCE=fantasycalc`; `check` and `ablate` print only; writes `outputs/gap_model_sim_<source>.csv.gz`) |
 | `ros_low_sim.py` | 27 (also `LEAGUE=sf`, `SOURCE=fantasycalc`; `check` prints only; writes `outputs/ros_low_sim_<source>.csv.gz`) |
+| `simple_rules_sim.py` | 28 (also `LEAGUE=sf`, `SOURCE=fantasycalc`; `table` prints the verdicts; writes `outputs/simple_rules_sim_<source>.csv.gz`) |
+| `rule_audit.py` | 29 (also `LEAGUE=sf`; prints only) |
 
 `common.py` holds shared loaders. Sections 13 and 16 also run for superflex if `outputs/sf/` exists.
 
@@ -1241,6 +1243,85 @@ On the site as a Contending-only sell signal (`rules.signals`: `ros_low`), added
 - **A stricter gap** (half again or more) gives less of both. Limiting it to 26+ leaves almost no one.
 
 This is not a sell by the test the site's other calls passed (titles over three seasons and value). The site uses it anyway as a Contending-only sell, for hurt and healthy players alike, as a trade of value for this season's title odds; the note on the page says so. Default and Rebuilding don't get it.
+
+## 28. Which in-season signals hold as simple rules at 2.5 standard errors? (`analysis/simple_rules_sim.py`)
+
+This set the site's in-season signals (`rules.SIG_RULES`). Each signal was tested as one rule for one team type, with no exemptions by position, age or injury: the flag laid on the site's calls with no signals, in the league sim at market prices (trades after weeks 4, 8 and 12, seasons 2021–25). A rule holds if its gain is at least 2.5 standard errors on the team's own objective at both KTC and FantasyCalc prices, and above zero in every cohort but one. Objectives: Contending, title odds this season; Default, title odds over three seasons; Rebuilding, value a year on. Default and Rebuilding rules also had to lose no value at 2.5 standard errors. Standard errors cluster on leagues.
+
+Gain on the objective, KTC / FantasyCalc (z in brackets):
+
+| Rule | Contending | Default | Rebuilding |
+|---|---|---|---|
+| Sell: rest-of-season rank a quarter worse than the market's, 1QB | **+6.1 / +2.4 (8.5, 4.2)** | −0.8 / −3.5 | −103 / −93 (−7.8, −6.1) |
+| The same, superflex | **+6.1 / +3.9 (7.8, 5.6)** | −0.2 / +3.1 | −101 / −55 (−13.1, −4.8) |
+| Sell: rest-of-season rank a quarter worse than the preseason, 1QB | +3.2 / +2.1 (5.1, 2.8): held alone, dropped below | +2.4 / +5.6 (2.4, 4.4) | −27 / −26 (−5.7, −3.8) |
+| The same, superflex | **+4.0 / +3.7 (6.2, 5.3)** | +1.2 / +7.8 (1.0, 3.9) | −30 / −26 (−6.3, −3.9) |
+| Sell: dynasty rank a quarter worse than the preseason, 1QB | +2.4 / +1.5 (6.1, 3.5): held alone, dropped below | +1.2 / +2.1 (2.0, 1.6) | −6 / −3 |
+| The same, superflex | +1.7 / +1.3 (3.3, 2.3) | +0.4 / +2.1 | −6 / −12 |
+| Buy: 25 or under, not a rookie, rest-of-season rank a quarter better than dynasty, 1QB | **+3.2 / +4.0 (5.9, 5.7)** | **+6.3 / +11.7 (5.1, 4.8)** | −30 / −33 (−4.0, −6.1) |
+| The same, superflex | +2.1 / +0.6 (3.2, 0.9) | +2.1 / +0.8 | −73 / −53 (−7.8, −4.2) |
+| Buy: a rookie with that gap, 1QB | +0.3 / +1.2 | +3.4 / +9.5 (3.2, 4.1), 1 of 3 cohorts at KTC | −4 / −11 |
+| The same, superflex | −0.1 / +0.2 | +1.5 / +6.4 (2.4, 4.1) | −25 / −8 (−7.2, −3.1) |
+
+- **Four rules are on the site** (bold): the market sell for Contending in both formats, the preseason-fall sell for Contending in superflex, and the young-player buy for Contending and Default in 1QB.
+- **Nothing holds for Rebuilding.** Every sell and buy lost value a year on in both formats, most at 4 standard errors or more.
+- **Nothing holds for Default in superflex**, and no sell holds for Default.
+- **A rule that held alone also had to help the set.** With each rule left out of the new set in turn (`signal_sim.py`), the two preseason-fall sells cost 1QB Contending title odds this season once the market sell and the buy were in place: 1.1 / 1.3 points for the rest-of-season one and 0.4 / 1.5 for the dynasty one. Both were dropped there. In superflex the rest-of-season one stayed: leaving it out cost 0.7 / 1.7.
+- **No Contending rule cost title odds over three seasons at 2.5 standard errors in this test.** The superflex Contending buy was +3.8 (1.5) / −2.1 (−0.7). Taken out of the old rule set it had raised three-season title odds by 4.7 (2.4) / 7.1 (4.0), so the harm was in the combination; it is gone either way, since it failed here.
+
+**The new set against the old one** (league sim, against no trades; new less old, KTC / FantasyCalc):
+
+| Team | Title odds, season 1 | Title odds, seasons 1–3 | Value 1 year on |
+|---|---|---|---|
+| 1QB Contending, before the two sells were dropped | −1.6 / −1.9 | −3.0 / −1.8 | −42 / +1 |
+| 1QB Default | +0.1 / 0.0 | +0.2 / 0.0 | −20 / −13 |
+| 1QB Rebuilding | −0.3 / −0.1 | −2.4 / −6.3 | +33 / +47 |
+| Superflex Contending | −0.3 / +1.1 | +4.7 / +7.0 | +34 / +35 |
+| Superflex Default | −2.8 / −2.8 | −2.3 / −6.9 | +36 / +3 |
+| Superflex Rebuilding | −0.3 / −0.5 | −2.2 / −5.7 | +48 / +25 |
+
+- **Superflex Default pays for the bar:** its old signals added title odds as a set (2.8 this season), but no one of them cleared 2.5 standard errors at both prices.
+- **Rebuilders give up title odds over three seasons for value a year on**, which is their objective here.
+- The 1QB Contending row is the set before the leave-one-out step; after it the set is the old one without its few hurt-player sells.
+
+Caveats: leagues in a cohort share players, so the standard errors are too small; three-season results rest on 2–3 cohorts; the signals were found on these seasons.
+
+## 29. Do the site's backtested calls and their pools hold at 2.5 standard errors? (`analysis/rule_audit.py`)
+
+An audit, not a change to the site. The same bar on the calls behind the page: each call group's return against the average player at its price (the lenses of `call_strength.py`: three seasons plus value after for Rebuilding's buys and every sell and cut, one season plus value for Default's buys, next season's VORP for Contending's buys), with a player's seasons as one cluster. A call holds if the ratio is 2.5 standard errors from 1 in its direction and on that side of 1 in every cohort but one.
+
+**The site's action calls that hold** (cells holding / cells; 1QB, superflex):
+
+| | Contending | Default | Rebuilding |
+|---|---|---|---|
+| Buys | 0 / 8, 0 / 8 | 0 / 5, 0 / 5 | 0 / 3, 0 / 4 |
+| Sells | 4 / 20, 6 / 22 | 4 / 23, 6 / 23 | 9 / 28, 8 / 29 |
+| Cuts | 7 / 23, 2 / 22 | 6 / 20, 1 / 20 | 6 / 20, 1 / 20 |
+
+- **No Buy call holds.** The largest, 1QB young NFL round 1–3 WRs priced 101–200 (57 players), returned 1.58 of their price in next season's VORP and beat it in 6 of 6 cohorts, at 1.5 standard errors: a few hits carry it.
+- **About a quarter of the sells hold**, covering 125 to 226 of the 312 to 529 players sold. The ones that do: WRs 26–29 priced 101 and lower (0.22 to 0.45 of their price), young NFL round 1–3 RBs at 101–200, RBs 26–29 at 51–200 for rebuilders, WRs 30+ with a 2-year window, TEs 26–29.
+- **Many cuts hold trivially:** a handful of players who all returned about nothing.
+
+**The pools that hold** (ratio, z, cohorts above 1; 1QB, with superflex where it differs):
+
+| Pool | 3 seasons + value | 1 season + value | Next season's VORP |
+|---|---|---|---|
+| Rookie RBs, WRs and TEs | 1.54, +3.4, 4/4 | 1.30, +3.5, 6/6 | 0.76, −2.3 |
+| Rookie WRs | 1.88, +3.1, 3/4 | 1.36, +2.7, 6/6 | 0.86 |
+| Rookie RBs | 1.28 | 1.18 | 0.64, −2.8, 0/6 |
+| RBs 26–29 | 0.70, −2.7, 0/4 | 0.84, −2.4 (superflex 0.82, −2.9) | 1.18 |
+| WRs 30+ | 0.44, −3.7, 0/4 | 0.70, −2.9, 1/6 | 1.12 |
+| WRs 26–29 priced 201+ | 0.20, −8.0, 0/4 | 0.43, −5.2, 0/6 | 0.55 |
+| WRs 26–29 priced 101–200 | 0.45, −3.9, 0/4 | 0.88 | 1.36 |
+| TEs 30+ | 1.26 | 1.12 | 1.70, +3.3, 5/6 |
+| QBs 30+, superflex | 1.07 | 1.04 | 1.52, +3.3, 5/6 |
+| RBs 25 and under, superflex | 0.78, −2.7, 0/4 | 0.91 | 0.82, −2.5 |
+
+- **The pools say more than the cells.** At this bar the page's price-and-draft-capital detail is mostly not separable from a fair price; what is separable is position by age.
+- **A rule set that held would be about eight lines:** buy rookies for value (WRs most) and don't count on rookie RBs this season; sell RBs 26–29, WRs 26–29 priced past 100 and WRs 30+ for value; for this season, buy TEs 30+ (and QBs 30+ in superflex).
+- Not done here: such a set has not been through the league sim, where calls act together and a rule can pass alone and fail in the set (section 28).
+
+Caveats: seasons of one cohort share a league year, so the standard errors are too small; the calls were picked on these cohorts; ratios of sums with a few large returns have skewed errors, so a group that beats its price in every cohort can still miss the bar.
 
 ## Caveats
 

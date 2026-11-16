@@ -135,62 +135,52 @@ calls, and each one shows as a note under the call:
 
 ## In-season signals (league simulation)
 
-From week 5 to week 14, a few rank moves change the call. Each shows as a note.
-[career_value/analysis/inseason_sim.py](../career_value/analysis/inseason_sim.py) tests them in the same league
-simulation, with one team making equal-price trades after week 4, 8 or 12, against the same trades made on random
-players. It covers the 2018-24 classes. Players off the rest-of-season list get no signal: the Stash and Sell when healthy calls
-cover them.
+From week 5 to week 14, a few rank moves change the call. Each shows as a note. Every rule is one signal for one kind of team, with
+no exceptions by position, age or injury.
 
-A fall also has to cost at least 6 rest-of-season places or 3 dynasty places. Near the top of the list a quarter can be a single
-place (#3 to #4), and top-36 players with falls that small kept their value about as well as players with no signal. The
-simulation didn't have these floors, so the numbers below include those trades.
+A rule is on the page only if it held in [simple_rules_sim.py](../career_value/analysis/simple_rules_sim.py). That is the league
+simulation at KTC and FantasyCalc prices, with one team trading after week 4, 8 or 12 over the 2021-25 seasons, and the signal laid
+on the page's calls with no signals. To hold, a rule had to gain at least 2.5 standard errors on its team's own objective at both
+prices, and be above zero in every class but one. The objectives are title odds this season for Contending, title odds over three
+seasons for Default and dynasty value a year on for Rebuilding. Default and Rebuilding rules also had to lose no value at 2.5 standard
+errors.
 
-Some players keep their usual call on a sell signal, from a [simulation at KTC and FantasyCalc prices](../career_value/analysis/market_price_sim.py):
+| Signal | Call | Who gets it | Gain on the objective (title points, KTC / FantasyCalc) |
+|---|---|---|---|
+| Rest-of-season positional rank a quarter worse than the trade market's | Sell | Contending | +6.1 / +2.4 this season (1QB), +6.1 / +3.9 (superflex) |
+| Rest-of-season rank a quarter worse than the preseason | Sell | Contending, superflex | +4.0 / +3.7 this season |
+| 25 or younger and not a rookie, positional rest-of-season rank a quarter better than dynasty | Buy | Contending and Default, 1QB | +3.2 / +4.0 this season; Default +6.3 / +11.7 over three seasons |
 
-- **QBs in 1QB.** Selling them lost value 3 years on in every mode (5 to 56) without a clear gain in titles. Contenders still sell
-  hurt ones, for this season.
-- **Hurt RBs, WRs and TEs 25 or younger**, for 1QB default teams and for rebuilders in both formats. 1QB default teams gained nothing
-  clear from selling them, and rebuilders lost value the next May (9 to 18). Contenders still sell them, for this season.
-- **Healthy players, for 1QB contenders and default teams.** [At those prices](../career_value/analysis/signal_sim.py), not selling
-  them added 0.8 to 5.6 title points over 3 seasons and 46 to 67 of value 3 years on. They still sell hurt players. 1QB rebuilders
-  keep these sells: without them, titles over 3 seasons fell 0.7 to 2.0.
+A rule that held on its own also had to help the set it joins, with each rule left out of the set in turn. Two sells passed alone
+for 1QB Contending and failed that: the sell on a rest-of-season rank a quarter worse than the preseason, and the one on a dynasty
+rank a quarter worse than the preseason. Once the market sell and the buy were in place, each cost title odds this season (1.1 to
+1.3 and 0.4 to 1.5 points), so 1QB doesn't use them.
 
-Superflex has no QB exemption, and superflex default teams sell hurt young players. Over 3 seasons, selling those QBs added 0.3 to
-2.6 title points and selling those young players added 1.3 to 1.4, and value 3 years on rose in both cases. About half of the QB gain
-comes from selling any QB, not from the signal. These tests cover few classes (2020-22 at 3 years).
+A fall since the preseason also has to cost at least 6 rest-of-season places, and a rank below the market's at
+least 3 positional places: near the top of the list a quarter can be a single place. Players off the rest-of-season list get no
+signal: the Stash and Sell when healthy calls cover them.
 
-Superflex rebuilders get no veteran buy signals, only rookie ones. In the same simulation, dropping the veteran buys added 1.1 to 3.5
-title points over 3 seasons, most of it from the 2022 class, and 67 to 81 of value 3 years on. 1QB rebuilders keep them: without
-them, titles over 3 seasons fell about 1.
+The Contending sells trade dynasty value for this season. The sell on a rank below the market's cost 21 to 39 of value a year on, and
+most of those players are rookies or 25 and under whose price held up the next May. The note on the page says so.
 
-| Signal | Call | Format | Modes | Title odds over 3 seasons (points) | Value 3 years on |
-|---|---|---|---|---|---|
-| Rest-of-season rank a quarter worse than the preseason | Sell | Both | All, but only hurt players for 1QB contenders and default teams | +3 to +5 (1QB), +5 to +6 (superflex) | +88 to +151 (1QB), +96 to +114 (superflex) |
-| 25 or younger, positional rest-of-season rank a quarter better than dynasty | Buy | Both | All except superflex rebuilders | +6 to +8 (1QB), +6 to +9 (superflex) | +65 to +187 (1QB), +7 to +186 (superflex) |
-| Rookie with that gap | Buy | Both | Rebuilding | +3 (1QB), +4 to +5 (superflex) | +101 to +122 (1QB), about +120 (superflex) |
-| Dynasty rank a quarter worse than the preseason | Sell | 1QB | Rebuilding; hurt players only for contenders and default teams | +2 to +4 | +55 to +70 |
-| That dynasty fall, and hurt | Note only | Superflex | All | +1 | +8 to +19 |
+What didn't hold, and is no longer on the page:
 
-Contending teams get one more sell, from [ros_low_sim.py](../career_value/analysis/ros_low_sim.py) at KTC and FantasyCalc prices: a player
-whose FantasyPros rest-of-season positional rank is a quarter or more worse than his positional rank in the trade market (FantasyCalc on
-the page), and at least 3 places worse. Players like this scored less than their price for the rest of the season in every season
-tested (2021-25), hurt or healthy. Laid on the page's calls, the sell added 1.1 to 4.3 title points that season for contenders and cost
-17 to 39 of dynasty value a year on; over three seasons the title gain was unclear. Nearly all of them are rookies or 25 and under, and
-their price the next May held up, so this is a trade of value for this season. Default and Rebuilding don't get it: they lost 31 to 108
-of value a year on for about one title point. It has none of the exemptions above, since the simulation sold QBs and healthy players
-too, and it covers a short test: 4 to 5 seasons, and 1 to 2 for anything three years on.
+- **Every signal for Rebuilding.** Each sell and each buy lost dynasty value a year on, most of them at 4 standard errors or more.
+- **The sells for Default.** The preseason-fall sell added title odds over three seasons at FantasyCalc prices but not at KTC's, where it
+  also lost value a year on. The other two sells cleared the bar at neither price.
+- **The young-player buy in superflex.** It lost 37 to 73 of value a year on for every kind of team and didn't clear the bar on titles.
+- **The rookie buy**, and the dynasty-fall sell in both formats.
+- **The exceptions** the earlier rules carried (1QB QBs, hurt young players, healthy players for 1QB contenders). The test sold and
+  bought every flagged player, so the rules that held don't need them.
 
-The table's numbers come from the earlier simulation at FP prices and predate these limits. The ranges run across how the simulated team chose its trade partner, and superflex leaves out the 2018 class, whose
-only in-season list looks corrupt. A signal becomes **Sell: light** or **Buy: weak**. It leaves Sell and Cut calls alone and doesn't
-raise a sell to heavy or a buy to strong. A sell signal also replaces "Use, then sell", because the simulated team sold starters too. Where a signal meets the opposite call (a sell signal on a Buy, or a buy signal on a Sell, Cut or
-Use, then sell), or a sell and a buy signal fire together, the call becomes Hold. Those Hold rules are judgment calls, as is
-naming what to take back in a trade.
+A signal becomes **Sell: light** or **Buy: weak**. It leaves Sell and Cut calls alone and doesn't raise a sell to heavy or a buy to
+strong. A sell signal also replaces "Use, then sell", because the simulated team sold starters too. Where a signal meets the opposite
+call (a sell signal on a Buy, or a buy signal on a Sell, Cut or Use, then sell), or a sell and a buy signal fire together, the call
+becomes Hold. Those Hold rules are judgment calls, as is naming what to take back in a trade.
 
-The signals were found on these same seasons, so this is not out of sample; there are only 3-5 classes behind each
-3-year number; and the simulation assumes someone accepts every equal-price trade. It also lets a team take the best
-player within 20% of the price, which is why these numbers are measured against random players and not against
-not trading. These numbers also clear trades at the FP rank. [At KTC and FantasyCalc prices](../career_value/analysis/market_price_sim.py), the calls' 3-year title gain against not trading falls by about half or more, and the signals add titles for contenders but little or no value. Other signals failed or were too weak to use: buying on a better rest-of-season rank (unreliable in 1QB)
-and selling superflex RB and TE risers (lost value a year on).
+The limits: the signals were found on these same seasons, so this is not out of sample; the standard errors treat simulated leagues
+as independent when leagues from one class share players, so they are too small; anything over three seasons rests on 2 or 3
+classes; and the simulation assumes someone accepts every equal-price trade.
 
 ## The 2026 test
 
