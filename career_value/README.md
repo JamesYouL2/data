@@ -54,6 +54,7 @@ Follow-up analyses for sections 3b and 7–12 are in `analysis/`. Run them from 
 | `rank_gaps.py` | 24 (also `LEAGUE=sf`; `REDRAFT=fp` for FP redraft ECR; prints only) |
 | `redraft_age.py` | 25 (also `LEAGUE=sf`; prints only) |
 | `gap_model_sim.py` | 26 (also `LEAGUE=sf`, `SOURCE=fantasycalc`; `check` and `ablate` print only; writes `outputs/gap_model_sim_<source>.csv.gz`) |
+| `ros_low_sim.py` | 27 (also `LEAGUE=sf`, `SOURCE=fantasycalc`; `check` prints only; writes `outputs/ros_low_sim_<source>.csv.gz`) |
 
 `common.py` holds shared loaders. Sections 13 and 16 also run for superflex if `outputs/sf/` exists.
 
@@ -1205,6 +1206,41 @@ Not used by the site. `single_model_sim.py`'s in-season panel (players in the ma
 - So the gap belongs where the site already uses a version of it, the contender's win-now targets, and not in the calls.
 
 Caveats: 3–4 walk-forward seasons for prediction and 1–2 cohorts for anything three years on; the model is untuned; KTC and FantasyCalc runs share players and seasons.
+
+## 27. Experiment: a sell call on a rest-of-season rank well below the market's? (`analysis/ros_low_sim.py`)
+
+Not used by the site. The flag: a player on FP's rest-of-season list whose positional rank there is a quarter or more worse than his positional rank in the trade market, and at least 3 places worse. Snapshots after weeks 4, 8 and 12, market top 340, seasons 2021–25. Numbers run KTC 1QB / FantasyCalc 1QB / KTC superflex / FantasyCalc superflex.
+
+**Who is flagged, and what they return against the market's price** (KTC 1QB; the other runs agree in sign):
+
+| On the rest-of-season list | Rest-of-season VORP | Value at next May's rank | A snapshot |
+|---|---|---|---|
+| Not flagged, healthy | +2.7 | −2.4 | 203 |
+| Not flagged, hurt | −2.0 | −9.0 | 24 |
+| Flagged, healthy | −5.4 | +9.3 | 38 |
+| Flagged, hurt | −15.7 | +7.5 | 11 |
+
+- **Right about this season, wrong about the price.** Flagged players trailed their price in rest-of-season VORP in every season, and beat it in value next May in every season (about 64% above it).
+- **They are stashes:** nearly all are rookies or 25 and under, about 49 a snapshot. Almost none is 26 or older, where the rest-of-season rank usually beats the dynasty one. The site's own sell signals fire on almost none of them.
+- **The gap grows through the season** (rest-of-season VORP −1 after week 4, −14 after week 12), and a larger gap is worse this season without being worse in value.
+
+**League sim at market prices: the flag laid on the site's calls as a sell signal**, against the site's calls (own-mode teams; title odds in points; value = sum of 340 − market rank; cohorts above zero in brackets for season 1):
+
+| Team | Title odds, season 1 | Title odds, seasons 1–3 | Value 1 year on | Value 3 years on |
+|---|---|---|---|---|
+| Contending | +4.3 / +1.4 / +2.0 / +1.1 (5/5, 3/4, 4/5, 3/4) | +3.2 / −4.4 / +6.5 / −2.9 | −39 / −28 / −25 / −17 | −149 / −148 / −56 / −81 |
+| Default | +1.2 / +0.6 / +1.1 / +1.4 | −4.3 / −7.0 / +0.3 / +1.1 | −66 / −44 / −61 / −31 | −138 / −84 / −59 / −12 |
+| Rebuilding | +1.0 / +0.6 / +0.2 / +0.2 | +7.9 / +0.5 / +5.3 / −5.4 | −108 / −99 / −91 / −50 | +27 / +32 / +66 / +51 |
+| Contending, hurt players only | +0.4 / +0.4 / +0.7 / +0.5 (5/5, 3/4, 4/5, 3/4) | +1.7 / +0.5 / +0.7 / −0.1 | +3 / −3 / +1 / −7 | −5 / −10 / −3 / −19 |
+| Contending, healthy only | +3.7 / +1.0 / +1.0 / +0.5 | +1.2 / −4.9 / +4.0 / −2.7 | −38 / −20 / −25 / −12 | −139 / −124 / −63 / −72 |
+
+- **For contenders it is titles this season for value**, about 1 to 2 extra trades a team: season-1 title odds up in 3 to 5 cohorts of every run, value a year on down in every run. Over three seasons the title gain is unclear (two runs up, two down).
+- **Default and rebuilding teams lose value for little:** a point or so of title odds, and 31 to 108 of value a year on (rebuilders in every cohort of three runs).
+- **Injury needs its own branch.** Hurt flagged players are few (0.2 trades a team) and selling them costs a contender no value; the title gain and the value loss both come from the healthy ones.
+- **A random control** (as many Hold or Use players sold) moved season-1 title odds by −1.7 to +0.6 for contenders, so the season-1 gain is the flag's, most clearly at KTC prices (+6.0 against the control, 5 of 5 cohorts; FantasyCalc +1.0, 2 of 4).
+- **A stricter gap** (half again or more) gives less of both. Limiting it to 26+ leaves almost no one.
+
+So this is not a sell call by the test the site's other calls passed (titles over three seasons and value). It fits as a Contending-only note on healthy players, and as one more reason for the sell on hurt ones that Contending already has.
 
 ## Caveats
 
