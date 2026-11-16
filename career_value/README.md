@@ -1493,6 +1493,21 @@ An experiment, not on the site. Section 31's design for buys: every player of on
 - **Old players priced outside the top 100 are not buys for anyone:** no title gain beyond the control and 50 to 160 of value lost.
 - **Near misses on the cohort check:** QBs 26–29 priced 101+ (title odds up 1 to 3 points for Contending and Default in both formats, +158 of value three years on in 1QB).
 
+**Young non-rookies and superflex QBs.**
+
+| Buy (25 and under, not a rookie) | Contending: title odds, seasons 1–2 | Default: seasons 1–3 | Rebuilding: value 1 year on | Value 3 years on, any team |
+|---|---|---|---|---|
+| WRs in the top 100 | −7.6 (−5.7) / −5.8 (−4.8) | −3.0 / −1.3; season 1 −5.7 / −4.1 | +22 (2.7), 2 of 6 cohorts / **+50 (5.8)** | +28 to +193 |
+| WRs priced 101+ | +1.2 (1.9) / −1.6 | −1.5 / −5.3 | −89 / −53 | −165 to +54 |
+| QBs in the top 100 | −6.9 (−6.4) / −8.5 (−7.3) | −8.6 / −11.0 | +57 (5.6), 4 of 6 cohorts / −100 (−9.7) | 1QB +144 to +177; superflex −82 to +128 |
+| QBs priced 101+ | −0.7 / −0.4 | +1.1 / −0.9 | −65 / −105 | — |
+
+- **No team type buys young non-rookie WRs or QBs as a rule**, apart from superflex Rebuilding with top-100 WRs. A top-100 young WR or QB costs Contending and Default 5 to 11 title points for value three years on; the cheap ones lose value.
+- **Superflex QBs.** Buying a top-100 QB of any age cost Contending and Default title odds (−7 to −14 over two to three seasons at 25 and under, 26–29 and 30+), and a top-100 QB 25 or under lost a rebuilder 100 of value a year on. The QB buy that leaned positive for every team type is 26–29 priced 101+ (Contending +3.0 over two seasons and +5.4 over three, Default +3.1, Rebuilding +98 of value three years on), short of the cohort check each time. QBs 30+ priced 101+ are a one-season rental (+1.5 title points in season 1, value −46 to −91).
+- **Selling superflex QBs moves little** (section 31's run): QBs 30+ priced 101+ gain 20 to 36 of value for any team, and no sell of a QB under 30 clears. In section 32's run a producing QB under 32 is a hold for everyone (selling now cost Contending −3.0 title points over three seasons and gained no value three years on), and one 32 or older is a hold for Contending (−2.6 in the season of the sale) and a sell now for Default and Rebuilding (+49 / +47 of value a year on, +112 / +106 three years on).
+- This sits beside section 5, where superflex QBs beat their price in VORP against a replacement QB26: here every team already rosters several QBs, so a top-100 QB adds less to a lineup than the top-100 player given for him.
+- **The Rebuilding buy of RBs 30+ in the top 100 should not be used:** it is one cohort, and it runs against everything else here about rebuilders and old RBs.
+
 Caveats as section 31; RBs 30+ in the top 100 exist in two cohorts.
 
 ## Caveats
