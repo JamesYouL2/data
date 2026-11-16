@@ -57,6 +57,7 @@ Follow-up analyses for sections 3b and 7–12 are in `analysis/`. Run them from 
 | `ros_low_sim.py` | 27 (also `LEAGUE=sf`, `SOURCE=fantasycalc`; `check` prints only; writes `outputs/ros_low_sim_<source>.csv.gz`) |
 | `simple_rules_sim.py` | 28 (also `LEAGUE=sf`, `SOURCE=fantasycalc`; `table` prints the verdicts; writes `outputs/simple_rules_sim_<source>.csv.gz`) |
 | `rule_audit.py` | 29 (also `LEAGUE=sf`; prints only) |
+| `threshold_sim.py` | 30 (also `LEAGUE=sf`; `table` reprints; writes `outputs/threshold_sim.csv.gz`) |
 
 `common.py` holds shared loaders. Sections 13 and 16 also run for superflex if `outputs/sf/` exists.
 
@@ -1322,6 +1323,32 @@ An audit, not a change to the site. The same bar on the calls behind the page: e
 - Not done here: such a set has not been through the league sim, where calls act together and a rule can pass alone and fail in the set (section 28).
 
 Caveats: seasons of one cohort share a league year, so the standard errors are too small; the calls were picked on these cohorts; ratios of sums with a few large returns have skewed errors, so a group that beats its price in every cohort can still miss the bar.
+
+## 30. How strict should the bar for a call be? (`analysis/threshold_sim.py`)
+
+An experiment, not a change to the site. Calls are built from pools alone (position x age class x price, position x age class, age class), each team type reading its own measure as in section 29: a player is a Buy or a Sell if the narrowest of his pools with 15+ players is at least B standard errors from a fair price, else a Hold. A cohort's calls never use that cohort: the table trains on every other cohort (2018–24, 30 leagues each); training only on finished seasons (2021–24) is given where it differs. Then the league sim of section 6a at FP prices, each team following the calls for its own type, against no trades. 1QB / superflex.
+
+| Bar | Contending: title odds, season 1 | Contending: seasons 1–3 | Contending: value 3 years on | Default: title odds, seasons 1–3 | Default: value 1 year on | Rebuilding: value 1 year on | Rebuilding: value 3 years on |
+|---|---|---|---|---|---|---|---|
+| 0.5 | +14.4 / +13.9 | +11.2 / +16.6 | −261 / −566 | +15.0 / +18.5 | +588 / +770 | +569 / +423 | +816 / +682 |
+| 1.0 | +16.1 / +12.9 | +10.5 / +9.6 | −401 / −642 | +14.1 / +21.0 | +596 / +829 | +504 / +432 | +741 / +727 |
+| 1.5 | +13.1 / +10.1 | +4.7 / +7.3 | −412 / −543 | +18.7 / +21.9 | +553 / +699 | +470 / +467 | +761 / +757 |
+| 2.0 | +8.8 / +8.1 | −0.3 / +5.3 | −418 / −458 | +21.7 / +21.6 | +505 / +623 | +399 / +458 | +595 / +786 |
+| 2.5 | +3.2 / +4.6 | +0.6 / +1.9 | −261 / −195 | +19.7 / +19.2 | +384 / +416 | +269 / +311 | +469 / +508 |
+| 3.0 | +1.2 / +1.1 | 0.0 / −3.2 | −101 / −122 | +6.1 / +12.9 | +128 / +196 | +186 / +205 | +315 / +342 |
+| The site's calls | +7.7 / +4.5 | +17.1 / +7.6 | +395 / +164 | +20.0 / +13.4 | +490 / +516 | +522 / +444 | +846 / +703 |
+| Random swaps | −1.4 / −0.7 | −2.9 / −1.7 | −20 / −1 | 0.0 / +0.8 | −7 / −2 | +6 / −3 | +7 / +2 |
+
+Players called (1QB): 116 buys and 207 sells of 340 at a bar of 0.5 for rebuilders, 54 and 113 at 2, 45 and 86 at 2.5, 37 and 57 at 3.
+
+- **2.5 is too strict, and 3 much too strict.** From 2 to 2.5 Default and Rebuilding lose a quarter to a third of their value gain in both formats, and from 2.5 to 3 another third to two thirds of what is left, for no gain in titles.
+- **About 2 is the best single bar.** Default's title odds over three seasons peak at 1.5 to 2 in both formats (and at 2 on finished seasons only: +9.7 / +22.6). Below 1.5 Default trades more for fewer titles.
+- **Rebuilding wants a loose bar:** value falls at every step up in 1QB and is flat to 2 in superflex. On finished seasons only it falls from 0.5 on (1QB +291 a year on at 0.5, +175 at 2).
+- **For Contending the bar is not the problem, the measure is.** Rules read on next season's VORP win more this season the looser they are (+16 at a bar of 1), and at every bar they give up the title odds of seasons 2–3 and 100 to 640 of value. The site's calls, which sell on three seasons of value, win less this season and far more after.
+- **Against the site's calls:** pools at a bar of 2 match them for Default in 1QB, beat them for Default in superflex (+21.6 against +13.4 over three seasons, and more value), and trail them for Rebuilding in 1QB. On finished seasons only, the site's calls lead in 1QB for every team type and trail for superflex Default.
+- **For the in-season signals** (section 28) a bar of 2 would add one rule, the dynasty-fall sell for superflex Contending (+1.7 / +1.3, z 3.3 / 2.3).
+
+Caveats: FP prices, where the sim takes the best player in a price window, so levels are inflated and the standard errors (leagues as clusters) are far too small: read the order of the rows. Training on every other cohort lets a neighbouring cohort's seasons in; the finished-seasons version has 4 test cohorts, and 2 for three-season results. The bar itself is chosen on these cohorts.
 
 ## Caveats
 
