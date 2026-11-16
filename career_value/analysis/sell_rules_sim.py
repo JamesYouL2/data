@@ -13,7 +13,8 @@ as clusters, cohorts above zero / cohorts.
 A sell is kept for a team type if it clears that type's bar on its objective at a z of BAR and is above zero in every cohort but one:
   Contending   title odds over seasons 1-2, and no loss over seasons 1-3 at z <= -BAR
   Default      title odds over seasons 1-3, and no loss of value 1 year on at z <= -BAR
-  Rebuilding   value 1 year on
+  Rebuilding   value 3 years on, and no loss of value 1 year on at z <= -BAR. (It was value 1 year on, for the extra cohorts; that hid
+               buys whose price doesn't move in a year, QBs above all.)
 and the objective has at least 3 cohorts. The bar is BAR (default 2) for every type. Section 30 had 1.5 a little ahead for Contending and Rebuilding within their type, but a team projected
 1st-3rd finishes there 45% of the time (team_signals.py persist), and Default's calls do as well or better over three seasons for every
 kind of team (middle_mode.py), so a rule that departs from Default has to clear the stricter bar.
@@ -44,11 +45,12 @@ from common import HERE, out_dir  # noqa: E402
 R, SF = cs.R, cs.SF
 REPS = int(os.environ.get("REPS", 20))
 JOBS = int(os.environ.get("JOBS", 6))
+ONLY = os.environ.get("ONLY", "")                  # "QB": QB classes only, with 30+ split into 30-32 and 33+ (files get a _qb suffix)
 SIDE = os.environ.get("SIDE", "sell")              # "buy": one buy rule at a time, written to buy_rules_sim.csv.gz
 TYPE = {**{r: "contend" for r in (1, 2, 3)}, **{r: "middle" for r in range(4, 10)}, **{r: "rebuild" for r in range(10, 13)}}
 NAME = {"contend": "Contending (1-3)", "middle": "Default (4-9)", "rebuild": "Rebuilding (10-12)"}
 BAR = float(os.environ.get("BAR", 2.0))
-GOAL = {"contend": ("yrs2", "yrs3"), "middle": ("yrs3", "v1"), "rebuild": ("v1", None)}     # objective, guard
+GOAL = {"contend": ("yrs2", "yrs3"), "middle": ("yrs3", "v1"), "rebuild": ("v3", "v1")}     # objective, guard
 MIN_COHORTS = 3
 METS = ["yr1", "yrs2", "yrs3", "v1", "v3"]
 
@@ -60,7 +62,7 @@ def run_cohort(args):
     bands = np.array([c.split(" | ")[1] for c in cls], dtype=object)
     out = []
     acts = {}
-    for c in sorted(set(cls)):
+    for c in sorted(x for x in set(cls) if not x.startswith("other")):
         for how, a in (("now", "Sell"), ("later", R.USE)):
             acts[c, how] = np.where(cls == c, a, "Hold").astype(object)
 
@@ -79,7 +81,7 @@ def run_cohort(args):
             out.append((t, rep, rkk[i], m, "none", "-", *p0[:3, i], v1, v3, 0, 0))
             if SIDE == "buy":
                 oth = (team >= 0) & (team != i)
-                for c in sorted(set(cls)):
+                for c in sorted(x for x in set(cls) if not x.startswith("other")):
                     tg = np.flatnonzero(oth & (cls == c))
                     band = c.split(" | ")[1]
                     pool_ = np.flatnonzero(oth & (bands == band))
@@ -132,7 +134,10 @@ def main():
         g["proj"] = proj(g)
         ctx = {"ROOKIE": t + 1}
         dy = np.where(g.row_type == "rookie", t + 1, 0)
-        cls = np.array([f"{p} {R.age_class(pd.Series({'age': a, 'dy': y}), ctx)} | {'1-100' if r <= 100 else '101+'}"
+        def ac(p, a, y):
+            c = R.age_class(pd.Series({"age": a, "dy": y}), ctx)
+            return ("30-32" if a < 33 else "33+") if ONLY == "QB" and c == "30+" else c
+        cls = np.array([f"{p if not ONLY or p == ONLY else 'other'} {ac(p, a, y) if not ONLY or p == ONLY else 'any'} | {'1-100' if r <= 100 else '101+'}"
                         for p, a, y, r in zip(g.position, g.age, dy, g.mkt_rank)], dtype=object)
         yrs = [y for y in range(t + 1, t + 1 + mm.H) if y <= su.LAST]
         P = np.stack([g.gsis_id.map(pts.get(y, {})).fillna(0).to_numpy() for y in yrs], 1)
@@ -145,7 +150,7 @@ def main():
         res = pool.map(run_cohort, jobs)
     cols = ["t", "rep", "rank", "mode", "cls", "how", "p1", "p2", "p3", "val1", "val3", "n", "held"]
     df = pd.DataFrame([r for part in res for r in part], columns=cols)
-    df.round(5).to_csv(out_dir(SF) / f"{SIDE}_rules_sim.csv.gz", index=False)
+    df.round(5).to_csv(out_dir(SF) / f"{SIDE}_rules_sim{'_' + ONLY.lower() if ONLY else ''}.csv.gz", index=False)
     summarize(df)
 
 
@@ -245,6 +250,6 @@ def summarize(df):
 
 if __name__ == "__main__":
     if sys.argv[1:] == ["table"]:
-        summarize(pd.read_csv(out_dir(SF) / f"{SIDE}_rules_sim.csv.gz"))
+        summarize(pd.read_csv(out_dir(SF) / f"{SIDE}_rules_sim{'_' + ONLY.lower() if ONLY else ''}.csv.gz"))
     else:
         main()

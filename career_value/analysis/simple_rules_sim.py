@@ -15,7 +15,7 @@ for title odds in season 1 and seasons 1-3 and value (340 - market rank) 1 and 3
 Test (`table`, from the four saved runs): the bar is 2 standard errors (Z) at both prices, above zero in every cohort but one, for team types
 by the May projection (Contending 1st-3rd, Default 4th-9th, Rebuilding 10th-12th). Contending: title odds over seasons 1-2, or in season 1
 and over seasons 1-3, with no title measure at z <= -2. Default: title odds over seasons 1-3, or value 1 year on with no title measure at
-z <= -2. Rebuilding: value 1 year on. Default and Rebuilding lose no value at 2.5 standard errors. The site first used a bar of 2.5 on
+z <= -2. Rebuilding: value 3 years on. Default and Rebuilding lose no value at 2.5 standard errors. The site first used a bar of 2.5 on
 season 1 (Contending), seasons 1-3 (Default) and value (Rebuilding); threshold_sim.py is why it is 2.
 A rule that holds alone goes into the set and is then left out of it in turn (signal_sim.py: noros, nofaller, nobuy); one whose removal
 raises the team's objective is dropped. That removed ros_down and faller for 1QB Contending.
@@ -105,8 +105,8 @@ def summarize(df):
 def table():
     """verdicts from the four saved runs, at a bar of Z (default 2) for every team type, the gain above zero in every cohort but one at
     both prices. Contending: title odds over seasons 1-2, and none of seasons 1, 1-2, 1-3 at z <= -Z. Default: title odds over seasons 1-3
-    with no value measure at z <= -Z, or value 1 year on with no title measure at z <= -Z. Rebuilding: value 1 year on, with value 3
-    years on not at z <= -Z."""
+    with no value measure at z <= -Z, or value 1 year on with no title measure at z <= -Z. Rebuilding: value 3 years on, with value 1
+    year on not down 2.5 standard errors."""
     pd.set_option("display.width", 300, "display.max_rows", 500)
     for sf in (False, True):
         parts = {}
@@ -139,8 +139,8 @@ def table():
                     keep, harm = a_ok or b_ok, harmed(arm, m, tit + val)
                     obj = "yrs3" if a_ok or not b_ok else "v1"
                 else:
-                    obj, harm = "v1", harmed(arm, m, ("v3",))
-                    keep = clears(pair(arm, m, "v1")) and not harm
+                    obj, harm = "v3", harmed(arm, m, ("v1",))
+                    keep = clears(pair(arm, m, "v3")) and not harm
                 rows.append({"rule": arm, "team": m, "objective": obj, "KTC | FantasyCalc": show(pair(arm, m, obj)),
                              "titles s1": show(pair(arm, m, "yr1")), "titles s1-3": show(pair(arm, m, "yrs3")), "value 1 yr": show(pair(arm, m, "v1")),
                              "trades": round(pair(arm, m, obj)[0].trades, 1), "keep": "KEEP" if keep else "", "at -Z": ", ".join(harm)})

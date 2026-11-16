@@ -60,7 +60,7 @@ Follow-up analyses for sections 3b and 7–12 are in `analysis/`. Run them from 
 | `threshold_sim.py` | 30 (also `LEAGUE=sf`; `table` reprints; writes `outputs/threshold_sim.csv.gz`) |
 | `sell_rules_sim.py` | 31, 33 (also `LEAGUE=sf`; `SIDE=buy` for buys; `table` reprints; writes `outputs/sell_rules_sim.csv.gz` or `buy_rules_sim.csv.gz`) |
 | `sell_timing_sim.py` | 32 (also `LEAGUE=sf`; `table` reprints; writes `outputs/sell_timing_sim.csv.gz`) |
-| `ruleset_sim.py` | 34 (also `LEAGUE=sf`; `table` reprints; writes `outputs/ruleset_sim.csv.gz`) |
+| `ruleset_sim.py` | 34, 35 (also `LEAGUE=sf`; `FINAL=1`, `GEN=1`, `REB=1` add the arms of section 35, `LOCO=0` drops the out-of-cohort ones, `OUT=` names the file; `table` reprints; writes `outputs/ruleset_sim.csv.gz`) |
 
 `common.py` holds shared loaders. Sections 13 and 16 also run for superflex if `outputs/sf/` exists.
 
@@ -1564,6 +1564,47 @@ For the calls, lowering the bar from 2 to 1.5 changes the class lists by one rul
 - The in-sample gain of +19.6 for 1QB Default became +4.5 out of cohort: about three quarters of what a loose bar seems to add is fit to the sample.
 
 Caveats: the rule lists were found on these cohorts, which favours them; FP prices; in this sim more trades gain more whatever is traded, though random swaps (6 a team) gained nothing here.
+
+## 35. Seven rules in place of the calls (`analysis/ruleset_sim.py`, `sell_rules_sim.py ONLY=QB`)
+
+Experiments, not on the site. The aim: a short list of reasoned rules, the same in both formats, consistent across team types (Default always between Contending and Rebuilding), that can stand in for the site's backtested calls. Team types and league sim as section 34; Rebuilding is judged on value three years on (value a year on hid buys whose price doesn't move in a year, QBs above all). 1QB / superflex.
+
+**The rules** (`simple`, `more`). "Producing" = inside his position's starter line by points per game the season before. Everyone not named is a Hold.
+
+1. Sell RBs and WRs 26 or older and TEs 30 or older who are priced outside the top 100.
+2. A producing veteran is sold on section 32's date: after the season for RBs 26–27 and WRs 28–29 (Rebuilding: now); now for RBs 28–29 and WRs 30+; now for RBs 30+ and TEs 29+, except that Contending holds them.
+3. A top-100 RB at 26–29 who isn't producing: Contending holds, Default sells after the season, Rebuilding sells now.
+4. Buy top-100 rookie WRs (Default, Rebuilding), rookie TEs (Rebuilding) and top-100 TEs 30 or older (Contending, Default).
+5. Sell anyone priced outside the top 200 who isn't a rookie or a QB.
+6. Sell RBs 25 or under who aren't producing.
+7. QBs: buy at 26–29 priced outside the top 100; sell at 33 or older.
+
+**Each set against the site's calls** (set less the site's calls; value = sum of 340 − FP rank):
+
+| Team | Set | Title odds, season 1 | Seasons 1–3 | Value 1 year on | Value 3 years on |
+|---|---|---|---|---|---|
+| Contending | rules 1–4 | −1.7 / +2.3 | −3.5 / +11.2 | −21 / +106 | +5 / +164 |
+| Contending | rules 1–7 | −1.8 / +1.9 | +2.3 / +22.5 | +211 / +314 | +426 / +517 |
+| Contending | rules 1–4 over the site's calls | +2.8 / +2.5 | +9.8 / +11.9 | +131 / +180 | +160 / +223 |
+| Default | rules 1–4 | −2.0 / +2.6 | +4.6 / +11.8 | −19 / −27 | +23 / −29 |
+| Default | rules 1–7 | −2.2 / +0.1 | +11.3 / +17.8 | +323 / +215 | +486 / +379 |
+| Default | rules 1–4 over the site's calls | −0.1 / +1.9 | +15.1 / +12.1 | +213 / +180 | +304 / +181 |
+| Rebuilding | rules 1–4 | +0.4 / +0.1 | −5.4 / −7.3 | −116 / −71 | −222 / −92 |
+| Rebuilding | rules 1–7 | −0.2 / −0.3 | −1.0 / −4.6 | +88 / +82 | +110 / +193 |
+| Rebuilding | rules 1–4 over the site's calls | 0.0 / −0.4 | −3.8 / −7.1 | +29 / +39 | −48 / +56 |
+
+("Over the site's calls": the four rules where they speak, the site's call elsewhere, Default moved between its neighbours.)
+
+- **The seven rules alone beat the site's calls on value for every team type in both formats** (three years on: +110 to +517, above zero in 3 or 4 of 4 cohorts), and on title odds over three seasons for Default in both formats and Contending in superflex.
+- **What they cost:** about 2 title points this season for 1QB Contending and Default, and 4.6 over three seasons for superflex Rebuilding. Against the four rules laid over the site's calls they give up 7.5 title points over three seasons for 1QB Contending and 3.8 for 1QB Default, and are ahead everywhere else.
+- **Rule 5 does most of it.** Added alone to rules 1–4 it gained 188 to 281 of value three years on for every team type in both formats, as much as all of the site's calls laid over the four rules, and 1.7 to 5.6 title points over three seasons.
+- **Rule 6 gains value everywhere** (+107 to +167 three years on alone) and costs superflex Contending and Default 2 to 3.5 title points over three seasons alone; in the set it adds 23 to 122 of value.
+- **Rule 7** read on finer QB ages (rookie, 25 and under, 26–29, 30–32, 33+; one rule against random players at the price): buying 26–29 priced past 100 gained 133 to 169 of value three years on in 1QB and 57 to 104 in superflex for every team type; 30–32 did not (+3 to +35); 33+ lost 76 to 230 bought and gained 10 to 47 sold; a top-100 QB of any age cost superflex Contending and Default 3 to 12 title points. In the set it adds 11 to 130 of value three years on and 6.8 title points over three seasons for superflex Contending.
+- **Calls the site makes that lose** when added to rules 1–4, in both formats: selling rookie RBs in the top 100 (value −11 to −37 three years on, every team type) and buying WRs or RBs 25 or under priced 101–200 (−2 to −73).
+- **"Producing" read other ways** (this season's projection from redraft ADP, the two ranks averaged, either, both) moved the layered set by 1 to 2 title points; "both" was a little ahead and "either" a little behind in both formats.
+- **Consistency:** rules 5–7 are the same call for every team type, and in rules 1–4 the push to sell never falls from Contending to Rebuilding, so Default is between its neighbours by construction.
+
+Caveats: the rules were written after seeing these cohorts, so this is not out of sample; there are seven of them, which limits the fit but doesn't remove it. FP prices and the best player in a price window. A team makes at most three buys, so a buy rule can crowd out another. Value three years on has 4 cohorts.
 
 ## Caveats
 

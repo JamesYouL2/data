@@ -16,6 +16,12 @@ or 101-340. Everyone not named is a Hold.
              Rebuilding              now: RBs 26+, WRs 28+, TEs 29+ (superflex: QBs 32+)
   barB     the lists read mechanically off sell_rules_sim.py's saved runs at a bar of B, a class that is both a sell and a buy left a
            Hold; zB the same without the every-cohort-but-one check; "+t" adds the timing dates
+  simple   four rules, the same in both formats and nested by team type (`simple`)
+  hybrid:X the same with "producing" read another way: rd = inside the starter line on this season's projection (redraft ADP), blend =
+           on the average of that rank and last season's points-per-game rank, either / both = on one or on both
+  hybrid   the four rules where they speak, the site's calls everywhere else, and Default kept between Contending and Rebuilding
+  uB       one list for both formats (`unified`): a class rule has to clear B in the 1QB runs and in the superflex runs, sells nest
+           (Contending's are Default's, Default's are Rebuilding's), QB rules are superflex only
   x:...    the same lists with each cohort's rules read from the other cohorts only, which is the fair test of a bar: a loose bar picks
            up rules that only fit the cohorts it was read on
   live     the site's calls (rules.classify)          random   middle_mode.py's random swaps
@@ -99,6 +105,139 @@ def from_tests(bar, cohort_check=True, without=None):
     return out
 
 
+def simple(m, pos, age, rookie, band, prod):
+    """four rules, the same in both formats; QBs are always a Hold
+      1  sell RBs and WRs 26 or older and TEs 30 or older who are priced outside the top 100 (every team type)
+      2  a producing veteran is sold on section 32's date: after the season for RBs 26-27 and WRs 28-29 (Rebuilding: now); now for
+         RBs 28-29 and WRs 30+; now for RBs 30+ and TEs 29+ unless Contending, which holds them
+      3  a top-100 RB at 26-29 who isn't producing: Contending holds, Default sells after the season, Rebuilding sells now
+      4  buy top-100 rookie WRs (Default, Rebuilding), rookie TEs (Rebuilding), and top-100 TEs 30 or older (Contending, Default)"""
+    if pos == "QB":
+        return "Hold"
+    if rookie:
+        return "Buy" if (pos == "WR" and band == A and m != "contend") or (pos == "TE" and m == "rebuild") else "Hold"
+    if pos == "TE" and age >= 30 and band == A and m != "rebuild":
+        return "Buy"
+    if prod:
+        if (pos == "RB" and 26 <= age < 28) or (pos == "WR" and 28 <= age < 30):
+            return "Sell" if m == "rebuild" else R.USE
+        if (pos == "RB" and 28 <= age < 30) or (pos == "WR" and age >= 30):
+            return "Sell"
+        if (pos == "RB" and age >= 30) or (pos == "TE" and age >= 29):
+            return "Hold" if m == "contend" else "Sell"
+    if band == B and ((pos in ("RB", "WR") and age >= 26) or (pos == "TE" and age >= 30)):
+        return "Sell"
+    if band == A and pos == "RB" and 26 <= age < 30:
+        return {"contend": "Hold", "middle": R.USE, "rebuild": "Sell"}[m]
+    return "Hold"
+
+
+# What the site's Rebuilding calls do that the four rules don't, as small rules to add to them one at a time (REB=1). age class, price
+# band (A = top 100) and FP rank -> a call, or None where the rule doesn't apply.
+REB_ADDS = {
+    "sell RB 25- top 100": lambda p, ac, b, r: "Sell" if p == "RB" and ac == "25-" and b == A else None,
+    "sell RB 25- 101+": lambda p, ac, b, r: "Sell" if p == "RB" and ac == "25-" and b == B else None,
+    "sell rookie RB top 100": lambda p, ac, b, r: "Sell" if p == "RB" and ac == "rookie" and b == A else None,
+    "sell TE under 30, 101+": lambda p, ac, b, r: "Sell" if p == "TE" and ac in ("25-", "26-29") and b == B else None,
+    "sell WR 25- 201+": lambda p, ac, b, r: "Sell" if p == "WR" and ac == "25-" and r > 200 else None,
+    "sell WR 26-29 top 100": lambda p, ac, b, r: "Sell" if p == "WR" and ac == "26-29" and b == A else None,
+    "buy QB 26-29 101+": lambda p, ac, b, r: "Buy" if p == "QB" and ac == "26-29" and b == B else None,
+    "buy WR 25- top 100": lambda p, ac, b, r: "Buy" if p == "WR" and ac == "25-" and b == A else None,
+    "buy rookie RB top 100": lambda p, ac, b, r: "Buy" if p == "RB" and ac == "rookie" and b == A else None,
+    "buy rookie QB": lambda p, ac, b, r: "Buy" if p == "QB" and ac == "rookie" else None,
+    "no rookie WR buy": lambda p, ac, b, r: "Hold" if p == "WR" and ac == "rookie" and b == A else None,
+    "no rookie TE buy": lambda p, ac, b, r: "Hold" if p == "TE" and ac == "rookie" else None,
+}
+# What the site's calls do for every team type where the four rules are silent, as candidate fifth and sixth rules (GEN=1): added to
+# the four rules one at a time, the same call for every team type. (position, age class, band, FP rank, producing) -> call or None.
+GEN_ADDS = {
+    "sell RB 25-, not producing": lambda p, ac, b, r, pd_: "Sell" if p == "RB" and ac == "25-" and not pd_ else None,
+    "sell RB 25-, not producing, top 100": lambda p, ac, b, r, pd_: "Sell" if p == "RB" and ac == "25-" and not pd_ and b == A else None,
+    "sell RB 25-, not producing, 101+": lambda p, ac, b, r, pd_: "Sell" if p == "RB" and ac == "25-" and not pd_ and b == B else None,
+    "sell rookie RB top 100": lambda p, ac, b, r, pd_: "Sell" if p == "RB" and ac == "rookie" and b == A else None,
+    "sell TE under 30, 101+, not producing": lambda p, ac, b, r, pd_: "Sell" if p == "TE" and ac in ("25-", "26-29") and b == B and not pd_ else None,
+    "sell WR 25- 201+": lambda p, ac, b, r, pd_: "Sell" if p == "WR" and ac == "25-" and r > 200 else None,
+    "sell WR 26-29 top 100, not producing": lambda p, ac, b, r, pd_: "Sell" if p == "WR" and ac == "26-29" and b == A and not pd_ else None,
+    "sell anyone 201+ who isn't a rookie": lambda p, ac, b, r, pd_: "Sell" if r > 200 and ac != "rookie" and p != "QB" else None,
+    "buy WR 25- 101-200": lambda p, ac, b, r, pd_: "Buy" if p == "WR" and ac == "25-" and 100 < r <= 200 else None,
+    "buy RB 25- 101-200": lambda p, ac, b, r, pd_: "Buy" if p == "RB" and ac == "25-" and 100 < r <= 200 else None,
+    "buy WR 25- top 100": lambda p, ac, b, r, pd_: "Buy" if p == "WR" and ac == "25-" and b == A else None,
+    "buy QB 26-29 101+": lambda p, ac, b, r, pd_: "Buy" if p == "QB" and ac == "26-29" and b == B else None,
+    "buy rookie RB top 100": lambda p, ac, b, r, pd_: "Buy" if p == "RB" and ac == "rookie" and b == A else None,
+}
+def more(base, pos, ac, rank, prod, age, rules):
+    """the four rules' call, with the fifth, sixth and QB rules where the four are silent (every team type gets the same call)
+      5   sell anyone priced outside the top 200 who isn't a rookie or a QB
+      6   sell RBs 25 or under who aren't producing
+      qb  buy QBs 26-29 priced outside the top 100; sell QBs 33 or older"""
+    if base != "Hold":
+        return base
+    if "qb" in rules and pos == "QB":
+        if ac == "26-29" and rank > 100:
+            return "Buy"
+        if age >= 33:
+            return "Sell"
+    if 5 in rules and rank > 200 and ac != "rookie" and pos != "QB":
+        return "Sell"
+    if 6 in rules and pos == "RB" and ac == "25-" and not prod:
+        return "Sell"
+    return base
+
+
+FINAL = {"five": (5,), "six": (5, 6), "six+qb": (5, 6, "qb"), "four+qb": ("qb",)}
+PUSH = {"buy": 0, "hold": 1, "lotto": 1, "none": 1, "use": 2, "sell": 3, "cut": 3}      # how hard a call pushes a player out
+
+
+def between(con, mid, reb):
+    """Default's calls, moved to the nearer neighbour's wherever they fall outside Contending's and Rebuilding's"""
+    out = mid.copy()
+    for k, (c, m, r) in enumerate(zip(con, mid, reb)):
+        pc, pm, pr_ = (PUSH[R.kind(x)] for x in (c, m, r))
+        lo, hi = (c, r) if pc <= pr_ else (r, c)
+        if pm < min(pc, pr_):
+            out[k] = lo
+        elif pm > max(pc, pr_):
+            out[k] = hi
+    return out
+
+
+BOTH = {}
+
+
+def unified(bar, without=None):
+    """one rule list for both formats. A class rule is kept if it clears `bar` in the 1QB runs and in the superflex runs (the team type's
+    objective, or for Default value with no title cost), with no cohort check: agreement across formats stands in for it. QB classes are
+    superflex-only rules, read on superflex alone, and there are none in 1QB. Sells nest: Default also sells what Contending sells, and
+    Rebuilding what Default sells. A class that ends up both a sell and a buy is a Hold."""
+    import sell_rules_sim as srs
+    if not BOTH:
+        for side in ("sell", "buy"):
+            BOTH[side] = [pd.read_csv(HERE / "outputs" / sub / f"{side}_rules_sim.csv.gz") for sub in ("", "sf")]
+
+    def table(side):
+        ts = []
+        for df in BOTH[side]:
+            t = srs.verdicts(df[df.t != without], bar, cohort_check=False)[0]
+            t = t[t["sold a team"] >= 0.05]
+            ts.append(t.assign(ok=(t.keep == "KEEP") | ((t.team == "middle") & t._value)).set_index(["team", "class", "when"])[["ok", "_z"]])
+        j = ts[0].join(ts[1], lsuffix="1", rsuffix="2", how="outer").fillna({"ok1": False, "ok2": False, "_z1": 0.0, "_z2": 0.0})
+        qb = j.index.get_level_values("class").str.startswith("QB")
+        j["ok"] = np.where(qb, j.ok2 & SF, j.ok1 & j.ok2)
+        j["score"] = j._z1 + j._z2
+        j = j[j.ok].reset_index().sort_values("score", ascending=False)
+        return {m: q.groupby("class").head(1).set_index("class").when.to_dict() for m, q in j.groupby("team")}
+    sells, buys = table("sell"), table("buy")
+    for lo, hi in (("contend", "middle"), ("middle", "rebuild")):
+        sells[hi] = {**sells.get(lo, {}), **sells.get(hi, {})}
+    out = {}
+    for m in NAME:
+        d = {c: ("Sell" if when == "now" else R.USE) for c, when in sells.get(m, {}).items()}
+        for c in buys.get(m, {}):
+            d[c] = "Hold" if c in d else "Buy"
+        out[m] = {tuple(x.strip() for x in c.replace(" | ", " ").split(" ", 2)): a for c, a in d.items()}
+    return out
+
+
 def run_cohort(args):
     t, g, P, act, rk1, rk3, nxt1, seed = args
     rng = np.random.default_rng(seed)
@@ -125,13 +264,20 @@ def run_cohort(args):
     return out
 
 
-TESTS, ARMS = {}, ["live", "core", "timing"]
-LOCO = {"x:z1": (1.0, False), "x:z1.5": (1.5, False), "x:z2": (2.0, False), "x:bar1.5": (1.5, True)}     # rules from the other cohorts only
+TESTS, ARMS = {}, ["live", "core", "timing", "simple", "hybrid", "hybrid:rd", "hybrid:blend", "hybrid:either", "hybrid:both"]
+LOCO = {"x:z1.5": (1.5, False), "x:u1.5": (1.5, "u"), "x:u2": (2.0, "u")}     # rules from the other cohorts only
+if os.environ.get("LOCO") == "0":
+    LOCO = {}
 
 
 def main():
-    TESTS.update({"bar1.5": from_tests(1.5), "z1.5": from_tests(1.5, False)})
-    ARMS.extend(x for n in list(TESTS) + list(LOCO) for x in (n, n + "+t"))
+    ARMS.extend(x for n in LOCO for x in (n, n + "+t"))
+    if os.environ.get("REB"):
+        ARMS.extend("r:" + n for n in REB_ADDS)
+    if os.environ.get("GEN"):
+        ARMS.extend("g:" + n for n in GEN_ADDS)
+    if os.environ.get("FINAL"):
+        ARMS.extend(FINAL)
     for n, tab in TESTS.items():
         print(n, {m: {a: sum(v == a for v in d.values()) for a in ("Sell", R.USE, "Buy")} for m, d in tab.items()})
     s = pd.read_parquet(HERE / "data" / "player_seasons.parquet")
@@ -159,8 +305,33 @@ def main():
         prod = np.array([r <= R.START[F][p] for r, p in zip(prk, g.position)])
         act["core"] = {m: np.array([core(m, c) for c in cls], dtype=object) for m in NAME}
         act["timing"] = {m: np.array([timing(m, p, a, pd_, b) for p, a, pd_, b in zip(g.position, g.age, prod, act["core"][m])], dtype=object) for m in NAME}
+        act["simple"] = {m: np.array([simple(m, p, a, c[1] == "rookie", c[2], pd_) for p, a, c, pd_ in zip(g.position, g.age, cls, prod)], dtype=object)
+                         for m in NAME}
+        hyb = {m: np.where(act["simple"][m] != "Hold", act["simple"][m], live[m]).astype(object) for m in NAME}
+        act["hybrid"] = {**hyb, "middle": between(hyb["contend"], hyb["middle"], hyb["rebuild"])}
+        # other tests of "producing": this season's projection (redraft ADP), and the two ranks averaged
+        line = np.array([R.START[F][p] for p in g.position])
+        rdk = g.groupby("position").proj.rank(ascending=False, method="min").to_numpy(float)
+        both = np.nanmean(np.vstack([prk, rdk]), axis=0)
+        for tag, pv in (("rd", rdk <= line), ("blend", both <= line), ("either", (prk <= line) | (rdk <= line)), ("both", (prk <= line) & (rdk <= line))):
+            sm = {m: np.array([simple(m, p, a, c[1] == "rookie", c[2], pd_) for p, a, c, pd_ in zip(g.position, g.age, cls, pv)], dtype=object)
+                  for m in NAME}
+            hy = {m: np.where(sm[m] != "Hold", sm[m], live[m]).astype(object) for m in NAME}
+            act[f"hybrid:{tag}"] = {**hy, "middle": between(hy["contend"], hy["middle"], hy["rebuild"])}
+        if os.environ.get("FINAL"):
+            for name, rules in FINAL.items():
+                act[name] = {m: np.array([more(b, p, c[1], r, pd_, a, rules) for b, p, c, r, pd_, a in
+                                          zip(act["simple"][m], g.position, cls, g.mkt_rank, prod, g.age)], dtype=object) for m in NAME}
+        if os.environ.get("GEN"):
+            for name, fn in GEN_ADDS.items():
+                ov = [fn(p, c[1], c[2], r, pd_) for p, c, r, pd_ in zip(g.position, cls, g.mkt_rank, prod)]
+                act["g:" + name] = {m: np.array([o or b for o, b in zip(ov, act["simple"][m])], dtype=object) for m in NAME}
+        if os.environ.get("REB"):
+            for name, fn in REB_ADDS.items():
+                ov = [fn(p, c[1], c[2], r) for p, c, r in zip(g.position, cls, g.mkt_rank)]
+                act["r:" + name] = {**act["simple"], "rebuild": np.array([o or b for o, b in zip(ov, act["simple"]["rebuild"])], dtype=object)}
         for name, (bar, chk) in LOCO.items():
-            TESTS[name] = from_tests(bar, chk, without=t)
+            TESTS[name] = unified(bar, without=t) if chk == "u" else from_tests(bar, chk, without=t)
         for name, tab in TESTS.items():
             act[name] = {m: np.array([tab[m].get(c, "Hold") for c in cls], dtype=object) for m in NAME}
             act[name + "+t"] = {m: np.array([timing(m, p, a, pd_, b) for p, a, pd_, b in zip(g.position, g.age, prod, act[name][m])], dtype=object)
@@ -181,7 +352,7 @@ def main():
         res = pool.map(run_cohort, jobs)
     cols = ["t", "rep", "rank", "mode", "arm", "p1", "p2", "p3", "val1", "val3", "sold", "later", "bought"]
     df = pd.DataFrame([r for part in res for r in part], columns=cols)
-    df.round(5).to_csv(out_dir(SF) / "ruleset_sim.csv.gz", index=False)
+    df.round(5).to_csv(out_dir(SF) / f"ruleset_sim{os.environ.get('OUT', '')}.csv.gz", index=False)
     summarize(df)
 
 
@@ -214,10 +385,38 @@ def summarize(df):
             rows.append({"team": NAME[m], "arm": arm, "trades": round((q.sold + q.later + q.bought).mean(), 1), **cells(q[mets] - base.loc[q.index])})
             if arm not in ("live", "random"):
                 rows2.append({"team": NAME[m], "arm": f"{arm} less live", **cells(q[mets] - live.loc[q.index, mets])})
+            if arm in FINAL and "hybrid" in set(q0.arm):
+                hy = q0[q0.arm == "hybrid"].set_index(key)
+                rows2.append({"team": NAME[m], "arm": f"{arm} less hybrid", **cells(q[mets] - hy.loc[q.index, mets])})
     print(f"\n== {'Superflex' if SF else '1QB'}: each set against no trades. mean, z (leagues as clusters), cohorts above zero / cohorts")
     print(pd.DataFrame(rows).to_string(index=False))
     print("\n-- the new sets less the site's calls, same leagues")
     print(pd.DataFrame(rows2).to_string(index=False))
+    gadd = [a for a in z.arm.unique() if a.startswith("g:")]
+    if gadd:
+        rows4 = []
+        for m in NAME:
+            q0 = z[z["mode"] == m]
+            sim = q0[q0.arm == "simple"].set_index(key)
+            for arm in gadd + ["hybrid", "live"]:
+                q = q0[q0.arm == arm].set_index(key)
+                rows4.append({"team": NAME[m], "added to the four rules": arm[2:] if arm.startswith("g:") else f"({arm})",
+                              "trades": round((q.sold + q.later + q.bought).mean() - (sim.sold + sim.later + sim.bought).mean(), 1),
+                              **cells(q[mets] - sim.loc[q.index, mets])})
+        print("\n-- one rule added to the four rules (the same call for every team type), less the four rules alone")
+        print(pd.DataFrame(rows4).to_string(index=False))
+    radd = [a for a in z.arm.unique() if a.startswith("r:")]
+    if radd:
+        q0 = z[z["mode"] == "rebuild"]
+        sim = q0[q0.arm == "simple"].set_index(key)
+        rows3 = []
+        for arm in radd + ["live", "hybrid"]:
+            q = q0[q0.arm == arm].set_index(key)
+            rows3.append({"added to the four rules": arm[2:] if arm.startswith("r:") else f"({arm})",
+                          "trades": round((q.sold + q.later + q.bought).mean() - (sim.sold + sim.later + sim.bought).mean(), 1),
+                          **cells(q[mets] - sim.loc[q.index, mets])})
+        print("\n-- Rebuilding teams: one rule added to the four rules, less the four rules alone")
+        print(pd.DataFrame(rows3).to_string(index=False))
 
 
 if __name__ == "__main__":
