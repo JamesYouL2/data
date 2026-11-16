@@ -15,6 +15,12 @@
 </header>
 
 <main>
+  <nav class="seg" id="tabs">
+    <button type="button" data-v="league">Your league</button>
+    <button type="button" data-v="rank">Rankings</button>
+  </nav>
+
+  <div id="tabLeague">
   <form id="load">
     <label for="league">Sleeper league ID or username</label>
     <div class="row">
@@ -72,6 +78,44 @@
     <h2>Free agents worth a roster spot</h2>
     <p class="hint">Unrostered players with a buy or hold call.</p>
     <div id="fa"></div>
+  </section>
+  </div>
+
+  <section id="tabRank" hidden>
+    <h2>Rankings by team type</h2>
+    <p class="hint">The FantasyPros dynasty ranking, re-ordered by the calls for each kind of team. A Buy is ranked as if he were 20%
+      higher on the FantasyPros list, a Sell 25% lower, and a Use-then-sell 10% lower; a Hold stays where he is. Those are the limits
+      of the trades the league simulation tested (a player for another within 0.8 to 1.25 times his rank), so the list says which way
+      to lean at a similar price. It does not say a Buy is worth exactly 20% more.</p>
+    <div class="ctl">
+      <div>
+        <span class="lbl">Ranked for</span>
+        <div class="seg" id="rkMode">
+          <button type="button" data-v="m">Default</button>
+          <button type="button" data-v="c">Contending</button>
+          <button type="button" data-v="r">Rebuilding</button>
+        </div>
+      </div>
+      <div>
+        <span class="lbl">Format</span>
+        <div class="seg" id="rkFmt">
+          <button type="button" data-v="1qb">1QB</button>
+          <button type="button" data-v="sf">Superflex</button>
+        </div>
+      </div>
+      <div>
+        <span class="lbl">Position</span>
+        <div class="seg" id="rkPos">
+          <button type="button" data-v="all">All</button>
+          <button type="button" data-v="QB">QB</button>
+          <button type="button" data-v="RB">RB</button>
+          <button type="button" data-v="WR">WR</button>
+          <button type="button" data-v="TE">TE</button>
+        </div>
+      </div>
+    </div>
+    <p class="hint" id="rkHint"></p>
+    <div id="rankings"></div>
   </section>
 
   <details id="legend">

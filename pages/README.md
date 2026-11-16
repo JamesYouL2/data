@@ -129,6 +129,15 @@ The limits: the signals were found on these same seasons, so this is not out of 
 as independent when leagues from one class share players, so they are too small; anything over three seasons rests on 2 or 3
 classes; and the simulation assumes someone accepts every equal-price trade.
 
+## The Rankings tab
+
+A second tab (`#rankings`) lists the FantasyPros top 340 for each team type and format, re-ordered by the calls. Each player's
+FantasyPros rank is multiplied by 0.8 for a Buy, 1.1 for a Use-then-sell and 1.25 for a Sell or Cut, and the list is sorted on the
+result (`rankList` in `app.js`). The multipliers are the edges of the price band the league simulation traded in (a player for another
+within 0.8 to 1.25 times his rank), so the list only re-orders players the simulation compared. It shows which way to lean at a
+similar price; the size of the move is not measured. Because rule 5 sells most non-rookies past 200, the Holds down there (rookies,
+QBs) rise about 50 places without any rule of their own.
+
 ## The 2026 test
 
 The backtests above use seasons that helped build them. The test in

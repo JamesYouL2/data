@@ -77,3 +77,7 @@ footer a { color: inherit; }
 .tag.q { color: var(--sell); border-color: var(--sell); }
 .up { color: var(--buy); font-size: 10px; }
 .dn { color: var(--cut); font-size: 10px; }
+#tabs { margin: 4px 0 22px; }
+#tabs button { padding: 8px 18px; }
+.mv { font-size: 12px; white-space: nowrap; }
+#rkHint { margin: 12px 0 10px; }

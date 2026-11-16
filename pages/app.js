@@ -292,7 +292,62 @@ function render() {
 
 const ordinal = (n) => n + (["th", "st", "nd", "rd"][(n % 100 - 20) % 10] || ["th", "st", "nd", "rd"][n % 100] || "th");
 
+// ---------- rankings tab ----------
+// FP dynasty rank re-ordered by each team type's calls. The multipliers are the edges of the price band the league sim traded in
+// (career_value/analysis/middle_mode.py: a player for another within x0.8-1.25 of his rank), so they order players the sim compared.
+const LEAN = { buy: 0.8, hold: 1, lotto: 1, none: 1, use: 1.1, sell: 1.25, cut: 1.25 };
+const RANKED = 340;                                                    // the sim's player pool: FP top 340
+const rk = { mode: "m", fmt: "1qb", pos: "all" };
+
+function rankList(fmt, mode) {
+  const rows = [];
+  for (const sid in D.players) {
+    const p = D.players[sid], base = price(p, fmt);
+    if (!base || base > RANKED) continue;
+    const c = call(sid, fmt, mode);
+    rows.push({ sid, p, c, base, adj: base * (LEAN[kind(c?.act)] ?? 1) });
+  }
+  rows.sort((a, b) => a.adj - b.adj || a.base - b.base);
+  const pos = {};
+  rows.forEach((r, i) => { r.rank = i + 1; r.posRank = pos[r.p.p] = (pos[r.p.p] || 0) + 1; });
+  return rows;
+}
+
+function renderRank() {
+  setSeg("rkMode", rk.mode); setSeg("rkFmt", rk.fmt); setSeg("rkPos", rk.pos);
+  const all = rankList(rk.fmt, rk.mode), rows = rk.pos === "all" ? all : all.filter((r) => r.p.p === rk.pos);
+  const moved = all.filter((r) => r.rank !== r.base).length;
+  $("rkHint").textContent = `${MODES[rk.mode]}, ${rk.fmt === "sf" ? "superflex" : "1QB"}: ${all.length} players, ` +
+    `${all.filter((r) => kind(r.c?.act) === "buy").length} buys, ${all.filter((r) => ["sell", "cut"].includes(kind(r.c?.act))).length} sells. ` +
+    `${moved} sit at a different rank than on the FantasyPros list.`;
+  const head = `<tr><th>Rank</th><th>Player</th><th>FantasyPros</th><th>Move</th><th>Call</th><th>Why</th></tr>`;
+  const body = rows.map((r) => {
+    const { p, c } = r, d = r.base - r.rank;
+    const meta = [p.t, p.a != null ? `${Math.floor(p.a)} next Sept` : null, p.dy === D.meta.rookie ? "rookie" : null].filter(Boolean).map(esc).join(" · ");
+    const mv = d > 0 ? `<span class="mv up">▲ ${d}</span>` : d < 0 ? `<span class="mv dn">▼ ${-d}</span>` : `<span class="meta">–</span>`;
+    return `<tr><td class="num"><b>${r.rank}</b> <span class="meta">${esc(p.p)}${r.posRank}</span></td>` +
+      `<td><span class="nm">${esc(p.n)}</span>${p.inj ? `<span class="tag ${OUT.has(p.inj) ? "inj" : "q"}">${esc(p.inj)}</span>` : ""}<div class="meta">${meta}</div></td>` +
+      `<td class="num">#${r.base} <span class="meta">${esc(p.p)}${posPrice(p, rk.fmt) ?? ""}</span></td><td class="num">${mv}</td>` +
+      `<td>${badge(c?.act)}</td><td class="why">${esc(c?.why)}${c?.note ? `<div class="note">${esc(c.note)}</div>` : ""}</td></tr>`;
+  }).join("");
+  $("rankings").innerHTML = `<div class="scroll"><table class="tbl">${head}${body}</table></div>`;
+}
+
+function showTab(t) {
+  const rank = t === "rank";
+  $("tabLeague").hidden = rank; $("tabRank").hidden = !rank;
+  setSeg("tabs", rank ? "rank" : "league");
+  if (rank) {
+    if (!rk.init) { rk.init = true; if (state.fmt) rk.fmt = state.fmt; if (state.mode) rk.mode = state.mode; }
+    renderRank();
+  }
+}
+
 // ---------- wiring ----------
+$("tabs").addEventListener("click", (e) => { const v = e.target.dataset?.v; if (v) showTab(v); });
+for (const [id, key] of [["rkMode", "mode"], ["rkFmt", "fmt"], ["rkPos", "pos"]])
+  $(id).addEventListener("click", (e) => { const v = e.target.dataset?.v; if (v) { rk[key] = v; renderRank(); } });
+window.addEventListener("hashchange", () => showTab(location.hash === "#rankings" ? "rank" : "league"));
 $("load").addEventListener("submit", (e) => { e.preventDefault(); loadInput($("league").value); });
 $("leaguePick").addEventListener("change", (e) => e.target.value && loadLeague(e.target.value));
 $("team").addEventListener("change", (e) => {
@@ -357,3 +412,5 @@ if (m.test) $("test-results").innerHTML = testResults(m.test);
   }
   if (id) { $("league").value = id; loadLeague(id); }
 })();
+
+showTab(location.hash === "#rankings" ? "rank" : "league");
