@@ -1606,6 +1606,24 @@ Experiments, not on the site. The aim: a short list of reasoned rules, the same 
 
 Caveats: the rules were written after seeing these cohorts, so this is not out of sample; there are seven of them, which limits the fit but doesn't remove it. FP prices and the best player in a price window. A team makes at most three buys, so a buy rule can crowd out another. Value three years on has 4 cohorts.
 
+## 36. Factors for a ranking by team type (`analysis/rank_factors.py`)
+
+The site's Rankings tab re-orders the FP list by each team type's calls. The factor for a call is the one multiplier on FP rank that
+prices the players given that call (live seven rules, base calls, ranks 1-300) fairly: sum of fair(k x rank) = sum of what they
+returned (VORP over h seasons + the value of the rank held after). Range = each cohort left out. 1QB / superflex:
+
+| Team type (seasons) | Buy | Use, then sell | Sell | Hold |
+|---|---|---|---|---|
+| Contending (1) | 0.70 / 0.82 (n 19) | 1.02 / 1.07 | 1.14 / 1.09 | 0.95 / 0.96 |
+| Default (3) | 0.47 / 0.46 (n 36 / 28, range 0.32-0.52) | 1.54 / 1.50 | 1.28 / 1.23 | 0.91 / 0.93 |
+| Rebuilding (3) | 0.64 / 0.65 (n 63 / 49) | none | 1.30 / 1.26 | 0.91 / 0.93 |
+
+Holds come out under 1 only because the Sells pull the average at each rank down, so the site takes each factor over Hold's, averages
+the formats (Contending 0.80 / 1.09 / 1.17, Default 0.50 / 1.65 / 1.37, Rebuilding 0.70 / 1.39) and uses the square root: 0.9 / 1.05 /
+1.1, 0.7 / 1.3 / 1.15, 0.85 / 1.2. The halving is a judgment: the rules were picked on these seasons, and section 34 found most of an
+in-sample gain gone out of cohort. Over three seasons a Use-then-sell (producing RB 26-27, WR 28-29) falls further than a Sell, which
+is why the call is to sell after the season; over one season he is fairly priced.
+
 ## Caveats
 
 - **Position-level residuals depend on league format.** The QB results flip sign between FP (1QB) and MFL, whose keeper pool includes superflex leagues. Within-position groupings are more trustworthy.

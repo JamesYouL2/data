@@ -293,9 +293,17 @@ function render() {
 const ordinal = (n) => n + (["th", "st", "nd", "rd"][(n % 100 - 20) % 10] || ["th", "st", "nd", "rd"][n % 100] || "th");
 
 // ---------- rankings tab ----------
-// FP dynasty rank re-ordered by each team type's calls. The multipliers are the edges of the price band the league sim traded in
-// (career_value/analysis/middle_mode.py: a player for another within x0.8-1.25 of his rank), so they order players the sim compared.
-const LEAN = { buy: 0.8, hold: 1, lotto: 1, none: 1, use: 1.1, sell: 1.25, cut: 1.25 };
+// FP dynasty rank re-ordered by each team type's calls. A factor is how far down the FP list a call belonged, measured from what
+// players given that call by the seven rules returned, 2018-24, against Holds (career_value/analysis/rank_factors.py: one season for
+// Contending, three for Default and Rebuilding; 1QB and superflex agreed, so one set). The rules were chosen on those same seasons,
+// so each measured factor is halved (its square root): Contending buy 0.80, use 1.09, sell 1.17; Default 0.50, 1.65, 1.37;
+// Rebuilding buy 0.70, sell 1.39.
+const SAME = { hold: 1, lotto: 1, none: 1 };
+const LEAN = {
+  c: { ...SAME, buy: 0.9, use: 1.05, sell: 1.1, cut: 1.1 },
+  m: { ...SAME, buy: 0.7, use: 1.3, sell: 1.15, cut: 1.15 },
+  r: { ...SAME, buy: 0.85, use: 1.2, sell: 1.2, cut: 1.2 },
+};
 const RANKED = 340;                                                    // the sim's player pool: FP top 340
 const rk = { mode: "m", fmt: "1qb", pos: "all" };
 
@@ -305,7 +313,7 @@ function rankList(fmt, mode) {
     const p = D.players[sid], base = price(p, fmt);
     if (!base || base > RANKED) continue;
     const c = call(sid, fmt, mode);
-    rows.push({ sid, p, c, base, adj: base * (LEAN[kind(c?.act)] ?? 1) });
+    rows.push({ sid, p, c, base, adj: base * (LEAN[mode]?.[kind(c?.act)] ?? 1) });
   }
   rows.sort((a, b) => a.adj - b.adj || a.base - b.base);
   const pos = {};

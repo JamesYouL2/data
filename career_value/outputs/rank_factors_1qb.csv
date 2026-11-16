@@ -1,0 +1,23 @@
+team,seasons,used,call,n,returned / price,factor,range,median rank
+Contending,1,*,buy,19,1.31,0.7,0.68-0.76,181
+Contending,1,*,use,67,0.99,1.02,0.92-1.08,37
+Contending,1,*,sell,749,0.81,1.14,1.11-1.15,214
+Contending,1,*,hold,965,1.04,0.95,0.94-0.97,108
+Contending,3,,buy,15,1.86,0.47,0.43-0.59,192
+Contending,3,,use,51,0.83,1.46,1.34-1.71,36
+Contending,3,,sell,501,0.66,1.29,1.24-1.33,214
+Contending,3,,hold,633,1.09,0.89,0.88-0.91,105
+Default,1,,buy,52,1.33,0.67,0.63-0.71,73
+Default,1,,use,79,0.98,1.05,0.94-1.10,49
+Default,1,,sell,771,0.81,1.14,1.12-1.15,212
+Default,1,,hold,898,1.03,0.96,0.95-0.98,114
+Default,3,*,buy,36,1.85,0.47,0.34-0.52,89
+Default,3,*,use,59,0.8,1.54,1.33-1.76,43
+Default,3,*,sell,515,0.67,1.28,1.26-1.32,212
+Default,3,*,hold,590,1.07,0.91,0.89-0.93,109
+Rebuilding,1,,buy,91,1.37,0.74,0.71-0.77,166
+Rebuilding,1,,sell,856,0.88,1.11,1.06-1.12,201
+Rebuilding,1,,hold,853,1.03,0.97,0.96-0.99,109
+Rebuilding,3,*,buy,63,1.73,0.64,0.60-0.66,180
+Rebuilding,3,*,sell,577,0.75,1.3,1.25-1.35,200
+Rebuilding,3,*,hold,560,1.07,0.91,0.89-0.93,105

@@ -132,10 +132,19 @@ classes; and the simulation assumes someone accepts every equal-price trade.
 ## The Rankings tab
 
 A second tab (`#rankings`) lists the FantasyPros top 340 for each team type and format, re-ordered by the calls. Each player's
-FantasyPros rank is multiplied by 0.8 for a Buy, 1.1 for a Use-then-sell and 1.25 for a Sell or Cut, and the list is sorted on the
-result (`rankList` in `app.js`). The multipliers are the edges of the price band the league simulation traded in (a player for another
-within 0.8 to 1.25 times his rank), so the list only re-orders players the simulation compared. It shows which way to lean at a
-similar price; the size of the move is not measured. Because rule 5 sells most non-rookies past 200, the Holds down there (rookies,
+FantasyPros rank is multiplied by a factor for his call and the list is sorted on the result (`rankList` in `app.js`):
+
+| | Buy | Use, then sell | Sell or Cut |
+|---|---|---|---|
+| Contending | 0.9 | 1.05 | 1.1 |
+| Default | 0.7 | 1.3 | 1.15 |
+| Rebuilding | 0.85 | n/a | 1.2 |
+
+A factor is how far down the list the call belonged: the one multiplier on rank that prices everyone the seven rules gave that call
+fairly, by what they returned in 2018-24 (`career_value/analysis/rank_factors.py`; one season for Contending, three for Default and
+Rebuilding), divided by the same figure for Holds. Measured: Contending 0.80 / 1.09 / 1.17, Default 0.50 / 1.65 / 1.37, Rebuilding
+0.70 / 1.39, close to equal in 1QB and superflex. The site uses the square root of each, half the measured move, because the rules
+were chosen on the seasons the factors are measured on. Default's Buys are 28-36 player-seasons. Because rule 5 sells most non-rookies past 200, the Holds down there (rookies,
 QBs) rise about 50 places without any rule of their own.
 
 ## The 2026 test
