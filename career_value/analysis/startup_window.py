@@ -1,7 +1,7 @@
 """A startup drafted for seasons 2-4: where does that board differ from the FantasyPros list, and from the Default calls?
 
-FP May rows 2018-21 (the cohorts whose fourth season is known), ranks 1-300. Targets: VORP in season 1, VORP in seasons 2-4, and
-seasons 2-4 plus the value of the rank held after season 4 ("2-4 + after"). For a group, the factor is the multiplier on FP rank that
+FP May rows 2018-21 (the cohorts whose fourth season is known), ranks 1-300. Targets: VORP in season 1, VORP in seasons 2-4,
+seasons 2-4 plus the value of the rank held after season 4 ("2-4 + after"), and VORP over seasons 1-3, 1-4 and 1-5 (1-5: 2018-20 only). For a group, the factor is the multiplier on FP rank that
 prices it fairly on that target (rank_factors.factor: sum fair(k x rank) = sum of what it returned; under 1 = draft him earlier than
 FP ranks him). Groups: the live Default call, and position x age class. Range = each cohort left out.
 
@@ -20,7 +20,7 @@ import market_residuals as M  # noqa: E402
 import rank_factors as rf  # noqa: E402
 
 F = cs.F
-TARGETS = {"season 1": "y1", "seasons 2-4": "y24", "2-4 + after": "y24a", "seasons 1-3": "y13"}
+TARGETS = {"season 1": "y1", "seasons 2-4": "y24", "2-4 + after": "y24a", "seasons 1-3": "y13", "seasons 1-4": "y14", "seasons 1-5": "y15"}
 
 
 def frame():
@@ -38,12 +38,16 @@ def frame():
     after = np.where(x.rank4.notna(), v3.predict(np.log(x.rank4.fillna(cs.POOL))), 0.0)
     x["y1"], x["y24"], x["y13"] = x.s1, x.s2 + x.s3 + x.s4, x.s1 + x.s2 + x.s3
     x["y24a"] = x.y24 + after
+    x["y14"] = x.y13 + x.s4
+    x["y15"] = np.where(x.t + 5 <= M.LAST, x.y14 + np.array([get(g, t + 5) for g, t in zip(x.gsis_id, x.t)]), np.nan)   # 2018-20 only
     x["acls"] = np.where(x.row_type == "rookie", "rookie", np.where(x.age < 26, "25-", np.where(x.age < 28, "26-27", np.where(x.age < 30, "28-29", "30+"))))
     return x[x.mkt_rank <= 300].reset_index(drop=True)
 
 
 def factor(x, g, col):
-    y = x.assign(hold=x[col])
+    y = x[x[col].notna()].assign(hold=lambda d: d[col])
+    g = g[g[col].notna()]
+    x = y
     k = rf.factor(y.loc[g.index], cs.iso(y.mkt_rank, y.hold))
     loo = []
     for t in sorted(x.t.unique()):

@@ -1745,6 +1745,11 @@ VORP, seasons 2-4 the other 70%. 1QB / superflex:
 - **What it gives up:** the players it passes on are the ones underpriced for season 1 (use-then-sell 0.63 / 0.72, WRs 28-29 0.77,
   RBs 26-27 0.79), and season 1 is the largest single season. Section 13's startup sim found neither all-in nor punt beat drafting
   near the list.
+- **Longer windows from season 1 (1-3 / 1-4 / 1-5, the last on 2018-20 only), 1QB:** buy 0.56 / 0.53 / 0.34, hold 0.96 / 0.94 /
+  0.94, sell 1.29 / 1.32 / 1.35, use-then-sell 1.02 / 1.18 / 1.42 (superflex 1.11 / 1.22 / 1.52). No call changes side; the only one
+  that moves much is use-then-sell, fair over three seasons and a clear pass over five. By group the same: WRs 28-29 1.12 / 1.24 /
+  1.52, RBs 26-27 1.22 / 1.29 / 1.39, rookie WRs 0.76 / 0.66 / 0.55, QBs 25- 0.69 / 0.65 / 0.54; WRs 26-27 stay fair (0.92 / 1.02 /
+  1.00). This is VORP by window; the league sim keeps title odds for three seasons only.
 - Four cohorts, groups chosen after seeing the rules: read the direction, halve the size.
 
 ## Caveats
