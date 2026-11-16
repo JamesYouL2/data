@@ -194,6 +194,9 @@ if ROS_ON:
     p["gone"] = p.ros_r.isna()          # only matters for injured players: see rules.situational
 # in season the calls price players at the FP dynasty rank tilted toward the ROS rank (rules.ros_tilt); the page still
 # shows the FP rank, with the tilted one beside it
+# rules.classify rule 7 reads one QB rank for both formats, untilted: the 1QB list's. FantasyPros' own 1QB, superflex and QB pages
+# order QBs alike; the values file's ecr_2qb departs from FP's superflex page for 27 of 67 QBs (Tua Tagovailoa 120 against 172)
+p["qbr"] = p["pr_1qb"]
 for f in ("1qb", "sf"):
     k = [ros_tilt(a, b) if ROS_ON and a == a else 1.0 for a, b in zip(p[f"pr_{f}"], p.ros_p)]
     p[f"v_{f}"], p[f"pv_{f}"] = p[f"r_{f}"] * k, p[f"pr_{f}"] * k

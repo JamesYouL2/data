@@ -23,7 +23,7 @@ game at or inside the starter line: QB12 (QB24 in superflex), RB24, WR30, TE12; 
 4. **Buy** top-100 rookie WRs (Default, Rebuilding), rookie TEs (Rebuilding) and top-100 TEs 30 or older (Contending, Default).
 5. **Sell anyone priced outside the top 200 who isn't a rookie or a QB.** Past 300 he is waiver level: cut.
 6. **Sell RBs 25 or under who aren't producing.**
-7. **QBs:** buy at 26-29 priced outside the top 100; sell at 33 or older.
+7. **QBs:** buy at 26-29 ranked QB25-32, the fringe starters (by QB rank, so the same players in both formats); sell at 33 or older.
 
 Everyone else is a Hold. The rules are the same in both formats.
 

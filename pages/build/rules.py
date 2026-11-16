@@ -95,9 +95,14 @@ def f0(x):
 #   4  Buy top-100 rookie WRs (Default, Rebuilding), rookie TEs (Rebuilding) and top-100 TEs 30 or older (Contending, Default).
 #   5  Sell anyone priced outside the top 200 who isn't a rookie or a QB. Past 300 he is waiver level: cut.
 #   6  Sell RBs 25 or under who aren't producing.
-#   7  QBs: buy at 26-29 priced outside the top 100; sell at 33 or older.
+#   7  QBs: buy at 26-29 ranked QB25-32, the fringe starters; sell at 33 or older. The band is by QB rank so that it names the same
+#      players in both formats (overall, QB25-32 is about 160-265 in 1QB and 75-150 in superflex). Held three years they returned 2.5x
+#      / 2.2x the average player at their price, 1.8x in both without the best one (Jared Goff 2021); QB33 and deeper returned under
+#      half, most of them nothing (scratch check on call_strength.horizons, 12 player-seasons).
+#      The site reads the 1QB list's QB rank for both formats: in the backtest the two lists put every QB 26-29 in the same band.
 # Everyone else is a Hold.
 TOP, DEEP, WAIVER = 100, 200, 300
+QB_BUY = (25, 32)                                # rule 7's buy band, by QB rank
 MODES3 = ("reb", "con", "mid")
 PUSH = {"buy": 0, "hold": 1, "lotto": 1, "none": 1, "use": 2, "sell": 3, "cut": 3}      # how hard a call pushes a player out
 
@@ -128,9 +133,12 @@ def classify(x, f, ctx, split=True):
                 return HOLD, "A rookie who isn't ranked yet: keep him if you have the spot."
             return CUT, "Past 300 in the rankings is waiver level."
         if pos == "QB":
-            if not rookie and 26 <= a < 30 and out:
-                return BUY, ("Rule 7: QBs at 26-29 priced outside the top 100 gained dynasty value three years on for every kind of "
-                             "team in both formats. The market has stopped paying for them and they keep playing.")
+            qr = getattr(x, "qbr", None)                  # the 1QB list's QB rank in both formats, so both name the same QBs
+            qr = getattr(x, f"pr_{f}", None) if qr is None or pd.isna(qr) else qr
+            if not rookie and 26 <= a < 30 and qr is not None and QB_BUY[0] <= qr <= QB_BUY[1]:
+                return BUY, ("Rule 7: QBs at 26-29 ranked QB25-32 returned about twice their price over three years in both formats. "
+                             "They are fringe starters the market has stopped paying for, and some get a job back. Deeper backups "
+                             "mostly returned nothing.")
             if a >= 33:
                 return SELL, ("Rule 7: QBs at 33 or older lost value fast in both formats. Sell while someone still pays.")
             return HOLD, "QBs hold their value: no rule says to move him."
