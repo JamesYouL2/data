@@ -11,6 +11,8 @@ trade market (KTC or FantasyCalc) and at least 3 places worse. Snapshots after w
      low_y / low_o   25 and under / 26+         low150                the gap at a half or more
      rand        control: as many Hold or Use players on the rest-of-season list turned to Sell, picked at random
 Caveats as market_price_sim.py: few cohorts, and KTC and FantasyCalc share players and seasons.
+The saved outputs ran before the site took the signal as a Contending sell (rules.signals: ros_low). Rerun, live has it for contenders, so their
+low arm matches live apart from the exemptions the overlay doesn't know.
 Writes outputs/[sf/]ros_low_sim_<source>.csv.gz. LEAGUE=sf; SOURCE=ktc or fantasycalc; REPS, WEEKS, JOBS.
 """
 import os

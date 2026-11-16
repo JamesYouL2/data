@@ -61,7 +61,7 @@ KIND_PLACEBO = ("noqbx", "noyoungx") if ONLY == "exempt" else ()
 LENS_MODE = {"1-3": "con", "4-8": "mid", "9-12": "reb"}
 Row = namedtuple("Row", ["position", "age", f"r_{F}", f"pr_{F}", "rd", "dy", "prk", "prk_last", "prod_rank", f"mr_{F}",
                          f"rv_{F}", "inj", "inj_part", "gone", "ros_r", "ros_p", "ro_pre", "ro_now", "do_pre", "do_now",
-                         "dsf_pre", "dsf_now"])
+                         "dsf_pre", "dsf_now", f"mp_{F}"], defaults=[np.nan])
 
 
 @contextmanager

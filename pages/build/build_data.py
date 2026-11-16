@@ -123,6 +123,7 @@ for f in ("1qb", "sf"):
 for f in ("1qb", "sf"):
     for k, i in (("mr", 0), ("mv", 1), ("rv", 2), ("rr", 3), ("mt", 4)):
         p[f"{k}_{f}"] = p.sleeper_id.map(lambda s, f=f, i=i: market.get(s, {}).get(f, (None,) * 5)[i]).astype(float)
+    p[f"mp_{f}"] = p.groupby("position")[f"mr_{f}"].rank(method="first")      # the market's positional rank (rules.signals: ros_low)
 
 sp = load_json("sleeper_players.json") or {}
 p["inj"] = p.sleeper_id.map(lambda s: (sp.get(s) or {}).get("injury_status"))

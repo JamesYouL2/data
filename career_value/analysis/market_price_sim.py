@@ -82,7 +82,7 @@ def market_rows(q, rows, mk, mkpre):
     mr = q.gsis_id.map(mk["rank"]).to_numpy(float)
     mp = q.gsis_id.map(mk["prank"]).to_numpy(float)
     pr = q.gsis_id.map(mkpre["rank"]).fillna(UNLISTED).to_numpy(float)
-    rows = [x._replace(**{f"mr_{F}": m}) for x, m in zip(rows, mr)]
+    rows = [x._replace(**{f"mr_{F}": m, f"mp_{F}": b}) for x, m, b in zip(rows, mr, mp)]
     mx = []
     for x, a, b, c in zip(rows, mr, mp, pr):                 # off the market's list: the FP rank, and he can't trade at m prices
         if a == a:

@@ -171,6 +171,15 @@ them, titles over 3 seasons fell about 1.
 | Dynasty rank a quarter worse than the preseason | Sell | 1QB | Rebuilding; hurt players only for contenders and default teams | +2 to +4 | +55 to +70 |
 | That dynasty fall, and hurt | Note only | Superflex | All | +1 | +8 to +19 |
 
+Contending teams get one more sell, from [ros_low_sim.py](../career_value/analysis/ros_low_sim.py) at KTC and FantasyCalc prices: a player
+whose FantasyPros rest-of-season positional rank is a quarter or more worse than his positional rank in the trade market (FantasyCalc on
+the page), and at least 3 places worse. Players like this scored less than their price for the rest of the season in every season
+tested (2021-25), hurt or healthy. Laid on the page's calls, the sell added 1.1 to 4.3 title points that season for contenders and cost
+17 to 39 of dynasty value a year on; over three seasons the title gain was unclear. Nearly all of them are rookies or 25 and under, and
+their price the next May held up, so this is a trade of value for this season. Default and Rebuilding don't get it: they lost 31 to 108
+of value a year on for about one title point. It has none of the exemptions above, since the simulation sold QBs and healthy players
+too, and it covers a short test: 4 to 5 seasons, and 1 to 2 for anything three years on.
+
 The table's numbers come from the earlier simulation at FP prices and predate these limits. The ranges run across how the simulated team chose its trade partner, and superflex leaves out the 2018 class, whose
 only in-season list looks corrupt. A signal becomes **Sell: light** or **Buy: weak**. It leaves Sell and Cut calls alone and doesn't
 raise a sell to heavy or a buy to strong. A sell signal also replaces "Use, then sell", because the simulated team sold starters too. Where a signal meets the opposite call (a sell signal on a Buy, or a buy signal on a Sell, Cut or

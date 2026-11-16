@@ -1207,9 +1207,9 @@ Not used by the site. `single_model_sim.py`'s in-season panel (players in the ma
 
 Caveats: 3–4 walk-forward seasons for prediction and 1–2 cohorts for anything three years on; the model is untuned; KTC and FantasyCalc runs share players and seasons.
 
-## 27. Experiment: a sell call on a rest-of-season rank well below the market's? (`analysis/ros_low_sim.py`)
+## 27. A Contending sell on a rest-of-season rank well below the market's (`analysis/ros_low_sim.py`)
 
-Not used by the site. The flag: a player on FP's rest-of-season list whose positional rank there is a quarter or more worse than his positional rank in the trade market, and at least 3 places worse. Snapshots after weeks 4, 8 and 12, market top 340, seasons 2021–25. Numbers run KTC 1QB / FantasyCalc 1QB / KTC superflex / FantasyCalc superflex.
+On the site as a Contending-only sell signal (`rules.signals`: `ros_low`), added after this run. The flag: a player on FP's rest-of-season list whose positional rank there is a quarter or more worse than his positional rank in the trade market, and at least 3 places worse. Snapshots after weeks 4, 8 and 12, market top 340, seasons 2021–25. Numbers run KTC 1QB / FantasyCalc 1QB / KTC superflex / FantasyCalc superflex.
 
 **Who is flagged, and what they return against the market's price** (KTC 1QB; the other runs agree in sign):
 
@@ -1240,7 +1240,7 @@ Not used by the site. The flag: a player on FP's rest-of-season list whose posit
 - **A random control** (as many Hold or Use players sold) moved season-1 title odds by −1.7 to +0.6 for contenders, so the season-1 gain is the flag's, most clearly at KTC prices (+6.0 against the control, 5 of 5 cohorts; FantasyCalc +1.0, 2 of 4).
 - **A stricter gap** (half again or more) gives less of both. Limiting it to 26+ leaves almost no one.
 
-So this is not a sell call by the test the site's other calls passed (titles over three seasons and value). It fits as a Contending-only note on healthy players, and as one more reason for the sell on hurt ones that Contending already has.
+This is not a sell by the test the site's other calls passed (titles over three seasons and value). The site uses it anyway as a Contending-only sell, for hurt and healthy players alike, as a trade of value for this season's title odds; the note on the page says so. Default and Rebuilding don't get it.
 
 ## Caveats
 

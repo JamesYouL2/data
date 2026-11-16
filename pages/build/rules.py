@@ -570,8 +570,15 @@ def gap(r, m):
 # A quarter is one place near the top of the list (#3 to #4), and small moves there had no edge: top-36 players down 5
 # ROS places or fewer kept their value like players with no signal (1 year on, 1.07 vs 1.04 in 1QB, 1.09 vs 1.02 in
 # superflex), as did 1QB fallers down 2 dynasty places or fewer. The sim didn't have these floors.
+# Contenders also sell a player whose ROS positional rank is a quarter or more worse than his positional rank in the trade
+# market, and at least 3 places worse (career_value/analysis/ros_low_sim.py, at KTC and FantasyCalc prices). He scores less than
+# his price for the rest of the season in every season, hurt or healthy. Laid on these calls it added 1.1 to 4.3 title points
+# that season and cost 17 to 39 of value a year on, so only Contending gets it: default and rebuilding teams lost 31 to 108 of
+# value for about a title point. Nearly all of them are rookies or 25 and under, whose price next May held up. It skips the
+# exemptions above: the sim sold QBs and healthy players too.
 SIG_MOVE = 4 / 3
 SIG_FLOOR_ROS, SIG_FLOOR_DYN = 6, 3             # places lost, on top of the quarter
+SIG_FLOOR_LOW = 3               # places below the market's positional rank, on top of the quarter
 SIG_WEEKS = (5, 14)             # Sleeper's current week: at least 4 played, and no later than the sim's last window
 SIG_POOL = 340                  # the sim's tradeable pool
 SIG_HURT = ("IR", "PUP", "Out")
@@ -579,7 +586,7 @@ SIG_HURT = ("IR", "PUP", "Out")
 
 def signals(x, f, ctx):
     """-> what fired for this player and format: ros_down / faller (preseason rank, rank now), hurt, gap (dynasty
-    positional rank, ROS positional rank), rookie"""
+    positional rank, ROS positional rank), rookie, ros_low (the market's positional rank, ROS positional rank)"""
     wk = ctx.get("WEEK") if ctx else None
     r, ros_r = getattr(x, f"r_{f}"), getattr(x, "ros_r", None)
     if not wk or not SIG_WEEKS[0] <= wk <= SIG_WEEKS[1] or pd.isna(r) or r > SIG_POOL or ros_r is None or pd.isna(ros_r):
@@ -599,6 +606,9 @@ def signals(x, f, ctx):
     # the backtests' age is at the September of the season played; x.age is at next September
     if (rookie or x.age - 1 < 26) and getattr(x, f"pr_{f}") / x.ros_p >= SIG_MOVE:
         s["gap"], s["rookie"] = (getattr(x, f"pr_{f}"), x.ros_p), bool(rookie)
+    mp = getattr(x, f"mp_{f}", None)                 # NaN compares false: off the market's list or the ROS list, no signal
+    if mp is not None and x.ros_p / mp >= SIG_MOVE and x.ros_p - mp >= SIG_FLOOR_LOW:
+        s["ros_low"] = (mp, x.ros_p)
     return s
 
 
@@ -612,7 +622,7 @@ def apply_signal(act, mode, x, f, s):
     backtested call, or a sell and a buy fire together, the player is held. Some players keep their usual call on a sell
     signal, except for contenders with hurt ones: 1QB QBs, and hurt players 25 or younger, apart from superflex default
     teams, who sell them. 1QB contenders and default teams sell only hurt players. Rookie buys are for rebuilders, and
-    superflex rebuilders get no others."""
+    superflex rebuilders get no others. Contenders alone sell on ros_low, with none of those exemptions."""
     sells = []
     if x.position == "QB":
         no_sell = f == "1qb" and not (mode == "con" and s.get("hurt"))
@@ -625,6 +635,10 @@ def apply_signal(act, mode, x, f, s):
     if "faller" in s and f == "1qb" and not no_sell:
         sells.append(f"His dynasty rank fell from #{f0(s['faller'][0])} in the preseason to #{f0(s['faller'][1])}, and "
                      "selling 1QB fallers gained in the league sim.")
+    if "ros_low" in s and mode == "con":
+        sells.append(f"FantasyPros ranks him {x.position}{f0(s['ros_low'][1])} for the rest of the season, but the trade market "
+                     f"prices him as {x.position}{f0(s['ros_low'][0])}: he won't score like his price this season. Selling players "
+                     "like this added title odds this season in the league sim and cost dynasty value.")
     buys = mode == "reb" if s.get("rookie") else not (f == "sf" and mode == "reb")
     gap = s.get("gap") if buys else None
     gtxt = (f"FantasyPros ranks him {x.position}{f0(gap[1])} for the rest of the season but {x.position}{f0(gap[0])} in "
