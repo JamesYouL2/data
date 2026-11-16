@@ -17,7 +17,7 @@ START = {"1qb": {"QB": 12, "RB": 24, "WR": 30, "TE": 12}, "sf": {"QB": 24, "RB":
 # ---------- rules ----------
 BUY, HOLD, HOLDF, LOTTO, SELLH, SELL, USE, CUT = (
     "Buy", "Hold", "Hold to February", "Lottery ticket", "Sell high now", "Sell", "Use, then sell", "Cut")
-STASH, BUYLOW, SELLHEALTHY = "Stash", "Buy low (injured)", "Sell when healthy"
+STASH, SELLHEALTHY = "Stash", "Sell when healthy"
 HEAVY, LIGHT = "Sell: heavy", "Sell: light"
 
 STRONG, WEAK = "Buy: strong", "Buy: weak"
@@ -337,14 +337,9 @@ def situational(x, f, call, ctx=None):
 
         def sell_later():
             return SELLHEALTHY, f"{what}. Selling now takes an injury discount ({where}); sell once he's playing again."
-        if kind(ra) in ("hold", "buy") and gp == "less":
-            ra, rn = BUYLOW, (f"{what}. The market has marked him down ({where}). Contenders who need help now will sell: "
-                              "buy if the injury isn't career-threatening.")
-        elif kind(ra) == "sell":
-            ra, rn = sell_later()
-        else:
-            rn = f"{what} ({where})."
-
+        # No "buy low" on the injured: players out for the season returned 0.63 / 0.53 of their FP price over the next season, the ones
+        # the market had marked down 0.22 / 0.45, and those 25 or under ranked in the top 50 0.65 / 0.62
+        # (career_value/analysis/injured_buy.py). Every team type keeps him (Stash) or waits to sell.
         def now(act):
             if kind(act) in ("hold", "buy"):
                 return STASH, (f"{what}: no help this season. Keep him for next year if you have the IR slot; "
@@ -352,7 +347,7 @@ def situational(x, f, call, ctx=None):
             if kind(act) in ("sell", "use"):
                 return sell_later()
             return act, f"{what} ({where})."
-        (ca, cn), (ma, mn) = now(ca), now(ma)
+        (ra, rn), (ca, cn), (ma, mn) = now(ra), now(ca), now(ma)
         return settle(g, ra, rw, ca, cw, rn, cn, ma, mw, mn)
     # contender / default: rest-of-season role. FP's ROS positional rank decides whether he starts for you this year.
     rp = getattr(x, "ros_p", None)

@@ -1699,6 +1699,12 @@ his FP rank, or at the market's rank that day (KTC, 2020 on). 1QB / superflex:
   ahead after 3-5 years; here they are about fair at best.
 - **RBs hold up better than WRs, not worse.** Young RBs are the one cell at or above 1 at the market's price (1.13 / 1.14, n 6-8);
   injured WRs and TEs returned a third to a half at every age.
+- **By position** (next season, FP price): RBs 25- 0.87 / 0.88 but 26-27 0.11 and 28+ 0.28 / 0.17; WRs 0.42 / 0.33 at every age,
+  those ranked 11-24 at the position 0.16 / 0.15 (0% beat); QBs 0.97 / 0.64, top-10 QBs 1.00 / 0.70 (n 6-7).
+- **A narrow version fails too.** 25 or under and a top-25 player overall preseason: 0.71 / 0.65 (n 3-4); top 50: 0.65 / 0.62
+  (n 7-8, 0/4 cohorts; Breece Hall 2022 and Joe Burrow 2020 up, Barkley 2020, Javonte Williams 2022, Sutton 2020, Dobbins 2021,
+  Bateman 2022, Lance 2022 down). The market almost never marks these players down, so the old call would not have fired on them.
+  The site's Buy low (injured) call is dropped: every team type stashes.
 - Limits: 45-82 player-seasons, 2-6 cohorts; the superflex 2019 preseason list is thin, so its position ranks that year are rough.
 
 ## Caveats

@@ -374,7 +374,7 @@ $("foot").innerHTML = `Prices: FantasyPros dynasty rankings via <a href="https:/
   (m.ros ? `Rest of season (ROS) and next game: FantasyPros ROS PPR and weekly rankings via DynastyProcess, ${esc(m.fp_date)}; the ROS overall rank is 1QB. ` +
     `In season the calls use the "in-season" rank: the FantasyPros dynasty rank tilted slightly toward the ROS rank (a player whose ROS positional rank is half his dynasty one moves up about 7%). ` : "") +
   `Injuries: <a href="https://sleeper.com">Sleeper</a>. ` +
-  `The market, injury and rest-of-season adjustments (the notes under each call, and the Stash, Buy low and Sell when healthy calls) are judgment calls, not backtested. ` +
+  `The market, injury and rest-of-season adjustments (the notes under each call, and the Stash and Sell when healthy calls) are judgment calls, not backtested. ` +
   `The exception is the notes on rank moves since the preseason and on rest-of-season ranks well above dynasty ranks: those sells and buys, shown from week 5 to week 14, come from a league simulation on the same seasons that suggested them. ` +
   `<a href="https://github.com/JamesYouL2/data/tree/career-value/pages">Source and method</a>.`;
 
