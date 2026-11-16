@@ -51,6 +51,7 @@ Follow-up analyses for sections 3b and 7–12 are in `analysis/`. Run them from 
 | `startup.py` | 21 (also `LEAGUE=sf`; writes `outputs/startup_sim.csv`) |
 | `startup_fp.py` | 22 (also `LEAGUE=sf`; writes `outputs/startup_fp_sim.csv`) |
 | `team_signals.py` | 23 (also `LEAGUE=sf`; writes `outputs/team_signals.csv.gz`; `may`, `decay`, `splits` and `modes` arguments print only) |
+| `rank_gaps.py` | 24 (also `LEAGUE=sf`; `REDRAFT=fp` for FP redraft ECR; prints only) |
 
 `common.py` holds shared loaders. Sections 13 and 16 also run for superflex if `outputs/sf/` exists.
 
@@ -1103,6 +1104,37 @@ Experiments, not used by the site. Three runs in the league simulation of sectio
 - **These teams do become the strongest:** without trades their title odds over seasons 2–3 are 24–27 points, against 17 for mid-value teams of the same strength.
 - The size of every gain is inflated by FP prices and by taking the best player in a price window (section 6a's market-price runs halve them); compare the rows, not the levels.
 
+
+## 24. Experiment: redraft rank, dynasty rank or last season's production? (`analysis/rank_gaps.py`)
+
+Not used by the site. For each veteran in a dynasty market's top 200, two gaps against his dynasty positional rank: that summer's redraft positional rank (FFC ADP), and his points-per-game positional rank last season. "Up" is a quarter or more better than the dynasty rank and at least 3 places, "down" a quarter worse. Residual % against the dynasty price, as section 2b; dynasty markets pooled (FP, KTC, FantasyCalc, DP), cohorts 2018–24.
+
+Redraft ranks are late August and those prices mostly May, so a second run prices everyone on FP's dynasty ECR from the same week as FP's redraft ECR (2019–24; superflex 2020–24).
+
+**Per 1 SD of each gap, both in one model, all veterans** (1 / 2 / 3 years; cohorts positive):
+
+| | Redraft gap | Production gap |
+|---|---|---|
+| 1QB, May prices | +26 / +19 / +20 (7/7, 6/6, 5/5) | +7 / +7 / +5 |
+| 1QB, same date | +29 / +20 / +19 (6/6, 5/5, 4/4) | +2 / +2 / −1 |
+| Superflex, May prices | +21 / +16 / +18 (7/7, 6/6, 5/5) | +6 / +7 / +4 |
+| Superflex, same date | +24 / +16 / +16 (5/5, 4/4, 3/3) | +2 / +3 / +1 |
+
+**Both gaps together, 1QB, May prices** (mean residual at 1 / 3 years; rows production, columns redraft):
+
+| Production \ redraft | Up | Level | Down |
+|---|---|---|---|
+| Up | +47 / +34 | +14 / 0 | −27 / −22 |
+| Level | +41 / +14 | +13 / −1 | −21 / −13 |
+| Down | +36 / −10 | −3 / +8 | −35 / −36 |
+
+- **The redraft rank is the one to trust.** Its gap is worth +16 to +29 per SD at every horizon, in every cohort, in both formats and at same-date prices. The production gap adds +7 or less and is not clear of zero once redraft is in the model. FP redraft ECR in place of FFC ADP gives the same (+31 / +22 / +22).
+- **Production only counts when redraft agrees.** Production up with redraft level returned +14 at 1 year and 0 at 3; with redraft down, −27. Production up and redraft up was the best cell, positive in 7 of 7 cohorts at 1 year.
+- **Redraft below dynasty is the worst sign, most of all for young players.** At same-date prices, players 25 or younger with redraft down returned −54 / −44 / −35 (0 cohorts positive at any horizon; superflex −49 / −32 / −30). Rookies with redraft down: −36 at 1 year, about level by 3.
+- **By age** (per SD, 1QB): for 25 and under both gaps count in year 1 (+15 redraft, +19 production) and only redraft after that. For 26–29 it is redraft in year 1 (+33) and both by years 2–3 (+20 and +10). For 30+, the production gap is negative (−12 to −14; 0 to 1 cohorts positive): an old player whose production outranks his price has not been a buy on that alone, while redraft up has (+38 / +24 / +11).
+- **Means sit well above medians** (a few hits carry each cell): in the best cell 50% beat their price, against 33–38% for a level player.
+
+Caveats: the "down" cells at May prices include players hurt over the summer, which is why the same-date run matters; the same-date run has 4–6 cohorts and prices on FP only; cells under 15 player-seasons are left out.
 
 ## Caveats
 
