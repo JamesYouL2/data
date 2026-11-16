@@ -1669,6 +1669,38 @@ late-round up; age down for WRs and QBs), so it is the same information, fitted 
 logistic model of beating one's price wasn't run: it would rank by the chance of a gain, not its size, and the factors already do
 that job.
 
+## 39. The site's "Buy low (injured)" call, backtested (`analysis/injured_buy.py`)
+
+The call: a rebuilding team buys a player who is out for the season (on IR / PUP / Out and off the FP rest-of-season list) when the
+trade market has marked him well below his FP dynasty rank. Test: the in-season panel at weeks 4 / 8 / 12, 2019-25, FP top 200, each
+player-season once at the first snapshot he is out. Returned / price = what he was worth from then on against the average player at
+his FP rank, or at the market's rank that day (KTC, 2020 on). 1QB / superflex:
+
+| Out for the season | n | 1 season, FP price | 1 season, market price | 3 seasons, FP price |
+|---|---|---|---|---|
+| healthy players (baseline) | 1204 / 1067 | 1.03 / 1.10 | 1.05 / 1.17 | 1.04 / 1.12 |
+| all | 67 / 82 | 0.63 / 0.53 (0/6 cohorts) | 0.76 / 0.79 | 0.61 / 0.48 |
+| **the site's call: market marked him down** | 15 / 19 | **0.22 / 0.45** | 0.38 / 0.83 | 0.19 / 0.18 |
+| market not marked down | 34 / 31 | 0.87 / 0.75 | 0.87 / 0.77 | 0.83 / 0.75 |
+| top 10 at position preseason (all 27 or under) | 10 / 12 | 0.83 / 0.69 | 0.85 / 0.79 | 0.96 / 0.82 |
+| position rank 11-24 | 27 / 32 | 0.50 / 0.43 | 0.76 / 0.89 | 0.25 / 0.16 |
+| age 25- / 28+ | 34, 15 / 36, 22 | 0.68, 0.49 / 0.58, 0.41 | | 0.66, 0.30 / 0.59, 0.16 |
+| RB | 20 / 21 | 0.73 / 0.72 | 1.02 / 1.00 | 0.72 / 0.74 |
+| RB 25- | 11 / 10 | 0.87 / 0.88 | 1.13 / 1.14 (3/3 cohorts, n 8 / 6) | 0.77 / 0.81 |
+| WR | 24 / 28 | 0.42 / 0.33 | 0.55 / 0.51 | 0.35 / 0.26 |
+| TE | 10 / 12 | 0.50 / 0.27 (0% beat) | | 0.45 / 0.29 |
+| QB | 13 / 21 | 0.97 / 0.64 | 0.81 / 0.90 | 1.17 (n 5) / 0.54 |
+| rookie | 10 / 7 | 1.21 / 1.03 | 1.01 / 0.85 | 1.53 (n 6) |
+
+- **The call loses, and the market's markdown is the warning, not the bargain.** The players the market marked down returned a fifth
+  to a half of their FP price and still trailed at the market's lower price. Those it left alone did better (0.75-0.87).
+- **Elite and young is the best group and still not a buy** in this window: 0.69-0.96, 7-12 players (Burrow 2020 and Prescott 2020
+  up; Barkley 2020, Kittle 2020, Javonte Williams 2022 down; Lance 2022 zero). Section 9's longer MFL history has young top-5 players
+  ahead after 3-5 years; here they are about fair at best.
+- **RBs hold up better than WRs, not worse.** Young RBs are the one cell at or above 1 at the market's price (1.13 / 1.14, n 6-8);
+  injured WRs and TEs returned a third to a half at every age.
+- Limits: 45-82 player-seasons, 2-6 cohorts; the superflex 2019 preseason list is thin, so its position ranks that year are rough.
+
 ## Caveats
 
 - **Position-level residuals depend on league format.** The QB results flip sign between FP (1QB) and MFL, whose keeper pool includes superflex leagues. Within-position groupings are more trustworthy.
