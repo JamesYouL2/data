@@ -59,6 +59,7 @@ Follow-up analyses for sections 3b and 7–12 are in `analysis/`. Run them from 
 | `rule_audit.py` | 29 (also `LEAGUE=sf`; prints only) |
 | `threshold_sim.py` | 30 (also `LEAGUE=sf`; `table` reprints; writes `outputs/threshold_sim.csv.gz`) |
 | `sell_rules_sim.py` | 31 (also `LEAGUE=sf`; `table` reprints; writes `outputs/sell_rules_sim.csv.gz`) |
+| `sell_timing_sim.py` | 32 (also `LEAGUE=sf`; `table` reprints; writes `outputs/sell_timing_sim.csv.gz`) |
 
 `common.py` holds shared loaders. Sections 13 and 16 also run for superflex if `outputs/sf/` exists.
 
@@ -1443,6 +1444,31 @@ Experiments, not on the site. Team types by the projection for the coming season
 - **Class matters for value, not for titles.** Against the control no rule moved title odds by more than about 1.5 points; the Rebuilding rules moved value by 18 to 63 each.
 
 Caveats: FP prices and the best player in a price window; leagues in a cohort share players, so z is too large; one rule at a time, and rules interact (section 28); classes are coarser than the site's call groups.
+
+## 32. When to sell a producing older player (`analysis/sell_timing_sim.py`)
+
+An experiment, not on the site. Producing = inside his position's starter line by points per game the season before. One team sells every such player it holds in a class now (May), after this season, or after next season, each time for the most valuable player in his price window at that date, against holding him throughout. The league of section 6a, 40 leagues a cohort; team types as section 31. 1QB / superflex. Every sale gains about 16 to 35 of value from the partner rule alone (the "after this season" column's value a year on), so read value against that.
+
+**Contending teams: title odds over seasons 1–3, and value 3 years on**
+
+| Class (real players) | Sell now | After this season | After next season | Still sellable after next season |
+|---|---|---|---|---|
+| RBs 26–27 (29) | −0.8 / −5.6; value +105 / +61. Season 1 alone −3.5 / −3.9 | **+0.6 / +0.7; +112 / +76** | −1.5 / −1.1; +87 / +53 | 95% |
+| RBs 28–29 (22) | **+0.4 / −1.2; +109 / +65**. Season 1 +0.1 / −0.8 | −4.6 / −3.4; +10 / +4 | −2.4 / −1.8; −13 / +2 | 53–63% |
+| RBs 30+ (8) | +4.0 / +1.3 on 3 cohorts; seasons 1–2 −5.5 / −3.6. Season 1 −3.0 / −4.0 | seasons 1–2 −2.6 / −2.4; +30 / +56 | about 0; +19 / +10 | 31–69% |
+| WRs 28–29 (28) | +0.6 / −2.6; +88 / +72. Season 1 −2.9 / −3.6 | **+1.8 / +0.7; +91 / +58** | −0.4 / −0.6; +54 / +38 | 90–95% |
+| WRs 30+ (21) | **+5.0 / +3.7; +154 / +176**. Season 1 −0.3 / −1.3 | +1.9 / −0.2; +95 / +79 | +0.5 / +1.7; +57 / +66 | 76–81% |
+| TEs 29+ (15) | −2.5 / −5.4; +35 / +49 | −4.7 / −2.9; +39 / +64 | −2.0 / −2.2 | 90% |
+| QBs 32+, superflex (17) | −1.6; +99. Season 1 −2.6 | −1.6; +63 | +0.1; +33 | 68% |
+
+- **"Use, then sell" is right where the price lasts a year: RBs at 26–27 and WRs at 28–29.** Selling them now costs a contender 3 to 4 title points this season; selling after it costs nothing over three seasons and keeps as much value.
+- **It is wrong for RBs at 28–29.** Their price is gone a year later (value 3 years on +4 to +10 against +65 to +109 for selling now, and by the second year barely half can be sold at all), and selling late still costs the title odds of the seasons after. Selling now cost a contender nothing in season 1. For them it is now or never.
+- **WRs 30+ are a sell now for everyone:** about a point of title odds this season, and the most titles over three seasons and the most value of any date.
+- **A contender keeps producing TEs at 29+, superflex QBs at 32+ and RBs at 30+.** Selling cost title odds at every date, and what a late sale brings back is little more than the partner rule's own gain. The RBs are 8 careers on 3 to 4 cohorts.
+- **Default** follows the same dates with smaller title costs: after this season for RBs 26–27 (+1.5 / +0.5 over three seasons against +0.5 / −0.8 now), now for RBs 28–29 (+2.0 / +0.5, value +124 / +102 against −0.9 / −1.4 and +21 / +15 a year later), now for WRs 30+, RBs 30+ and TEs 29+.
+- **Rebuilding sells now in every class:** value is highest then and titles don't fall.
+
+Caveats: few real players a class, so each row is a handful of careers replayed; FP prices; one partner rule; a player who has left the top 340 can't be sold, which is the risk of waiting and is in the numbers.
 
 ## Caveats
 
