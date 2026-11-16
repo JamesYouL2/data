@@ -53,6 +53,7 @@ Follow-up analyses for sections 3b and 7–12 are in `analysis/`. Run them from 
 | `team_signals.py` | 23 (also `LEAGUE=sf`; writes `outputs/team_signals.csv.gz`; `may`, `decay`, `splits` and `modes` arguments print only) |
 | `rank_gaps.py` | 24 (also `LEAGUE=sf`; `REDRAFT=fp` for FP redraft ECR; prints only) |
 | `redraft_age.py` | 25 (also `LEAGUE=sf`; prints only) |
+| `gap_model_sim.py` | 26 (also `LEAGUE=sf`, `SOURCE=fantasycalc`; `check` and `ablate` print only; writes `outputs/gap_model_sim_<source>.csv.gz`) |
 
 `common.py` holds shared loaders. Sections 13 and 16 also run for superflex if `outputs/sf/` exists.
 
@@ -1154,6 +1155,56 @@ Not used by the site. A model of h-year VORP on the summer redraft rank, age, po
 - **A blend adds about 0.01–0.02 in year 1 and nothing after.** The site's in-season price already tilts the dynasty rank toward the rest-of-season rank by a small power (0.1).
 - **For the top of the list the redraft rank helps a little longer.** The top 50 by each ranking captured, of the best possible top 50's VORP: 69% / 70% by dynasty rank and 71% / 74% by redraft rank at 1 year, 75% / 76% and 76% / 78% at 2, and 78% / 79% and 76% / 78% at 3.
 - **This fits section 24.** A redraft rank that disagrees with the dynasty rank says which way a player's return will miss; it doesn't make redraft the better ranking overall.
+
+## 26. Experiment: the redraft gap inside a model of price, position, age and draft capital (`analysis/gap_model_sim.py`)
+
+Not used by the site. `single_model_sim.py`'s in-season panel (players in the market's top 340 after weeks 4, 8 and 12, seasons 2021–25) and model, which starts from the market price and learns where the other inputs move off it. Base = market positional rank, position, age, NFL draft round, rookie or not. Gap = log(FP rest-of-season positional rank / market positional rank). Every number is walk-forward (trained on earlier seasons only) and runs KTC 1QB / FantasyCalc 1QB / KTC superflex / FantasyCalc superflex.
+
+**Prediction: % of the error the market price leaves that the model removes.**
+
+| Model | Rest-of-season VORP | Value at next May's market rank |
+|---|---|---|
+| Base | 1.6 / −3.0 / 2.5 / −3.0 | 2.8 / 2.6 / 1.2 / 3.1 |
+| Base + gap | 5.0 / 1.8 / 6.2 / 3.5 | 3.3 / 3.6 / 2.9 / 4.3 |
+| Base + gap + production gap | 4.9 / 1.4 / 5.0 / 3.6 | 3.2 / 2.6 / 3.0 / 3.3 |
+| Every input (`+all`) | 13.9 / 9.6 / 15.2 / 13.3 | 4.5 / 3.9 / 4.6 / 4.0 |
+
+- **The gap helps this season in every test season of all four runs**, and next May's value by about a point (12 of 14 season-tests). The production gap adds nothing. No model predicts the one-year hold return better than the price alone.
+
+**Ablations** (rest-of-season VORP unless said):
+
+| Ablation | Result |
+|---|---|
+| Gap down only (rest-of-season rank worse than the market's) | 5.2 / 2.0 / 6.8 / 2.3: as good as both directions |
+| Gap up only | 3.5 / −1.5 / 4.3 / −1.1 |
+| Gap for 25 and under only | 2.5 / 0.3 / 4.5 / −0.2 |
+| Gap for 26+ only | 4.0 / −0.9 / 5.8 / −0.4 |
+| Off-list flag, no gap | 2.4 / −1.6 / 4.0 / −2.2 |
+| By week: gain in the edge's rank correlation over base | week 4 +0.02 to +0.09, week 8 +0.06 to +0.08, week 12 +0.10 to +0.11 |
+| Base + gap, no age / no draft capital / no position | no loss this season; for next May's value age matters most (2.1 / 2.4 / 2.9 / 3.2 without it) |
+| `+all` less injury status / week / rest-of-season ranks / last season | −2.0 to −2.7 / −1.2 to −2.5 / +0.4 to −2.0 / −0.3 to −1.1 |
+| Base + gap plus week / games played / injury status | +6.3 to +7.1 / +3.0 to +4.8 / +1.3 to +1.8 |
+
+- **The sell side carries it:** a rest-of-season rank below the market's is the signal; a better one adds about half as much at KTC prices and nothing at FantasyCalc's.
+- **Both age groups count.** Neither half matches the whole, so limiting the gap to players 25 and under leaves out about half of it.
+- **It is not the off-list flag.** Players off the rest-of-season list give about a quarter of the gain; the gap among listed players gives the rest.
+- **The gap is worth more late in the season**, not less. For next May's value its gain is small in every week.
+- **Most of `+all`'s lead is the calendar.** The week and games played tell the model how much season is left, which sets the scale of rest-of-season VORP but ranks nobody within a snapshot. Injury status is the one input that adds real information on top of the gap (+1.3 to +1.8).
+
+**League sim at market prices** (own-mode teams, title odds in points, value = sum of 340 − market rank).
+
+| Contenders | Title odds, season 1 | Value 1 year on |
+|---|---|---|
+| Base + gap model's calls less the base model's | +2.3 / +0.9 / +3.9 / +1.5 (3/4, 1/3, 4/4, 2/3 cohorts) | −50 / −67 / −68 / −85 |
+| The rules with gap-model picks in place of their signals, less the site's rules | +2.6 / −2.2 / +2.6 / −0.6 | −38 / −31 / −44 / −68 |
+| The base + gap model with no rules, less the site's rules | +9.0 / +2.6 / +4.2 / +1.7 | −147 / −212 / −118 / −198 |
+
+- **In trades the gap buys contenders titles this season and costs value**, in every run. For default and rebuilding teams it changes nothing clear (season 1: −2.2 to +1.2).
+- **It doesn't beat the site's signals.** Swapping them for the gap model's picks lost value a year on in all four runs and 205 to 434 three years on, for a title gain that is positive at KTC prices and negative at FantasyCalc's.
+- **A model with no rules gives up far more value** than the site's calls (520 to 1,075 three years on for contenders, on 1–2 cohorts).
+- So the gap belongs where the site already uses a version of it, the contender's win-now targets, and not in the calls.
+
+Caveats: 3–4 walk-forward seasons for prediction and 1–2 cohorts for anything three years on; the model is untuned; KTC and FantasyCalc runs share players and seasons.
 
 ## Caveats
 
