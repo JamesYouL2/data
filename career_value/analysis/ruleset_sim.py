@@ -238,6 +238,26 @@ def unified(bar, without=None):
     return out
 
 
+def old_calls(g, t, pr, look):
+    """mode -> the calls the site made before the seven rules (rules_before_seven.py), as middle_mode.calls"""
+    import rules_before_seven as OLD
+    x = pd.DataFrame({"position": g.position, "age": g.age, f"r_{F}": g.mkt_rank, f"pr_{F}": g.pos_rank_fp, "rd": g.draft_round_f.fillna(8),
+                      "dy": np.where(g.row_type == "rookie", t + 1, 0), "prk": g.gsis_id.map(pr[4].get(t, {}))})
+    x["prod_rank"] = pd.concat([x.prk, g.gsis_id.map(pr[6].get(t - 1, {}))], axis=1).mean(axis=1)
+    ctx = {"ROOKIE": t + 1, "LOOK": look}
+    out = {m: [] for m in NAME}
+    for row in x.itertuples(index=False):
+        _, (ra, _), (ca, _), (ma, _) = OLD.classify(row, F, ctx)
+        out["rebuild"].append(ra)
+        out["contend"].append(ca)
+        out["middle"].append(ma)
+    return {m: np.array(v, dtype=object) for m, v in out.items()}
+
+
+GAP = os.environ.get("GAP")          # a team type ("contend"): add the old calls back to the seven rules one bucket at a time
+BUCKETS = {}
+
+
 def run_cohort(args):
     t, g, P, act, rk1, rk3, nxt1, seed = args
     rng = np.random.default_rng(seed)
@@ -255,8 +275,12 @@ def run_cohort(args):
         p0 = mm.season_titles(T0, P, pos, seeds)
         for i in range(su.TEAMS):
             m = TYPE[rkk[i]]
+            if GAP and m != GAP:
+                continue
             out.append((t, rep, rkk[i], m, "none", *p0[:3, i], val(T0, i, 1, rk1), val(T0, i, 2, rk3), 0, 0, 0))
             for arm, a in act.items():
+                if m not in a:
+                    continue
                 T, n = mm.policy(i, "random" if arm == "random" else m, team, g, a, nxt1, rng)
                 p = mm.season_titles(T, P, pos, seeds)[:, i] if sum(n) else p0[:, i]
                 out.append((t, rep, rkk[i], m, arm, *p[:3], val(T, i, 1, rk1), val(T, i, 2, rk3), *n))
@@ -318,6 +342,42 @@ def main():
                   for m in NAME}
             hy = {m: np.where(sm[m] != "Hold", sm[m], live[m]).astype(object) for m in NAME}
             act[f"hybrid:{tag}"] = {**hy, "middle": between(hy["contend"], hy["middle"], hy["rebuild"])}
+        if GAP:
+            old = old_calls(g, t, pr, look)
+            new = live[GAP]                                   # the site's calls now: the seven rules
+            act["old"] = {GAP: old[GAP]}
+            act["seven over old"] = {GAP: np.where(np.array([R.kind(c) for c in new]) != "hold", new, old[GAP]).astype(object)}
+            b3 = np.where(g.mkt_rank <= 100, "1-100", np.where(g.mkt_rank <= 200, "101-200", "201+"))
+            keys = [f"old {R.kind(o)} / seven {R.kind(n)}: {p} {c[1]} {b}{' producing' if pd_ else ''}"
+                    for o, n, p, c, b, pd_ in zip(old[GAP], new, g.position, cls, b3, prod)]
+            differ = np.array([R.kind(o) != R.kind(n) for o, n in zip(old[GAP], new)])
+            for k in sorted(set(np.array(keys)[differ])):
+                sel = differ & (np.array(keys) == k)
+                BUCKETS[k] = BUCKETS.get(k, 0) + int(sel.sum())
+                act["b:" + k] = {GAP: np.where(sel, old[GAP], new).astype(object)}
+        if GAP and os.environ.get("EIGHT"):
+            # candidate eighth rules for the gap: what to do with RBs 25 or under priced 101-200 (rule 6 sells the ones not producing),
+            # WRs 25 or under at that price, and the QB buy
+            new = live[GAP]
+            late = g.draft_round_f.fillna(8).to_numpy() >= 4
+            yrb = np.array([p == "RB" and c[1] == "25-" and 100 < r <= 200 for p, c, r in zip(g.position, cls, g.mkt_rank)])
+            ywr = np.array([p == "WR" and c[1] == "25-" and 100 < r <= 200 for p, c, r in zip(g.position, cls, g.mkt_rank)])
+            qbb = np.array([p == "QB" and R.kind(n) == "buy" for p, n in zip(g.position, new)])
+            def put(mask, call):
+                return {GAP: np.where(mask, call, new).astype(object)}
+            act["e:buy RB 25- 101-200, NFL round 4+"] = put(yrb & late & ~prod, "Buy")
+            act["e:hold RB 25- 101-200, NFL round 4+"] = put(yrb & late & ~prod, "Hold")
+            act["e:buy RB 25- 101-200, NFL rounds 1-3"] = put(yrb & ~late & ~prod, "Buy")
+            act["e:hold RB 25- 101-200, any round"] = put(yrb & ~prod, "Hold")
+            act["e:buy RB 25- 101-200, any round"] = put(yrb & ~prod, "Buy")
+            act["e:buy WR 25- 101-200"] = put(ywr, "Buy")
+            act["e:buy WR 25- 101-200, NFL rounds 1-3"] = put(ywr & ~late, "Buy")
+            act["e:no QB buy"] = put(qbb, "Hold")
+            act["e:buy late RB + young WR, no QB buy"] = put(qbb, "Hold")
+            act["e:buy late RB + young WR, no QB buy"][GAP][yrb & late & ~prod] = "Buy"
+            act["e:buy late RB + young WR, no QB buy"][GAP][ywr] = "Buy"
+            act["e:buy late RB, no QB buy"] = put(qbb, "Hold")
+            act["e:buy late RB, no QB buy"][GAP][yrb & late & ~prod] = "Buy"
         if os.environ.get("FINAL"):
             for name, rules in FINAL.items():
                 act[name] = {m: np.array([more(b, p, c[1], r, pd_, a, rules) for b, p, c, r, pd_, a in
@@ -345,6 +405,13 @@ def main():
         rk1 = g.gsis_id.map(rank_at[t + 1]).to_numpy(float) if t + 1 in rank_at else None
         rk3 = g.gsis_id.map(rank_at[t + 3]).to_numpy(float) if t + 3 in rank_at else None
         jobs.append((t, g, P, act, rk1, rk3, nxt1, int(rng.integers(1 << 31))))
+    if GAP:
+        for j in jobs:                                        # every cohort runs every bucket: one with no such player keeps the seven rules
+            for k in BUCKETS:
+                j[3].setdefault("b:" + k, {GAP: j[3]["live"][GAP]})
+        ARMS.extend(["old", "seven over old"] + ["b:" + k for k in BUCKETS])
+        if os.environ.get("EIGHT"):
+            ARMS.extend(a for a in jobs[0][3] if a.startswith("e:"))
     pd.set_option("display.width", 250, "display.max_rows", 400)
     print(f"== {'Superflex' if SF else '1QB'}: players of 340 called Buy / Sell / Use, then sell, mean over cohorts")
     print(pd.DataFrame(counts).groupby("arm").mean().drop(columns="t").round(0).to_string())
@@ -392,6 +459,21 @@ def summarize(df):
     print(pd.DataFrame(rows).to_string(index=False))
     print("\n-- the new sets less the site's calls, same leagues")
     print(pd.DataFrame(rows2).to_string(index=False))
+    badd = [a for a in z.arm.unique() if a.startswith(("b:", "e:"))]
+    if badd:
+        m = z[z.arm.isin(badd)]["mode"].iloc[0]
+        q0 = z[z["mode"] == m]
+        sev = q0[q0.arm == "live"].set_index(key)
+        rows5 = []
+        for arm in ["old", "seven over old"] + badd:
+            q = q0[q0.arm == arm].set_index(key)
+            d = q[mets] - sev.loc[q.index, mets]
+            rows5.append({"the old calls put back": arm[2:] if arm.startswith("b:") else f"({arm})",
+                          "trades": round((q.sold + q.later + q.bought).mean() - (sev.sold + sev.later + sev.bought).mean(), 2),
+                          "_s": d.yrs2.mean(), **cells(d)})
+        t5 = pd.DataFrame(rows5).sort_values("_s", ascending=False).drop(columns="_s")
+        print(f"\n-- {NAME[m]}: the old calls put back into the seven rules one bucket at a time, less the seven rules; sorted by seasons 1-2")
+        print(t5.to_string(index=False))
     gadd = [a for a in z.arm.unique() if a.startswith("g:")]
     if gadd:
         rows4 = []

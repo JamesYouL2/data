@@ -1624,6 +1624,28 @@ the formats (Contending 0.80 / 1.09 / 1.17, Default 0.50 / 1.65 / 1.37, Rebuildi
 in-sample gain gone out of cohort. Over three seasons a Use-then-sell (producing RB 26-27, WR 28-29) falls further than a Sell, which
 is why the call is to sell after the season; over one season he is fairly priced.
 
+## 37. Where the seven rules trail the old calls, and an exception to rule 6 (`analysis/ruleset_sim.py`, `GAP=`, `EIGHT=1`)
+
+The seven rules alone trailed the four-rules-over-old-calls set by 7.5 title points over three seasons for 1QB Contending. `GAP=contend`
+puts the old calls (`rules_before_seven.py`) back one bucket at a time wherever old and seven disagree. One bucket carries the gap: the
+old calls bought RBs 25 or under priced 101-200 who weren't producing, the late-round ones (NFL round 4+ or undrafted), where rule 6
+sells them: +2.6 this season, +5.5 over two, +12.9 over three (5/5 cohorts), value 3 years on -9.
+
+`EIGHT=1` tests candidate rules for that bucket against the live seven, Contending and Default, 1QB / superflex (title odds over three
+seasons, cohorts above zero; value 3 years on):
+
+| RBs 25-, not producing, 101-200 | Contending 1QB | Contending SF | Default 1QB | Default SF |
+|---|---|---|---|---|
+| hold, round 4+ | +3.6 (4/5), -18 | +1.5 (4/5), +10 | +5.9 (4/5), -31 | +3.8 (5/5), +8 |
+| buy, round 4+ | +12.9 (5/5), -9 | +3.4 (2/5), -44 | +7.3 (4/5), -61 | +2.6 (3/5), -54 |
+| hold, any round | +0.9, -69 | -0.1, -41 | +3.0, -110 | +2.0, -67 |
+| buy, any round | +5.5, -138 | -3.3, -155 | +3.9, -171 | +0.5, -157 |
+| buy, rounds 1-3 | -1.7, -127 | -3.1, -122 | -0.5, -141 | -1.3, -117 |
+
+Holding the late-round ones gains in all four cells at little cost; buying them is a 1QB result. Buying WRs 25- at 101-200 lost in
+superflex (-8.7 Contending), and dropping the QB buy lost in superflex (-6.9). The site's rule 6 now holds late-round RBs at 101-200
+for Contending and Default. Rebuilding wasn't tested. The title gains carry the sim's usual flattery of any trade that fills a lineup.
+
 ## Caveats
 
 - **Position-level residuals depend on league format.** The QB results flip sign between FP (1QB) and MFL, whose keeper pool includes superflex leagues. Within-position groupings are more trustworthy.

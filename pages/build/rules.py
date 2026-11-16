@@ -94,7 +94,9 @@ def f0(x):
 #   3  A top-100 RB at 26-29 who isn't producing: Contending holds, Default sells after the season, Rebuilding sells now.
 #   4  Buy top-100 rookie WRs (Default, Rebuilding), rookie TEs (Rebuilding) and top-100 TEs 30 or older (Contending, Default).
 #   5  Sell anyone priced outside the top 200 who isn't a rookie or a QB. Past 300 he is waiver level: cut.
-#   6  Sell RBs 25 or under who aren't producing.
+#   6  Sell RBs 25 or under who aren't producing. Contending and Default hold the late-round ones (NFL round 4 or later, or undrafted)
+#      priced 101-200: holding them added title odds over three seasons in both formats (ruleset_sim.py GAP, EIGHT: +3.6 / +1.5
+#      Contending, +5.9 / +3.8 Default) at little or no cost in value. Early-round ones at that price are busts: sell.
 #   7  QBs: buy at 26-29 ranked QB25-32, the fringe starters; sell at 33 or older. The band is by QB rank so that it names the same
 #      players in both formats (overall, QB25-32 is about 160-265 in 1QB and 75-150 in superflex). Held three years they returned 2.5x
 #      / 2.2x the average player at their price, 1.8x in both without the best one (Jared Goff 2021); QB33 and deeper returned under
@@ -180,6 +182,9 @@ def classify(x, f, ctx, split=True):
             return SELL, ("Rule 5: priced outside the top 200 and not a rookie. Selling these players gained more dynasty value than "
                           "any other rule, for every kind of team in both formats.")
         if pos == "RB" and a < 26 and not prod:
+            if m != "reb" and out and getattr(x, "rd", 0) >= 4:
+                return HOLD, ("Rule 6: a late-round RB at 25 or under priced 101-200. He isn't producing yet, but holding RBs like him "
+                              "added title odds over three seasons in both formats. Early-round RBs at this price are the ones to sell.")
             return SELL, (f"Rule 6: an RB at 25 or under who isn't producing ({now}). RBs lose value from the start, and these gained "
                           "dynasty value sold.")
         return HOLD, "None of the seven rules applies: keep him."
