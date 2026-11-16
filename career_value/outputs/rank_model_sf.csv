@@ -1,0 +1,19 @@
+team,seasons,method,spearman,skill over fp,cohorts better than fp,return of its top 100
+Contending,1,fp,0.801,0.0,0/6,206.5
+Contending,1,factors (site),0.803,0.003,4/6,205.8
+Contending,1,"factors (refit, full)",0.803,0.004,4/6,206.8
+Contending,1,linear,0.798,-0.002,3/6,206.2
+Contending,1,ridge,0.8,-0.001,3/6,205.8
+Contending,1,boost,0.785,-0.037,2/6,207.6
+Default,3,fp,0.696,0.0,0/4,259.9
+Default,3,factors (site),0.7,0.03,4/4,261.6
+Default,3,"factors (refit, full)",0.695,0.034,4/4,261.7
+Default,3,linear,0.691,0.047,3/4,255.0
+Default,3,ridge,0.691,0.053,3/4,254.8
+Default,3,boost,0.687,-0.009,2/4,258.1
+Rebuilding,3,fp,0.696,0.0,0/4,259.9
+Rebuilding,3,factors (site),0.701,0.023,4/4,260.4
+Rebuilding,3,"factors (refit, full)",0.699,0.025,4/4,261.2
+Rebuilding,3,linear,0.691,0.047,3/4,255.0
+Rebuilding,3,ridge,0.691,0.053,3/4,254.8
+Rebuilding,3,boost,0.687,-0.009,2/4,258.1

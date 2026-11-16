@@ -1646,6 +1646,29 @@ Holding the late-round ones gains in all four cells at little cost; buying them 
 superflex (-8.7 Contending), and dropping the QB buy lost in superflex (-6.9). The site's rule 6 now holds late-round RBs at 101-200
 for Contending and Default. Rebuilding wasn't tested. The title gains carry the sim's usual flattery of any trade that fills a lineup.
 
+## 38. Would a regression order the ranking better than the factors? (`analysis/rank_model.py`)
+
+Each cohort predicted from the others, FP ranks 1-300; target = what the player returned (1 season for Contending, 3 for Default and
+Rebuilding). `fp` = the average return at his FP rank; `factors` = section 36's method; `linear` / `ridge` = least squares on the fair
+return at his rank times position, age, age squared, rookie, producing and NFL round 4+; `boost` = gradient-boosted trees. Spearman
+of predicted against realised, and the share of the variance fp leaves that the method explains (1QB / superflex):
+
+| | Spearman, 1 season | skill, 1 season | Spearman, 3 seasons | skill, 3 seasons |
+|---|---|---|---|---|
+| fp | 0.800 / 0.801 | 0 | 0.670 / 0.696 | 0 |
+| factors (site), Default's at 3 | 0.807 / 0.803 | 0.009 / 0.003 | 0.682 / 0.700 | 0.022 / 0.030 |
+| linear | 0.799 / 0.798 | 0.012 / -0.002 | 0.670 / 0.691 | 0.045 / 0.047 |
+| ridge | 0.799 / 0.800 | 0.011 / -0.001 | 0.664 / 0.691 | 0.052 / 0.053 |
+| boost | 0.783 / 0.785 | -0.017 / -0.037 | 0.654 / 0.687 | -0.027 / -0.009 |
+
+No. The FP order is hard to beat by any method: the factors lift the rank correlation by about 0.005-0.01 and are the only method
+that orders players better than FP in most held-out cohorts in every cell. The regressions explain more of the size of the return
+over three seasons (5% of what FP leaves, against 2-3%) but order players no better than FP, and in superflex their top 100 returned
+less than FP's (255 against 260). The trees are worse than FP. The regression's signs agree with the rules (producing, rookie and
+late-round up; age down for WRs and QBs), so it is the same information, fitted with more freedom than 4-6 cohorts support. A
+logistic model of beating one's price wasn't run: it would rank by the chance of a gain, not its size, and the factors already do
+that job.
+
 ## Caveats
 
 - **Position-level residuals depend on league format.** The QB results flip sign between FP (1QB) and MFL, whose keeper pool includes superflex leagues. Within-position groupings are more trustworthy.
