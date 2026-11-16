@@ -550,21 +550,26 @@ def gap(r, m):
 
 # In-season trade signals. Each is one flag for one kind of team, with no exemptions by position, age or injury. A rule is here
 # only if it held in the league sim at trade-market prices (career_value/analysis/simple_rules_sim.py: the flag laid on these calls
-# with no signals, trades after weeks 4, 8 and 12, seasons 2021-25): a gain of at least 2.5 standard errors on the team type's own
-# objective at both KTC and FantasyCalc prices, above zero in every cohort but one. Objectives: Contending, title odds this season;
-# Default, title odds over three seasons; Rebuilding, value a year on. Default and Rebuilding rules also had to lose no value at
-# 2.5 standard errors. Gains below are title points, KTC / FantasyCalc.
-#   ros_low   ROS positional rank a quarter worse than the trade market's: sell. Contending, +6.1 / +2.4 (1QB), +6.1 / +3.9 (superflex).
-#   ros_down  ROS rank a quarter worse than the preseason: sell. Contending in superflex, +4.0 / +3.7.
-#   gap       25 or younger and not a rookie, ROS positional rank a quarter better than dynasty: buy. 1QB: Contending +3.2 / +4.0,
-#             Default +6.3 / +11.7 over three seasons.
+# with no signals, trades after weeks 4, 8 and 12, seasons 2021-25): a gain of at least 2 standard errors on the team type's own
+# objective at both KTC and FantasyCalc prices, above zero in every cohort but one. Team types by the May projection: Contending
+# 1st-3rd, Default 4th-9th, Rebuilding 10th-12th. Objectives: Contending, title odds over this season and next (or this season and
+# all three), with no title measure 2 standard errors down; Default, title odds over three seasons; Rebuilding, value a year on.
+# Default and Rebuilding rules also had to lose no value at 2.5 standard errors. Gains are title points, KTC / FantasyCalc.
+#   ros_low   ROS positional rank a quarter worse than the trade market's: sell. Contending, two seasons +9.9 / +3.9 (1QB),
+#             +10.0 / +3.6 (superflex).
+#   ros_down  ROS rank a quarter worse than the preseason: sell. Contending in superflex, two seasons +5.8 / +4.3.
+#   gap       25 or younger and not a rookie, ROS positional rank a quarter better than dynasty: buy. 1QB: Contending this season
+#             +3.2 / +4.0 and three seasons +6.6 / +10.0, Default three seasons +5.8 / +10.9.
+#   rookie    a rookie with that gap: buy. 1QB Default, three seasons +3.3 / +9.2 and value a year on +13 / +19.
 # A rule that held alone also had to help the set it joins (signal_sim.py, each rule left out of the set in turn). In 1QB, ros_down
-# (+3.2 / +2.1 alone) and faller, the sell on a dynasty rank a quarter worse than the preseason (+2.4 / +1.5 alone), each cost
+# (+4.7 / +5.5 alone) and faller, the sell on a dynasty rank a quarter worse than the preseason (+2.3 / +3.3 alone), each cost
 # Contending title odds this season once ros_low and the buy were in place (-1.1 / -1.3 and -0.4 / -1.5), so neither is used there.
+# Left out of the 1QB Default set, the rookie buy cost 2.5 / 3.2 title points over three seasons, so it stays.
 # The Contending sells trade value for this season: ros_low cost 21 to 39 of value a year on (2.3 to 4.4 standard errors).
 # What didn't hold: every rule for Rebuilding (each sell and buy lost value a year on, most at 4 standard errors or more), the
-# sells for Default, the gap buy in superflex (it lost 37 to 73 of value a year on for every team type), the rookie buy, and
-# faller in superflex. signals() still reports faller and rookie for the backtests. Players off the ROS list get no signal: mostly out for the year, and Stash / Sell when healthy cover them.
+# sells for Default, the gap buy in superflex (it lost 37 to 73 of value a year on for every team type), the rookie buy in
+# superflex (value three years on down 2.8 standard errors), and faller in superflex. signals() still reports faller for the backtests.
+# Players off the ROS list get no signal: mostly out for the year, and Stash / Sell when healthy cover them.
 # A quarter is one place near the top of the list (#3 to #4), so a move also has to cover a floor of places.
 SIG_MOVE = 4 / 3
 SIG_FLOOR_ROS, SIG_FLOOR_DYN = 6, 3             # places lost since the preseason, on top of the quarter
@@ -572,7 +577,8 @@ SIG_FLOOR_LOW = 3               # places below the market's positional rank, on 
 SIG_WEEKS = (5, 14)             # Sleeper's current week: at least 4 played, and no later than the sim's last window
 SIG_POOL = 340                  # the sim's tradeable pool
 SIG_HURT = ("IR", "PUP", "Out")
-SIG_RULES = {"ros_low": {"1qb": ("con",), "sf": ("con",)}, "ros_down": {"sf": ("con",)}, "faller": {}, "gap": {"1qb": ("con", "mid")}}
+SIG_RULES = {"ros_low": {"1qb": ("con",), "sf": ("con",)}, "ros_down": {"sf": ("con",)}, "faller": {}, "gap": {"1qb": ("con", "mid")},
+             "rookie": {"1qb": ("mid",)}}
 
 
 def signals(x, f, ctx):
@@ -620,7 +626,7 @@ def apply_signal(act, mode, x, f, s):
     if on("ros_low"):
         sells.append(f"FantasyPros ranks him {x.position}{f0(s['ros_low'][1])} for the rest of the season, but the trade market "
                      f"prices him as {x.position}{f0(s['ros_low'][0])}: he won't score like his price this season.")
-    gap = s["gap"] if on("gap") and not s.get("rookie") else None
+    gap = s["gap"] if "gap" in s and mode in SIG_RULES["rookie" if s.get("rookie") else "gap"].get(f, ()) else None
     gtxt = (f"FantasyPros ranks him {x.position}{f0(gap[1])} for the rest of the season but {x.position}{f0(gap[0])} in "
             "dynasty, and buying young players like this gained in the league sim") if gap else ""
     k = kind(act)

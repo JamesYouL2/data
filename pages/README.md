@@ -140,16 +140,20 @@ no exceptions by position, age or injury.
 
 A rule is on the page only if it held in [simple_rules_sim.py](../career_value/analysis/simple_rules_sim.py). That is the league
 simulation at KTC and FantasyCalc prices, with one team trading after week 4, 8 or 12 over the 2021-25 seasons, and the signal laid
-on the page's calls with no signals. To hold, a rule had to gain at least 2.5 standard errors on its team's own objective at both
-prices, and be above zero in every class but one. The objectives are title odds this season for Contending, title odds over three
-seasons for Default and dynasty value a year on for Rebuilding. Default and Rebuilding rules also had to lose no value at 2.5 standard
-errors.
+on the page's calls with no signals. To hold, a rule had to gain at least 2 standard errors on its team's own objective at both
+prices, and be above zero in every class but one. Team types are by the projection for the season: Contending 1st-3rd, Default
+4th-9th, Rebuilding 10th-12th. The objectives are title odds over this season and next for Contending (or this season and all
+three), title odds over three seasons for Default and dynasty value a year on for Rebuilding. Default and Rebuilding rules also had
+to lose no value at 2.5 standard errors. The bar is 2 standard errors because
+[calls built at each bar](../career_value/analysis/threshold_sim.py) did best in the league simulation at about 2: at 2.5 and 3 they
+gave up a quarter to two thirds of the gain.
 
 | Signal | Call | Who gets it | Gain on the objective (title points, KTC / FantasyCalc) |
 |---|---|---|---|
-| Rest-of-season positional rank a quarter worse than the trade market's | Sell | Contending | +6.1 / +2.4 this season (1QB), +6.1 / +3.9 (superflex) |
-| Rest-of-season rank a quarter worse than the preseason | Sell | Contending, superflex | +4.0 / +3.7 this season |
-| 25 or younger and not a rookie, positional rest-of-season rank a quarter better than dynasty | Buy | Contending and Default, 1QB | +3.2 / +4.0 this season; Default +6.3 / +11.7 over three seasons |
+| Rest-of-season positional rank a quarter worse than the trade market's | Sell | Contending | +9.9 / +3.9 over two seasons (1QB), +10.0 / +3.6 (superflex) |
+| Rest-of-season rank a quarter worse than the preseason | Sell | Contending, superflex | +5.8 / +4.3 over two seasons |
+| 25 or younger and not a rookie, positional rest-of-season rank a quarter better than dynasty | Buy | Contending and Default, 1QB | Contending +3.2 / +4.0 this season, +6.6 / +10.0 over three; Default +5.8 / +10.9 over three |
+| A rookie with that gap | Buy | Default, 1QB | +3.3 / +9.2 over three seasons, and +13 / +19 of value a year on |
 
 A rule that held on its own also had to help the set it joins, with each rule left out of the set in turn. Two sells passed alone
 for 1QB Contending and failed that: the sell on a rest-of-season rank a quarter worse than the preseason, and the one on a dynasty
@@ -169,7 +173,7 @@ What didn't hold, and is no longer on the page:
 - **The sells for Default.** The preseason-fall sell added title odds over three seasons at FantasyCalc prices but not at KTC's, where it
   also lost value a year on. The other two sells cleared the bar at neither price.
 - **The young-player buy in superflex.** It lost 37 to 73 of value a year on for every kind of team and didn't clear the bar on titles.
-- **The rookie buy**, and the dynasty-fall sell in both formats.
+- **The rookie buy** outside 1QB Default, and the dynasty-fall sell in both formats.
 - **The exceptions** the earlier rules carried (1QB QBs, hurt young players, healthy players for 1QB contenders). The test sold and
   bought every flagged player, so the rules that held don't need them.
 

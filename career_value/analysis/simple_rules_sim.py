@@ -12,8 +12,11 @@ rules.signals' flags on that base for every flagged player, hurt or healthy, any
 Every arm runs for every team type on its own teams (Contending 1st-3rd, Default 4th-8th, Rebuilding 9th-12th by projection).
 Reported as the arm less the base: mean, z = mean / standard error with leagues (cohort and draft) as clusters, and cohorts above zero,
 for title odds in season 1 and seasons 1-3 and value (340 - market rank) 1 and 3 years on.
-Test: a rule holds if z >= 2.5 on its team type's own objective in both KTC and FantasyCalc. Objectives: Contending title odds this
-season; Default title odds over seasons 1-3; Rebuilding value 3 years on. `table` reads the four saved runs and prints the verdicts.
+Test (`table`, from the four saved runs): the bar is 2 standard errors (Z) at both prices, above zero in every cohort but one, for team types
+by the May projection (Contending 1st-3rd, Default 4th-9th, Rebuilding 10th-12th). Contending: title odds over seasons 1-2, or in season 1
+and over seasons 1-3, with no title measure at z <= -2. Default: title odds over seasons 1-3, or value 1 year on with no title measure at
+z <= -2. Rebuilding: value 1 year on. Default and Rebuilding lose no value at 2.5 standard errors. The site first used a bar of 2.5 on
+season 1 (Contending), seasons 1-3 (Default) and value (Rebuilding); threshold_sim.py is why it is 2.
 A rule that holds alone goes into the set and is then left out of it in turn (signal_sim.py: noros, nofaller, nobuy); one whose removal
 raises the team's objective is dropped. That removed ros_down and faller for 1QB Contending.
 Caveats: leagues in a cohort share players, so these standard errors are too small; 3-year results rest on 2-3 cohorts.
@@ -37,8 +40,10 @@ SELL = {"s_rosdown": lambda s: "ros_down" in s, "s_faller": lambda s: "faller" i
 BUY = {"b_gap": lambda s: "gap" in s and not s.get("rookie"), "b_rookie": lambda s: "gap" in s and bool(s.get("rookie"))}
 ARMS = ("live", "nosig", *SELL, *BUY)
 GOAL = {"con": "yr1", "mid": "yrs3", "reb": "v3"}
-METS = ["yr1", "yrs3", "v1", "v3"]
-Z = 2.5
+METS = ["yr1", "yrs2", "yrs3", "v1", "v3"]
+Z = float(os.environ.get("Z", 2.0))
+G = 2.5                                             # value lost at this many standard errors rules a Default or Rebuilding rule out
+OWN = {"con": [1, 2, 3], "mid": list(range(4, 10)), "reb": [10, 11, 12]}      # team types by the May projection (section 31)
 
 
 def snapshot_calls(q, last, w, mk, mkpre):
@@ -63,9 +68,9 @@ def snapshot_calls(q, last, w, mk, mkpre):
 def diffs(df):
     """arm less nosig on own-mode teams: rows (arm, mode, metric) -> mean, z, cohorts above zero / cohorts, trades"""
     key = ["t", "rep", "wk", "rank"]
-    own = {m: list(r) for m, r in mps.LENS.values()}
-    z = df[[r in own.get(m, ()) for r, m in zip(df["rank"], df["mode"])]].copy()
+    z = df[[r in OWN.get(m, ()) for r, m in zip(df["rank"], df["mode"])]].copy()
     z["yr1"] = z.p1 * 100
+    z["yrs2"] = np.where(z.t + 2 <= mps.su.LAST, (z.p1 + z.p2) * 100, np.nan)
     z["yrs3"] = np.where(z.t + 3 <= mps.su.LAST, (z.p1 + z.p2 + z.p3) * 100, np.nan)
     z["v1"], z["v3"], z["n"] = z.mval1, z.mval3, z.sell + z.later + z.buy
     z = z.set_index(key + ["mode", "arm"])[METS + ["n"]]
@@ -98,41 +103,49 @@ def summarize(df):
 
 
 def table():
-    """verdicts from the four saved runs. plain: z >= Z on the objective at both prices. final: Rebuilding judged on value 1 year on
-    (more cohorts than 3 years on); the gain above zero in all cohorts but one at each price; and for Default and Rebuilding no value
-    measure at z <= -Z. Contending is let off the value guard: it trades value for this season. A Contending rule that costs title odds
-    over seasons 1-3 at z <= -Z is marked, kept or not."""
-    pd.set_option("display.width", 280, "display.max_rows", 500)
-    goal2 = {**GOAL, "reb": "v1"}
+    """verdicts from the four saved runs, at a bar of Z (default 2) for every team type, the gain above zero in every cohort but one at
+    both prices. Contending: title odds over seasons 1-2, and none of seasons 1, 1-2, 1-3 at z <= -Z. Default: title odds over seasons 1-3
+    with no value measure at z <= -Z, or value 1 year on with no title measure at z <= -Z. Rebuilding: value 1 year on, with value 3
+    years on not at z <= -Z."""
+    pd.set_option("display.width", 300, "display.max_rows", 500)
     for sf in (False, True):
         parts = {}
         for src in ("ktc", "fantasycalc"):
             f = HERE / "outputs" / ("sf" if sf else "") / f"simple_rules_sim_{src}.csv.gz"
             parts[src] = diffs(pd.read_csv(f)).set_index(["arm", "mode", "met"])
 
-        def get(src, arm, m, c):
-            return parts[src].loc[(arm, m, c)] if (arm, m, c) in parts[src].index else None
+        def pair(arm, m, c):
+            return [parts[s_].loc[(arm, m, c)] if (arm, m, c) in parts[s_].index else None for s_ in ("ktc", "fantasycalc")]
 
-        def show(r):
-            return "" if r is None else f"{r['mean']:+.1f} z{r.z:+.1f} {int(r.up)}/{int(r.cohorts)}"
+        def show(rs):
+            return " | ".join("" if r is None else f"{r['mean']:+.1f} z{r.z:+.1f} {int(r.up)}/{int(r.cohorts)}" for r in rs)
+
+        def clears(rs):
+            return all(r is not None and r.z >= Z and r.up >= r.cohorts - 1 for r in rs)
+
+        def harmed(arm, m, cs_):
+            return [f"{c} {r.z:+.1f}" for c in cs_ for r in pair(arm, m, c) if r is not None and r.z <= -(G if c in ("v1", "v3") else Z)]
         rows = []
         for arm in [a for a in ARMS if a not in ("nosig", "live")]:
             for m in MODES:
-                pair = lambda c: [get(s_, arm, m, c) for s_ in ("ktc", "fantasycalc")]  # noqa: E731
-                a, b = pair(GOAL[m])
-                plain = a is not None and b is not None and min(a.z, b.z) >= Z
-                a2, b2 = pair(goal2[m])
-                ok = a2 is not None and b2 is not None and min(a2.z, b2.z) >= Z and all(r.up >= r.cohorts - 1 for r in (a2, b2))
-                harm = [f"{c} {r.z:+.1f}" for c in ("v1", "v3") for r in pair(c) if r is not None and r.z <= -Z]
-                final = ok and not (harm and m != "con")
-                t3 = [r for r in pair("yrs3") if r is not None]
-                oof = m == "con" and any(r.z <= -Z for r in t3)
-                rows.append({"rule": arm, "team": m, "objective": goal2[m], "KTC": show(a2), "FantasyCalc": show(b2),
-                             "titles 3 seasons (KTC, FC)": " | ".join(show(r) for r in t3),
-                             "value 1 yr (KTC, FC)": " | ".join(show(r) for r in pair("v1")), "trades": round(a2.trades, 1) if a2 is not None else "",
-                             "plain": "yes" if plain else "", "final": "KEEP" if final else "",
-                             "note": ("COSTS TITLES OVER 3 SEASONS " if oof else "") + ("value: " + ", ".join(harm) if harm else "")})
-        print(f"\n== {'Superflex' if sf else '1QB'}: one signal for one team type, against the calls with no signals. mean, z, cohorts above zero / cohorts")
+                tit, val = ("yr1", "yrs2", "yrs3"), ("v1", "v3")
+                if m == "con":
+                    obj, harm = "yrs2", harmed(arm, m, tit)
+                    keep = (clears(pair(arm, m, "yrs2")) or (clears(pair(arm, m, "yr1")) and clears(pair(arm, m, "yrs3")))) and not harm
+                elif m == "mid":
+                    obj = "yrs3"
+                    a_ok = clears(pair(arm, m, "yrs3")) and not harmed(arm, m, val)
+                    b_ok = clears(pair(arm, m, "v1")) and not harmed(arm, m, tit)
+                    keep, harm = a_ok or b_ok, harmed(arm, m, tit + val)
+                    obj = "yrs3" if a_ok or not b_ok else "v1"
+                else:
+                    obj, harm = "v1", harmed(arm, m, ("v3",))
+                    keep = clears(pair(arm, m, "v1")) and not harm
+                rows.append({"rule": arm, "team": m, "objective": obj, "KTC | FantasyCalc": show(pair(arm, m, obj)),
+                             "titles s1": show(pair(arm, m, "yr1")), "titles s1-3": show(pair(arm, m, "yrs3")), "value 1 yr": show(pair(arm, m, "v1")),
+                             "trades": round(pair(arm, m, obj)[0].trades, 1), "keep": "KEEP" if keep else "", "at -Z": ", ".join(harm)})
+        print(f"\n== {'Superflex' if sf else '1QB'}: one signal for one team type (1-3 / 4-9 / 10-12), against the calls with no signals, bar {Z}. "
+              "mean, z, cohorts above zero / cohorts, KTC | FantasyCalc")
         print(pd.DataFrame(rows).to_string(index=False))
 
 

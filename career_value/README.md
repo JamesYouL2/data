@@ -60,6 +60,7 @@ Follow-up analyses for sections 3b and 7–12 are in `analysis/`. Run them from 
 | `threshold_sim.py` | 30 (also `LEAGUE=sf`; `table` reprints; writes `outputs/threshold_sim.csv.gz`) |
 | `sell_rules_sim.py` | 31, 33 (also `LEAGUE=sf`; `SIDE=buy` for buys; `table` reprints; writes `outputs/sell_rules_sim.csv.gz` or `buy_rules_sim.csv.gz`) |
 | `sell_timing_sim.py` | 32 (also `LEAGUE=sf`; `table` reprints; writes `outputs/sell_timing_sim.csv.gz`) |
+| `ruleset_sim.py` | 34 (also `LEAGUE=sf`; `table` reprints; writes `outputs/ruleset_sim.csv.gz`) |
 
 `common.py` holds shared loaders. Sections 13 and 16 also run for superflex if `outputs/sf/` exists.
 
@@ -1509,6 +1510,39 @@ An experiment, not on the site. Section 31's design for buys: every player of on
 - **The Rebuilding buy of RBs 30+ in the top 100 should not be used:** it is one cohort, and it runs against everything else here about rebuilders and old RBs.
 
 Caveats as section 31; RBs 30+ in the top 100 exist in two cohorts.
+
+## 34. The rules at 2 standard errors: the in-season signals, and a rule set for the calls (`simple_rules_sim.py table`, `analysis/ruleset_sim.py`)
+
+**The in-season signals, re-read at 2** (this is what the site uses now). Section 28's runs with section 31's team types and section 30's objectives: Contending on title odds over seasons 1–2 (or season 1 and seasons 1–3), Default over seasons 1–3, Rebuilding on value a year on; 2 standard errors at both prices, every cohort but one, and for Default and Rebuilding no value lost at 2.5. KTC / FantasyCalc.
+
+| Rule | Who | Gain |
+|---|---|---|
+| Sell: rest-of-season rank a quarter worse than the market's | Contending, both formats | 1QB +9.9 / +3.9 over two seasons; superflex +10.0 / +3.6 |
+| Sell: rest-of-season rank a quarter worse than the preseason | Contending, superflex | +5.8 / +4.3 over two seasons |
+| Buy: 25 or under, not a rookie, rest-of-season rank a quarter better than dynasty | Contending and Default, 1QB | Contending +3.2 / +4.0 in season 1, +6.6 / +10.0 over three; Default +5.8 / +10.9 over three |
+| Buy: a rookie with that gap | Default, 1QB | +3.3 / +9.2 over three seasons, value +13 / +19 a year on |
+
+- **One rule is new at 2: the rookie buy for 1QB Default.** Left out of the set it cost 2.5 / 3.2 title points over three seasons, so it stays. On today's data it changes one call.
+- The two preseason-fall sells again clear alone for 1QB Contending (+4.7 / +5.5 and +2.3 / +3.3 over two seasons) and again fail when left out of the set (section 28), so they stay off. In superflex the dynasty-fall sell (z 2.5 / 1.6) and the rookie buy (value three years on down 2.8 standard errors) miss.
+- Still nothing for Rebuilding, and nothing for Default in superflex.
+
+**A rule set for the calls themselves** (`ruleset_sim.py`): sections 31–33's rules acting together, each team following its own type's list, against the site's calls in the same leagues. "core" is the class sells and buys; "timing" adds section 32's dates for producing players. 1QB / superflex, the new set less the site's calls:
+
+| Team | Set | Title odds, season 1 | Seasons 1–2 | Seasons 1–3 | Value 1 year on | Value 3 years on | Trades a team (site's: 11 to 13) |
+|---|---|---|---|---|---|---|---|
+| Contending | core | −0.9 / +0.6 | −0.5 / +2.7 | −10.0 / 0.0 | −236 / −224 | −303 / −135 | 2.8 / 1.8 |
+| Contending | timing | −0.3 / +1.3 | +0.2 / +3.5 | −6.1 / +2.5 | −181 / −157 | −148 / −11 | 4.4 / 3.5 |
+| Default | core | +0.3 / +4.0 | +1.4 / +7.2 | −0.7 / +8.3 | −143 / −86 | −147 / −115 | 7.7 / 8.8 |
+| Default | timing | +0.2 / +3.6 | +2.8 / +6.5 | +3.3 / +8.0 | −70 / −49 | −42 / −40 | 8.7 / 9.5 |
+| Rebuilding | core | +0.3 / −0.3 | −1.1 / −2.7 | −5.5 / −8.5 | −121 / −30 | −275 / −88 | 9.8 / 10.9 |
+| Rebuilding | timing | +0.4 / −0.4 | −0.7 / −2.7 | −4.0 / −8.4 | −97 / −32 | −236 / −82 | 10.5 / 11.3 |
+
+- **The 2-standard-error set does not replace the site's calls.** It is worse for 1QB Contending (6 to 10 title points over three seasons, 150 to 300 of value) and for Rebuilding in both formats (4 to 9 title points over three seasons and 30 to 275 of value). The site's calls make three to five times as many trades for a contender, and the extra ones pay.
+- **It is better in one place: superflex Default**, by +3.6 to +4.0 title points this season and +8.0 to +8.3 over three (z 5 to 10, 4 to 6 cohorts of 5 to 7), for 40 to 115 of value. Superflex Contending gains 2 to 3.5 title points over two seasons for 157 to 224 of value a year on; 1QB Default is level on titles and down on value.
+- **Adding the sale dates helps every team type**: "timing" is ahead of "core" on titles over three seasons and on value in all six cells.
+- So the bar of 2 is right for adding a rule to a set (section 30) and for the in-season signals; it is not a reason to cut the calls down to the rules that clear it one at a time. The finer calls carry real gains that single-rule tests against a control can't see.
+
+Caveats: the rule lists were found on these cohorts, which favours them; FP prices; in this sim more trades gain more whatever is traded, though random swaps (6 a team) gained nothing here.
 
 ## Caveats
 
