@@ -67,7 +67,7 @@ calls, and each one shows as a note under the call:
   trades, and the rookie pick closest in value. When the market is 12+ spots (or 25%) away from FantasyPros, a note says
   whether that makes it a better time to buy or to sell.
 - **Injuries** come from Sleeper. A player who is out and has dropped off the FantasyPros rest-of-season rankings is
-  treated as out for the season. Every mode gets **Stash** instead of Hold or Buy, and **Sell when healthy** instead of Sell. There is no buy-low call on injured
+  treated as out for the season. Rookies and RBs 25 or under get **Stash** instead of Hold or Buy; everyone else gets **Sell in the offseason**: the trade market held an injured player's price until May, and he then returned about three quarters of it, so selling in the offseason was worth about a third more than keeping (`injured_buy.py`, `own()`). There is no buy-low call on injured
   players: in the backtest (`career_value/analysis/injured_buy.py`) players out for the season returned 0.63 / 0.53 of their price
   over the next season, and the ones the market had marked down, which the site used to tell rebuilders to buy, 0.22 / 0.45. Other injured players get a
   note with their rest-of-season rank.
@@ -106,7 +106,7 @@ rank a quarter worse than the preseason. Once the market sell and the buy were i
 
 A fall since the preseason also has to cost at least 6 rest-of-season places, and a rank below the market's at
 least 3 positional places: near the top of the list a quarter can be a single place. Players off the rest-of-season list get no
-signal: the Stash and Sell when healthy calls cover them.
+signal: the Stash and Sell in the offseason calls cover them.
 
 The Contending sells trade dynasty value for this season. The sell on a rank below the market's cost 21 to 39 of value a year on, and
 most of those players are rookies or 25 and under whose price held up the next May. The note on the page says so.

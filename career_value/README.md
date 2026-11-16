@@ -1705,6 +1705,13 @@ his FP rank, or at the market's rank that day (KTC, 2020 on). 1QB / superflex:
   (n 7-8, 0/4 cohorts; Breece Hall 2022 and Joe Burrow 2020 up, Barkley 2020, Javonte Williams 2022, Sutton 2020, Dobbins 2021,
   Bateman 2022, Lance 2022 down). The market almost never marks these players down, so the old call would not have fired on them.
   The site's Buy low (injured) call is dropped: every team type stashes.
+- **One you own: sell in the offseason** (`own()`, 49 / 50 player-seasons with a market price, 2021-24). The market holds an injured
+  player's price to May (1.03 / 1.02 of it; a healthy player's slips to 0.87 / 0.86 as rookies enter), then he returns 0.76 / 0.79
+  of it. Value per player against keeping everyone: sell everyone now +31% / +27%, sell everyone in the offseason +32% / +34% (4/4
+  seasons), stash RBs 25- and sell the rest +32% / +36%, stash everyone 25- and sell 26+ only +6% / +7% (young WRs keep 35 / 37 a
+  player against 59-79 sold; young QBs 27 / 66 against 111 / 195). RBs 25- are level kept or sold (135 / 183 against 140 / 181); RBs
+  26+ lose a third of their price by May and are worth almost nothing either way. Players hurt around week 12 lose about a fifth of
+  their price by May. The site: Stash for rookies and RBs 25-, Sell in the offseason for everyone else out for the season.
 - Limits: 45-82 player-seasons, 2-6 cohorts; the superflex 2019 preseason list is thin, so its position ranks that year are rough.
 
 ## Caveats

@@ -98,6 +98,42 @@ def main():
         print("\ntop 10 preseason, out for the season, 3-season hold / FP price:")
         print(g.sort_values("ratio")[["name", "season", "position", "age", "rank", "mrank", "ratio"]].round(2).to_string(index=False))
     o.to_csv(out_dir(SF) / "injured_buy.csv", index=False)
+    own(x)
+
+
+def own(x):
+    """What to do with one you own: keep him through next season, sell now, or sell in the offseason (at next May's market rank).
+    Each is worth what the average player returns over a season at the rank it leaves you holding: the injured player's own return,
+    the in-season average at the market's rank today, the May average (call_strength.horizons) at his market rank next May."""
+    mkt = mp.market_ranks(pd.read_parquet(HERE / "data" / "panel.parquet"))
+    x = x.copy()
+    x["may"] = [mkt[f"{y + 1}-05-15"]["rank"].get(g, 500.0) if f"{y + 1}-05-15" in mkt else np.nan for y, g in zip(x.season, x.gsis_id)]
+    H1 = cs.horizons(hs=(1,))[1]
+    fair_may = cs.iso(H1.mkt_rank, H1.hold)
+    x["sell_may"] = np.where(x.may <= mp.POOL, fair_may.predict(np.log(x.may.fillna(mp.POOL).clip(1, mp.POOL))), 0.0)
+    o = first(x, x.out & (x["rank"] <= 200) & x.mrank.notna() & x.may.notna() & x.hold1.notna() & x.m_hold1.notna())
+    young, rb = o.age < 26, o.position == "RB"
+    keep, now, may = o.hold1, o.m_hold1, o.sell_may
+    pol = {"keep everyone": keep, "sell everyone now": now, "sell everyone in the offseason": may,
+           "stash 25-, sell 26+ in the offseason": np.where(young, keep, may),
+           "stash RBs 25-, sell RBs 26+ now, sell the rest in the offseason": np.where(rb & young, keep, np.where(rb, now, may)),
+           "stash RBs 25- and QBs 25-, sell RBs 26+ now, the rest in the offseason": np.where((rb | (o.position == "QB")) & young, keep, np.where(rb, now, may)),
+           "hindsight by group (position x 25- / 26+): the best of the three": None}
+    grp = o.position + np.where(young, " 25-", " 26+")
+    best = pd.Series(0.0, index=o.index)
+    rows = []
+    for k, g in o.groupby(grp):
+        tot = {"keep": keep[g.index].sum(), "now": now[g.index].sum(), "may": may[g.index].sum()}
+        b = max(tot, key=tot.get)
+        best[g.index] = {"keep": keep, "now": now, "may": may}[b][g.index]
+        rows.append({"group": k, "n": len(g), **{kk: round(v / len(g), 1) for kk, v in tot.items()}, "best": b})
+    pol["hindsight by group (position x 25- / 26+): the best of the three"] = best
+    base = keep.sum()
+    print(f"\n== {'Superflex' if SF else '1QB'}: one you own, {len(o)} player-seasons {sorted(o.season.unique())}. Value per player, and against keeping everyone")
+    print(pd.DataFrame([{"policy": k, "per player": round(np.sum(v) / len(o), 1), "vs keep": f"{np.sum(v) / base - 1:+.0%}",
+                         "seasons ahead of keep": f"{sum(np.sum(np.asarray(v)[(o.season == y).to_numpy()]) > keep[o.season == y].sum() for y in sorted(o.season.unique()))}/{o.season.nunique()}"}
+                        for k, v in pol.items()]).to_string(index=False))
+    print(pd.DataFrame(rows).to_string(index=False))
 
 
 if __name__ == "__main__":
