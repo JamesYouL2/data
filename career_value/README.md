@@ -1780,6 +1780,32 @@ by season, so seasons 4-5 without drafts can't be read.
   rules 1, 2 and 4. Limits: no pick trading or roster cuts in the sim, every team drafts the board instead of for need, and the
   1-5 window is three cohorts.
 
+## 42. Three simplifications of the seven rules (`analysis/ruleset_sim.py`, `SIMPLIFY=1`)
+
+The site's calls against the same calls with one simplification, in the same leagues (100 leagues a cohort, 2018-24, no rookie
+drafts). Each team type on its own objective: Contending title odds in season 1, Default over seasons 1-3, Rebuilding value. The
+reps of a cohort share its calls, so the z is overstated here: read the size and the cohorts above zero. 1QB / superflex, change
+against the live calls:
+
+| Simplification | Team | season 1 | seasons 1-3 | value 1 yr on | value 3 yrs on |
+|---|---|---|---|---|---|
+| No Contending setting (a contender follows Default) | Contending | -2.1 (2/7) / -2.2 (3/7) | +10.6 / +5.2 | +165 / +99 | +223 / +190 |
+| No rookie TE buy for Rebuilding | Rebuilding | +0.1 / -0.2 | +5.2 (4/5) / +5.5 (5/5) | -12 (3/6) / -49 (2/6) | +59 (3/4) / +8 (2/4) |
+| Rule 2: every producing veteran sold after the season (Rebuilding now) | Contending | -0.4 / -0.4 | -2.4 / -1.3 | -47 / -48 | -66 / -72 |
+| | Default | -0.2 / 0.0 | -2.5 (0/5) / -2.5 (0/5) | -43 / -39 | -38 / -29 |
+| Rule 2: Default sells them all now (Contending after the season) | Default | -1.0 (2/7) / -0.8 (3/7) | -0.1 / +2.3 | +11 / +12 | -27 / +21 |
+| All three (rule 2 after the season) | Contending | -1.9 / -1.5 | +8.2 / +3.8 | +73 / +20 | +109 / +65 |
+| | Default | -0.2 / 0.0 | -2.5 / -2.5 | -43 / -39 | -38 / -29 |
+
+- **The Contending setting does its job:** about 2 title points this season, both formats, paid for with 5-11 title points over
+  three seasons and a lot of value. It changes the calls on about 8 players a league. Kept; the site already steers most teams to
+  Default.
+- **Rule 2's tiers earn their place.** One date for every producing veteran costs Default about 2.5 title points over three seasons
+  (after the season) or a title point this season (now), and costs a contender value either way.
+- **The rookie TE buy is the one candidate.** Dropping it gains rebuilding teams about 5 title points over seasons 1-3 in every
+  cohort but one, and is mixed on value: a loss a year on (-12 / -49), a gain three years on (+59 / +8). Rebuilding is judged on value
+  a year on, so on the site's own test it stays (superflex fails).
+
 ## Caveats
 
 - **Position-level residuals depend on league format.** The QB results flip sign between FP (1QB) and MFL, whose keeper pool includes superflex leagues. Within-position groupings are more trustworthy.

@@ -254,6 +254,47 @@ def old_calls(g, t, pr, look):
     return {m: np.array(v, dtype=object) for m, v in out.items()}
 
 
+def simplified(g, t, pr, look):
+    """SIMPLIFY=1: the site's calls with one simplification each, arm -> mode -> calls.
+      s:no Contending          a contender follows the Default calls
+      s:no rookie TE buy       Rebuilding holds rookie TEs (rule 4 keeps the rookie WR and old TE buys)
+      s:rule 2 after season    every producing veteran rule 2 names (RB 26+, WR 28+, TE 29+): Rebuilding sells now, everyone else
+                               after the season (no sell-now tier, no contender hold)
+      s:rule 2 now             the same players: Contending sells after the season, Default and Rebuilding now
+      s:all three              no Contending, no rookie TE buy, rule 2 after the season
+    Default is put back between Contending and Rebuilding after each change, as on the site."""
+    x = pd.DataFrame({
+        "position": g.position, "age": g.age, f"r_{F}": g.mkt_rank, f"pr_{F}": g.pos_rank_fp,
+        "rd": g.draft_round_f.fillna(8), "dy": np.where(g.row_type == "rookie", t + 1, 0),
+        "prk": g.gsis_id.map(pr[4].get(t, {})),
+    })
+    x["prod_rank"] = pd.concat([x.prk, g.gsis_id.map(pr[6].get(t - 1, {}))], axis=1).mean(axis=1)
+    ctx = {"ROOKIE": t + 1, "LOOK": look}
+    calls = {m: [] for m in NAME}
+    tag2 = {m: [] for m in NAME}
+    for row in x.itertuples(index=False):
+        _, reb, con, mid = mm.R.classify(row, F, ctx)            # the live rules (R here is the old calls' module)
+        for m, (a, why) in (("rebuild", reb), ("contend", con), ("middle", mid)):
+            calls[m].append(a)
+            tag2[m].append(why.startswith("Rule 2"))
+    live = simplified.live = {m: np.array(v, dtype=object) for m, v in calls.items()}
+    tag2 = {m: np.array(v) for m, v in tag2.items()}
+    rte = ((g.position == "TE") & (g.row_type == "rookie")).to_numpy() & np.array([R.kind(a) == "buy" for a in live["rebuild"]])
+
+    def build(no_con=False, no_te=False, r2=None):
+        c, m_, r = live["contend"].copy(), live["middle"].copy(), live["rebuild"].copy()
+        if no_te:
+            r[rte] = "Hold"
+        if r2:
+            new = {"after": ("Use, then sell", "Use, then sell", "Sell"), "now": ("Use, then sell", "Sell", "Sell")}[r2]
+            for arr, k, call in ((c, "contend", new[0]), (m_, "middle", new[1]), (r, "rebuild", new[2])):
+                arr[tag2[k]] = R.USE if call == "Use, then sell" else call
+        m_ = between(c, m_, r)
+        return {"contend": m_.copy() if no_con else c, "middle": m_, "rebuild": r}
+    return {"s:no Contending": build(no_con=True), "s:no rookie TE buy": build(no_te=True), "s:rule 2 after season": build(r2="after"),
+            "s:rule 2 now": build(r2="now"), "s:all three": build(True, True, "after")}
+
+
 GAP = os.environ.get("GAP")          # a team type ("contend"): add the old calls back to the seven rules one bucket at a time
 BUCKETS = {}
 
@@ -294,7 +335,13 @@ if os.environ.get("LOCO") == "0":
     LOCO = {}
 
 
+SIMP = os.environ.get("SIMPLIFY") not in (None, "", "0")
+
+
 def main():
+    if SIMP:
+        LOCO.clear()
+        ARMS[:] = ["live", "s:no Contending", "s:no rookie TE buy", "s:rule 2 after season", "s:rule 2 now", "s:all three"]
     ARMS.extend(x for n in LOCO for x in (n, n + "+t"))
     if os.environ.get("REB"):
         ARMS.extend("r:" + n for n in REB_ADDS)
@@ -396,6 +443,10 @@ def main():
             act[name] = {m: np.array([tab[m].get(c, "Hold") for c in cls], dtype=object) for m in NAME}
             act[name + "+t"] = {m: np.array([timing(m, p, a, pd_, b) for p, a, pd_, b in zip(g.position, g.age, prod, act[name][m])], dtype=object)
                                 for m in NAME}
+        if SIMP:                                              # only the site's calls and the simplified sets
+            act = {"live": act["live"], **simplified(g, t, pr, look)}
+            sl = simplified.live                              # its own read of the live calls has to match middle_mode's
+            assert all((sl[m] == live[m]).all() for m in NAME)
         for arm in ARMS:
             counts.append({"t": t, "arm": arm, **{f"{m[:3]} {k[:4]}": int(sum(R.kind(x) == k for x in act[arm][m])) for m in NAME for k in ("buy", "sell", "use")}})
         yrs = [y for y in range(t + 1, t + 1 + mm.H) if y <= su.LAST]
@@ -503,6 +554,6 @@ def summarize(df):
 
 if __name__ == "__main__":
     if sys.argv[1:] == ["table"]:
-        summarize(pd.read_csv(out_dir(SF) / "ruleset_sim.csv.gz"))
+        summarize(pd.read_csv(out_dir(SF) / f"ruleset_sim{os.environ.get('OUT', '')}.csv.gz"))
     else:
         main()
