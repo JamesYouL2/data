@@ -8,14 +8,14 @@ in 1QB and superflex (rules in rules.py).
   python -I build/build_data.py RAW_DIR OUT_FILE
 
 RAW_DIR holds the downloaded inputs (build/fetch.sh):
-  values-players.csv                  DynastyProcess FP dynasty ECR, 1QB and superflex
+  values-players.csv                  DynastyProcess player list (ages, FP ids); its FP dynasty ECR only for players off FP's pages
   db_playerids.csv                    DynastyProcess id map (FantasyPros / gsis -> Sleeper), names, draft info
   players.parquet                     nflverse bios: birth dates, NFL draft round
   stats_player_reg_<season>.parquet   nflverse regular-season stats, current and last season
   fc_1qb.json, fc_sf.json             FantasyCalc dynasty trade-market values (with rest-of-season redraft values)
   sleeper_players.json                Sleeper player database: injury status, current team
   sleeper_state.json                  Sleeper's current week
-  db_fpecr_latest.csv                 DynastyProcess FP rankings scrape: rest-of-season (PPR) ranks in season
+  db_fpecr_latest.csv                 DynastyProcess FP rankings scrape: dynasty ranks (1QB, superflex); rest-of-season (PPR) ranks in season
   db_fpecr.parquet                    DynastyProcess FP rankings history: this season's preseason ranks (rules.signals)
   fp_latest_weekly.csv                DynastyProcess FP weekly ranks: opponent, projected PPR points
 The market, injury, ROS and weekly files are optional: the build runs without them.
@@ -35,6 +35,16 @@ RAW, OUT = Path(sys.argv[1]), Path(sys.argv[2])
 POS = ["QB", "RB", "WR", "TE"]
 
 vals = pd.read_csv(RAW / "values-players.csv")
+# The dynasty ranks are FantasyPros' own pages (dynasty-overall, dynasty-op for superflex) from the rankings scrape, which is what the
+# backtests ran on. The values file's ecr columns move more slowly than the pages (2026-11-06: Tua Tagovailoa 120 against the superflex
+# page's 172; 157 of 505 players differ) and only place players the pages don't list: they keep its order, below everyone on a page.
+if (RAW / "db_fpecr_latest.csv").exists():
+    _e = pd.read_csv(RAW / "db_fpecr_latest.csv", usecols=["page_type", "id", "ecr"])
+    for _pg, _col in (("dynasty-overall", "ecr_1qb"), ("dynasty-op", "ecr_2qb")):
+        _x = _e[_e.page_type == _pg].dropna(subset=["ecr"]).drop_duplicates("id").set_index("id").ecr
+        if len(_x) > 200:
+            _on = vals.fp_id.map(_x)
+            vals[_col] = _on.where(_on.notna() | vals[_col].isna(), _x.max() + vals[_col].rank())
 SCRAPE = pd.Timestamp(vals.scrape_date.max())
 TODAY = pd.Timestamp.today().normalize()
 CUR = TODAY.year if TODAY.month >= 9 else TODAY.year - 1            # season in progress, or the one just finished

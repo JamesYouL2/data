@@ -155,11 +155,11 @@ the default. `master` holds nothing of ours: [`sync-upstream.yml`](../.github/wo
 
 | Input | Source | Updated |
 |---|---|---|
-| `values-players.csv` (FantasyPros dynasty rankings) | DynastyProcess | weekly |
+| `values-players.csv` (player list; dynasty ranks only for players off FantasyPros' pages) | DynastyProcess | weekly |
 | `db_playerids.csv` (Sleeper / FantasyPros / NFL id map) | DynastyProcess | weekly |
 | `players.parquet` (birth dates, draft round) | nflverse | daily |
 | `stats_player_reg_<season>.parquet` (this season and last) | nflverse | daily in season |
-| `db_fpecr_latest.csv` (FantasyPros rest-of-season ranks), `fp_latest_weekly.csv` | DynastyProcess | daily |
+| `db_fpecr_latest.csv` (FantasyPros dynasty ranks, 1QB and superflex, and rest-of-season ranks), `fp_latest_weekly.csv` | DynastyProcess | daily |
 | `db_fpecr.parquet` (FantasyPros rank history, about 40 MB: preseason ranks for the in-season signals) | DynastyProcess | weekly |
 | `fc_1qb.json`, `fc_sf.json` (trade market and rest-of-season values) | FantasyCalc API | live |
 | `sleeper_players.json` (injuries, teams), `sleeper_state.json` | Sleeper API | live |
