@@ -125,11 +125,53 @@ def calls(g, t, pr, look):
     return {m: np.array(v, dtype=object) for m, v in out.items()}
 
 
+# Rookie drafts between seasons (off unless a sim sets ROOK = rookie_classes(...) for its cohort). Before season k (k >= 1) the
+# league drafts that year's rookie class: ROOK_ROUNDS rounds, worst team first in every round, by last season's lineup points with
+# the noise a 14-week season puts on a team's total (weekly sd wn.SD, so wn.SD / sqrt(14) of the total); every pick is the best
+# rookie left on the FP dynasty list of that May, with startup.py's log-normal noise on rank (one noisy board a draft). The
+# randomness comes from the season's seed, so the arms of one league differ only through their rosters. The rookies stay with
+# the team that drafts them and score what they really scored.
+ROOK = None
+ROOK_ROUNDS = int(os.environ.get("ROOK_ROUNDS", 4))
+
+
+def rookie_classes(d, pts, t):
+    """k -> None, or the rookie class drafted before season k of cohort t: pos, adp (FP rank that May), P (players x H seasons)"""
+    out = [None] * H
+    for k in range(1, H):
+        c = d[(d.t == t + k) & (d.row_type == "rookie")]
+        if c.empty or t + 1 + k > su.LAST:
+            continue
+        P = np.zeros((len(c), H))
+        for j in range(k, H):
+            if t + 1 + j <= su.LAST:
+                P[:, j] = c.gsis_id.map(pts.get(t + 1 + j, {})).fillna(0).to_numpy()
+        out[k] = {"pos": c.position.to_numpy(), "adp": c.mkt_rank.to_numpy(float), "P": P}
+    return out
+
+
 def season_titles(T, P, pos, seeds):
     """P(title) of every team per season; T is players x seasons (team ids); common random numbers via seeds"""
-    out = []
+    out, drafted, prev = [], [], None
     for k in range(P.shape[1]):
-        L = np.array([su.lineup(P[T[:, k] == i, k], pos[T[:, k] == i]) for i in range(su.TEAMS)])
+        c = ROOK[k] if ROOK else None
+        if c is not None and prev is not None:
+            rg = np.random.default_rng(int(seeds[k]) + 7)
+            order = np.argsort(prev * (1 + wn.SD / np.sqrt(14) * rg.standard_normal(su.TEAMS)))     # worst team first
+            board = np.argsort(c["adp"] * np.exp(su.NOISE * rg.standard_normal(len(c["adp"]))))
+            n = min(len(board), ROOK_ROUNDS * su.TEAMS)
+            tm = np.full(len(board), -1)
+            tm[board[:n]] = np.tile(order, ROOK_ROUNDS)[:n]
+            drafted.append((c["pos"], c["P"], tm))
+        L = []
+        for i in range(su.TEAMS):
+            m = T[:, k] == i
+            pp, qq = [P[m, k]], [pos[m]]
+            for rpos, rP, tm in drafted:
+                pp.append(rP[tm == i, k])
+                qq.append(rpos[tm == i])
+            L.append(su.lineup(np.concatenate(pp), np.concatenate(qq)))
+        prev = L = np.array(L)
         out.append(wn.titles(L, np.random.default_rng(seeds[k]))[0])
     return np.array(out)                                     # seasons x teams
 

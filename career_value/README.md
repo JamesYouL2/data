@@ -1749,8 +1749,36 @@ VORP, seasons 2-4 the other 70%. 1QB / superflex:
   0.94, sell 1.29 / 1.32 / 1.35, use-then-sell 1.02 / 1.18 / 1.42 (superflex 1.11 / 1.22 / 1.52). No call changes side; the only one
   that moves much is use-then-sell, fair over three seasons and a clear pass over five. By group the same: WRs 28-29 1.12 / 1.24 /
   1.52, RBs 26-27 1.22 / 1.29 / 1.39, rookie WRs 0.76 / 0.66 / 0.55, QBs 25- 0.69 / 0.65 / 0.54; WRs 26-27 stay fair (0.92 / 1.02 /
-  1.00). This is VORP by window; the league sim keeps title odds for three seasons only.
+  1.00). This is VORP by window; section 41 takes the league sim's title odds to five seasons.
 - Four cohorts, groups chosen after seeing the rules: read the direction, halve the size.
+
+## 41. Title odds over seasons 1-4 and 1-5, with rookie drafts (`analysis/sell_rules_sim.py windows`, `ROOKIES=1`)
+
+The sell and buy rule sims (one rule less its random control) now keep title odds for all five seasons: `yrs4` uses cohorts 2018-21,
+`yrs5` 2018-20. A league with no new players ages out, so `ROOKIES=1` adds a rookie draft before seasons 2-5 (`middle_mode.ROOK`):
+each later cohort's real rookie class, `ROOK_ROUNDS=4` rounds, worst team first by last season's lineup with standings noise, each
+team taking the best left on FP's rookie ADP with the sim's usual price noise; the draft luck is shared by every arm of a league.
+Files get a `_rook` suffix. A one-league check: team title odds with and without drafts correlate 1.00 / 0.90 / 0.87 / 0.54 / 0.09
+by season, so seasons 4-5 without drafts can't be read.
+
+- **No rule changes from gain to loss** between the draft and no-draft runs in any window or cell (189 / 187 sells, 96 buys a
+  format). Drafts mostly shrink the long-window effects: Contending selling a top-100 WR 25- now, 1QB, -12.2 → -5.6 title points
+  over seasons 1-5; Contending buying a top-100 QB 25-, superflex, -15.2 → -6.0.
+- **Seasons 1-3 move a little.** 10-15% of rules change between a gain or loss at 2 SE and neither, none from one side to the other.
+  Rule 1's Default sell of WRs 26-29 priced 101+ falls under the bar (+1.1 → +0.7, 1QB) and so do the rebuilding sells of RBs and
+  WRs 26-29 priced 101+; rule 1 also rests on value, which the drafts don't touch (v1 / v3 count only the starting pool).
+- **What holds over 1-3, 1-4 and 1-5 with drafts** (gain at 2 SE in all cohorts but one, in each window):
+  - Buy top-100 rookie WRs, every team type, both formats: +6.6 / +13.4 / +23.1 title points for Default, 1QB (+6.7 / +11.4 /
+    +25.0 superflex); a loss of 1-2 points in season 1. Rule 4.
+  - Buy top-100 TEs 30+, Contending and Default, both formats (and Rebuilding in superflex). Rule 4.
+  - Contending, 1QB: sell top-100 QBs 30+ now. Default, 1QB: sell top-100 rookie TEs now. Superflex: sell WRs 26-29 priced 101+
+    now (Contending, Default), and Contending selling top-100 TEs 25- after the season. Rebuilding, 1QB: sell WRs 25- priced 101+ now.
+- **What only longer windows add, with drafts:** cheap (101+) rookie WRs and TEs and cheap QBs 25-29 turn into gains by seasons
+  1-4 or 1-5 for Contending and Default; selling top-100 WRs 30+ now gains for Default; selling rookies and QBs 25- after the season
+  turns into a loss. Buying veterans (RBs 26+, WRs 26+, QBs 30+) priced 101+ turns into a loss.
+- The live rules stay on seasons 1-3 (season 1 for Contending): no call there flips, and the longer windows point the same way as
+  rules 1, 2 and 4. Limits: no pick trading or roster cuts in the sim, every team drafts the board instead of for need, and the
+  1-5 window is three cohorts.
 
 ## Caveats
 
