@@ -1714,6 +1714,39 @@ his FP rank, or at the market's rank that day (KTC, 2020 on). 1QB / superflex:
   their price by May. The site: Stash for rookies and RBs 25-, Sell in the offseason for everyone else out for the season.
 - Limits: 45-82 player-seasons, 2-6 cohorts; the superflex 2019 preseason list is thin, so its position ranks that year are rough.
 
+## 40. A startup drafted for seasons 2-4 (`analysis/startup_window.py`)
+
+FP May rows 2018-21, ranks 1-300. Factor = the multiplier on FP rank that prices a group fairly on the target (under 1: take him
+earlier than FP ranks him); range over cohorts left out is in the script's output. Season 1 holds 30% / 29% of the pool's four-season
+VORP, seasons 2-4 the other 70%. 1QB / superflex:
+
+| Group | season 1 | seasons 2-4 | share of his 4-season VORP in season 1 |
+|---|---|---|---|
+| Default call: buy | 0.84 / 0.72 | 0.41 / 0.36 | 21% |
+| Default call: hold | 1.05 / 1.08 | 0.91 / 0.93 | 27% |
+| Default call: use, then sell | 0.63 / 0.72 | 1.63 / 1.58 | 43% |
+| Default call: sell | 1.06 / 0.95 | 1.35 / 1.24 | 37% |
+| rookie WR | 1.10 / 1.05 | 0.55 / 0.62 | 15% |
+| rookie QB | 1.21 / 1.69 | 0.55 / 0.66 | 9% |
+| rookie RB | 1.36 / 1.47 | 0.80 / 0.87 | 18% |
+| QB 25- | 0.67 / 0.80 | 0.64 / 0.65 | 30% |
+| WR 25- | 1.01 / 0.96 | 0.91 / 0.91 | 28% |
+| WR 26-27 | 0.88 / 0.90 | 1.05 / 1.13 | 33% |
+| WR 28-29 | 0.77 / 0.79 | 1.49 / 1.48 | 42% |
+| WR 30+ | 1.14 / 1.07 | 2.25 / 1.99 | 49% |
+| RB 25- (not rookie) | 1.24 / 1.32 | 1.27 / 1.37 | 30% |
+| RB 26-27 | 0.79 / 0.85 | 1.78 / 1.73 | 43% |
+| FP top 24, 25- | 1.83 / 1.22 | 0.97 / 0.98 | 26% |
+
+- **It is the Default board, pushed a little harder.** On seasons 2-4 the Default calls' factors are 0.41 / 0.91 / 1.63 / 1.35 (1QB),
+  against 0.47 / 0.91 / 1.54 / 1.28 on Default's own three-season measure (section 36): same order, same sizes within the noise.
+- **Where it leaves FP:** rookies up (WRs and QBs most), QBs 27 or under up, WRs 28+ and RBs 26-27 down, non-rookie RBs down at every
+  age. The top 24 is FP's order: young players there are fairly priced for seasons 2-4.
+- **What it gives up:** the players it passes on are the ones underpriced for season 1 (use-then-sell 0.63 / 0.72, WRs 28-29 0.77,
+  RBs 26-27 0.79), and season 1 is the largest single season. Section 13's startup sim found neither all-in nor punt beat drafting
+  near the list.
+- Four cohorts, groups chosen after seeing the rules: read the direction, halve the size.
+
 ## Caveats
 
 - **Position-level residuals depend on league format.** The QB results flip sign between FP (1QB) and MFL, whose keeper pool includes superflex leagues. Within-position groupings are more trustworthy.
