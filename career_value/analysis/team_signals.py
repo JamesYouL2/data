@@ -252,7 +252,8 @@ def summarize(df):
 def may_cohort(args):
     t, g, P, seed = args
     rng = np.random.default_rng(seed)
-    pos, pj, rk = g.position.to_numpy(), g.proj.to_numpy(), g.mkt_rank.to_numpy(float)
+    pos, pj, rk, age = g.position.to_numpy(), g.proj.to_numpy(), g.mkt_rank.to_numpy(float), g.age.to_numpy(float)
+    w = np.exp(-rk / DECAY)
     out = []
     for rep in range(REPS * 4):
         team = su.draft(g, "ADP", -1, np.random.default_rng(rng.integers(1 << 31)))
@@ -261,8 +262,13 @@ def may_cohort(args):
             m = team == i
             out.append((t, rep, i, su.lineup(pj[m], pos[m]), np.maximum(0, POOL - rk[m]).sum(), np.exp(-rk[m] / DECAY).sum(),
                         *[np.exp(-rk[m] / tau).sum() for tau in TAUS],
+                        np.sort(w[m])[-3:].sum() / w[m].sum(), w[m & (age <= 25)].sum() / w[m].sum(),
+                        *[w[m & (pos == q)].sum() / w[m].sum() for q in ("QB", "RB", "WR", "TE")],
                         *np.pad(p[:, i], (0, mm.H - P.shape[1]), constant_values=np.nan)))
     return out
+
+
+COMP = ["top3", "young", "QB", "RB", "WR", "TE"]
 
 
 def may(scan=False):
@@ -284,11 +290,13 @@ def may(scan=False):
     with Pool(JOBS) as pool:
         res = pool.map(may_cohort, jobs)
     pc = [f"p{k}" for k in range(1, mm.H + 1)]
-    z = pd.DataFrame([r for part in res for r in part], columns=["t", "rep", "team", "redraft", "value", "value_top"] + [f"tau{x}" for x in TAUS] + pc)
-    for c in ["redraft", "value", "value_top"] + [f"tau{x}" for x in TAUS]:
+    z = pd.DataFrame([r for part in res for r in part], columns=["t", "rep", "team", "redraft", "value", "value_top"] + [f"tau{x}" for x in TAUS] + COMP + pc)
+    for c in ["redraft", "value", "value_top"] + [f"tau{x}" for x in TAUS] + COMP:
         gb = z.groupby(["t", "rep"])[c]
         z[c] = (z[c] - gb.transform("mean")) / gb.transform("std")
     z["lgid"] = z.t * 1000 + z.rep
+    if scan == "splits":
+        return splits(z)
     if scan:
         z["s1"], z["s23"], z["s45"], z["s25"] = z.p1, z.p2 + z.p3, z.p4 + z.p5, z.p2 + z.p3 + z.p4 + z.p5
         rows = []
@@ -331,6 +339,42 @@ def may(scan=False):
     z["s23"], z["s45"] = (z.p2 + z.p3) * 100, (z.p4 + z.p5) * 100
     z["s1"] = z.p1 * 100
     print(z.pivot_table(index="rd3", columns="v3", values=["s1", "s23", "s45"], observed=True).round(1).to_string())
+
+
+def splits(z):
+    """Does what a roster's dynasty value is made of matter, at the same strength this season and the same total value? Shares of
+    the top-heavy value: in the best three players (top3), in players 25 or younger (young), and at each position. Title odds per
+    1 SD of the share, with redraft strength and total top-heavy value in the model; and by thirds of the share."""
+    z = z.copy()
+    wins = {"s1": ["p1"], "s23": ["p2", "p3"], "s45": ["p4", "p5"]}
+    for k, cs in wins.items():
+        z[k] = z[cs].sum(axis=1, skipna=False) * 100
+    rng = np.random.default_rng(11)
+    print(f"== {'Superflex' if SF else '1QB'}, May, rosters frozen: title odds (points) per 1 SD of each share of top-heavy value, strength this season and "
+          "total value held fixed [95% CI over leagues] cohorts with that sign; then mean title odds by thirds of the share "
+          "(bottom / middle / top). s1 = season 1, s23 = seasons 2-3, s45 = seasons 4-5")
+    print("correlations:")
+    print(z[["redraft", "value_top"] + COMP].corr().round(2).to_string())
+    rows = []
+    for c in COMP:
+        if c == "QB" and not SF:
+            continue
+        r = {"share": c}
+        third = z.groupby(["t", "rep"])[c].rank(method="first").pipe(lambda x: pd.cut(x, [0, 4, 8, 12], labels=["b", "m", "t"]))
+        for y in wins:
+            q = z.dropna(subset=[y])
+
+            def fit(q):
+                X = np.column_stack([np.ones(len(q)), q.redraft, q.value_top, q[c]])
+                return np.linalg.lstsq(X, q[y].to_numpy(), rcond=None)[0][3]
+            b, parts, ids = fit(q), dict(tuple(q.groupby("lgid"))), q.lgid.unique()
+            bs = [fit(pd.concat([parts[j] for j in rng.choice(ids, len(ids))])) for _ in range(200)]
+            lo, hi = np.percentile(bs, [2.5, 97.5])
+            by = np.array([fit(g) for _, g in q.groupby("t")])
+            r[y] = f"{b:+5.1f} [{lo:+.1f}, {hi:+.1f}] {int((np.sign(by) == np.sign(b)).sum())}/{len(by)}"
+            r[y + " thirds"] = " / ".join(f"{v:.1f}" for v in q.groupby(third[q.index], observed=True)[y].mean())
+        rows.append(r)
+    print(pd.DataFrame(rows).to_string(index=False))
 
 
 def decay():
@@ -449,6 +493,8 @@ if __name__ == "__main__":
         modes()
     elif sys.argv[1:] == ["decay"]:
         decay()
+    elif sys.argv[1:] == ["splits"]:
+        may(scan="splits")
     elif len(sys.argv) > 1:
         summarize(pd.read_csv(out_dir(SF) / "team_signals.csv.gz"))
     else:

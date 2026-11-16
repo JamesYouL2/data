@@ -50,7 +50,7 @@ Follow-up analyses for sections 3b and 7–12 are in `analysis/`. Run them from 
 | `rb_long.py` | 20 (also `LEAGUE=sf`) |
 | `startup.py` | 21 (also `LEAGUE=sf`; writes `outputs/startup_sim.csv`) |
 | `startup_fp.py` | 22 (also `LEAGUE=sf`; writes `outputs/startup_fp_sim.csv`) |
-| `team_signals.py` | 23 (also `LEAGUE=sf`; writes `outputs/team_signals.csv.gz`; `may`, `decay` and `modes` arguments print only) |
+| `team_signals.py` | 23 (also `LEAGUE=sf`; writes `outputs/team_signals.csv.gz`; `may`, `decay`, `splits` and `modes` arguments print only) |
 
 `common.py` holds shared loaders. Sections 13 and 16 also run for superflex if `outputs/sf/` exists.
 
@@ -1060,6 +1060,21 @@ Experiments, not used by the site. Three runs in the league simulation of sectio
 - **Value adds most for strong teams:** in the top third by strength, bottom-third to top-third value took title odds over seasons 2–3 from about 17 to 27.
 - Frozen rosters understate value, which can't be traded or turned into rookies here. Seasons 4 and 5 have 4 and 3 cohorts.
 - **The decay of 60 is fitted to titles** (`decay`). Value's correlation with title odds over seasons 2–5 peaks at a decay of 45–60 in 1QB (0.26, against 0.15 for the rank sum) and 60–90 in superflex (0.25–0.26, against 0.17), and is flat across that range. Trade markets are less top-heavy: an exponential fitted to May values gives a decay of 73–99 for FantasyCalc and 106–196 for KTC, rising each year.
+
+**What the value is made of** (`splits`). Shares of a roster's top-heavy value, per 1 SD, with strength this season and total top-heavy value held fixed (1QB / superflex):
+
+| Share of value in | Season 1 | Seasons 2–3 | Seasons 4–5 |
+|---|---|---|---|
+| Players 25 or younger | −0.1 / −0.1 | +1.7 / +1.1 | +4.9 / +4.4 |
+| The best three players | −0.8 / −0.5 | −1.2 / −0.8 | −1.3 / −1.3 |
+| RBs | +0.2 / +0.5 | −1.1 / −0.1 | −0.6 / −0.2 |
+| WRs | +0.2 / −0.1 | +1.7 / +0.7 | +0.5 / +0.3 |
+| TEs | −0.3 / 0.0 | −1.2 / +0.1 | +0.4 / +0.6 |
+| QBs (superflex) | −0.2 | −0.4 | −0.1 |
+
+- **Age is the one that matters.** Young value does nothing in season 1 and is the largest effect in the run by seasons 4–5 (3 of 3 cohorts, both formats; thirds of the share: 12 / 18 / 21 title points in 1QB, 13 / 16 / 22 in superflex).
+- **Concentration adds nothing on top of top-heavy value**, and leans negative: at the same total, the roster with more of it in three players did slightly worse (clear of zero only in season 1, and in seasons 2–3 in 1QB). The measure already credits stars; this doesn't test a 2-for-1 at market prices (section 16).
+- **Position is small.** In 1QB, WR-heavy value gained and RB- or TE-heavy value lost about 1 to 2 points over seasons 2–3 (4 of 5 cohorts each); in superflex nothing is clear, and nothing is by seasons 4–5.
 
 **Does a top-heavy measure change the modes' value results?** (`modes`) The trades of section 6a's modes, value against no trades as a % of the roster, 3 years on (4 cohorts):
 
