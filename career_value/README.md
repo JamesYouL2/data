@@ -52,6 +52,7 @@ Follow-up analyses for sections 3b and 7–12 are in `analysis/`. Run them from 
 | `startup_fp.py` | 22 (also `LEAGUE=sf`; writes `outputs/startup_fp_sim.csv`) |
 | `team_signals.py` | 23 (also `LEAGUE=sf`; writes `outputs/team_signals.csv.gz`; `may`, `decay`, `splits` and `modes` arguments print only) |
 | `rank_gaps.py` | 24 (also `LEAGUE=sf`; `REDRAFT=fp` for FP redraft ECR; prints only) |
+| `redraft_age.py` | 25 (also `LEAGUE=sf`; prints only) |
 
 `common.py` holds shared loaders. Sections 13 and 16 also run for superflex if `outputs/sf/` exists.
 
@@ -1135,6 +1136,24 @@ Redraft ranks are late August and those prices mostly May, so a second run price
 - **Means sit well above medians** (a few hits carry each cell): in the best cell 50% beat their price, against 33–38% for a level player.
 
 Caveats: the "down" cells at May prices include players hurt over the summer, which is why the same-date run matters; the same-date run has 4–6 cohorts and prices on FP only; cells under 15 player-seasons are left out.
+
+## 25. Experiment: does redraft rank plus age beat a dynasty rank? (`analysis/redraft_age.py`)
+
+Not used by the site. A model of h-year VORP on the summer redraft rank, age, position and rookie or not (gradient boosting, trained in real time on cohorts from 2012), against each dynasty market's own rank over its top 200. The fair test is FP dynasty ECR against FP redraft ECR from the same week in late August (cohorts 2019–24; superflex 2020–24). Spearman with h-year VORP, mean over cohorts, 1QB / superflex:
+
+| Years | Dynasty rank | Redraft rank alone | Redraft + age model | 25% model, 75% dynasty |
+|---|---|---|---|---|
+| 1 | 0.514 / 0.544 | 0.554 / 0.592 | 0.515 / 0.534 | 0.527 / 0.561 |
+| 2 | 0.574 / 0.595 | 0.569 / 0.605 | 0.508 / 0.538 | 0.571 / 0.601 |
+| 3 | 0.601 / 0.604 | 0.566 / 0.582 | 0.519 / 0.537 | 0.596 / 0.606 |
+| 5 (2 / 1 cohorts) | 0.608 / 0.613 | 0.543 / 0.573 | 0.520 / 0.566 | 0.596 / 0.622 |
+
+- **No. The dynasty rank is the better ranking from year 2 on**, and redraft plus age beat it in no cohort at 2, 3 or 5 years (same date, both formats). The May markets (FP, KTC, FantasyCalc) give the same order, even with the redraft rank three months newer.
+- **The redraft rank alone wins year 1**, in every cohort (6/6 and 5/5), which section 2a already says: for next season, use redraft.
+- **Adding age made the redraft rank worse, not better.** The model trails the raw redraft rank at every horizon, also among veterans on the redraft list. One specification; a better age adjustment may exist, but the dynasty rank is already that adjustment and more (it also ranks the rookies and stashes a redraft list leaves off).
+- **A blend adds about 0.01–0.02 in year 1 and nothing after.** The site's in-season price already tilts the dynasty rank toward the rest-of-season rank by a small power (0.1).
+- **For the top of the list the redraft rank helps a little longer.** The top 50 by each ranking captured, of the best possible top 50's VORP: 69% / 70% by dynasty rank and 71% / 74% by redraft rank at 1 year, 75% / 76% and 76% / 78% at 2, and 78% / 79% and 76% / 78% at 3.
+- **This fits section 24.** A redraft rank that disagrees with the dynasty rank says which way a player's return will miss; it doesn't make redraft the better ranking overall.
 
 ## Caveats
 
