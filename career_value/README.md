@@ -1711,7 +1711,7 @@ his FP rank, or at the market's rank that day (KTC, 2020 on). 1QB / superflex:
   seasons), stash RBs 25- and sell the rest +32% / +36%, stash everyone 25- and sell 26+ only +6% / +7% (young WRs keep 35 / 37 a
   player against 59-79 sold; young QBs 27 / 66 against 111 / 195). RBs 25- are level kept or sold (135 / 183 against 140 / 181); RBs
   26+ lose a third of their price by May and are worth almost nothing either way. Players hurt around week 12 lose about a fifth of
-  their price by May. The site: Stash for rookies and RBs 25-, Sell in the offseason for everyone else out for the season.
+  their price by May. The site: Stash for RBs 25-, Sell in the offseason for everyone else out for the season.
 - Limits: 45-82 player-seasons, 2-6 cohorts; the superflex 2019 preseason list is thin, so its position ranks that year are rough.
 
 ## 40. A startup drafted for seasons 2-4 (`analysis/startup_window.py`)

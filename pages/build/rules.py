@@ -338,16 +338,15 @@ def situational(x, f, call, ctx=None):
         # One you own (career_value/analysis/injured_buy.py own(), 2021-24, 1QB / superflex): the trade market holds an injured
         # player's price until May (1.03 / 1.02 of it, while a healthy player's slips to 0.87), then he returns 0.76 / 0.79 of it
         # over the next season. Selling everyone in the offseason was worth +32% / +34% over keeping them; RBs 25 or under (keep
-        # 135 / 183 a player, sell 140 / 181) and rookies are the ones worth keeping. Keeping everyone 25 or under gave most of it
+        # 135 / 183 a player, sell 140 / 181) are the ones worth keeping. Keeping everyone 25 or under gave most of it
         # back (+6% / +7%): young WRs and QBs out for the season were sells. No buy low either: players out for the season
         # returned 0.63 / 0.53 of their FP price to a buyer, and the ones the market had marked down 0.22 / 0.45.
-        rookie = bool(ctx) and x.dy == ctx["ROOKIE"]
-        keep = rookie or (x.position == "RB" and x.age < 26)
+        keep = x.position == "RB" and x.age < 26
 
         def now(act):
             if kind(act) in ("hold", "buy") and keep:
-                return STASH, (f"{what}: no help this season. A {'rookie' if rookie else 'young RB'} out for the year was worth "
-                               f"keeping: stash him if you have the IR slot ({where}).")
+                return STASH, (f"{what}: no help this season. An RB at 25 or under out for the year was worth as much kept as sold: "
+                               f"stash him if you have the IR slot ({where}).")
             if kind(act) in ("hold", "buy", "sell", "use"):
                 return SELLOFF, (f"{what}. The market holds an injured player's price until the spring, then he returned about three "
                                  f"quarters of it the next season: sell in the offseason, before he has to prove it ({where}).")
