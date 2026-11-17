@@ -1807,6 +1807,55 @@ against the live calls:
   a year on, so on the site's own test it would stay (superflex fails). The site dropped it anyway: one rule fewer, and 5 title
   points over three seasons outweigh a value result that flips sign with the horizon. Rookie TEs are now a Hold for every team.
 
+## 43. Which free agents to add (`analysis/free_agents.py`)
+
+The site listed unrostered players with a buy, hold or lottery call priced 300 or better, or producing. Past 200, rule 5 sells every
+non-rookie, non-QB, so the list was backup QBs and injured rookies and hid startable veterans. Test: the in-season panel at weeks 4 /
+8 / 12, 2019-25. A league rosters about L players (L = 200 / 250 / 300); everyone priced past L or off the list is a free agent, and
+the player you'd drop for him is one priced L-49 to L that day. Each free agent is scored against that drop tier on rest-of-season
+VORP (ros), plus next season and value in May (hold1), and over three seasons (hold3); ± 2 SE by player-cluster bootstrap, * past
+it. Snapshots with fewer than 250 ranked are dropped (superflex 2019 week 4). 1QB / superflex.
+
+**Plays now** (healthy free agents by FP rest-of-season position rank over the starter line: QB 12 / 24, RB 24, WR 30, TE 12), ros:
+
+| Band | L 200 | L 250 | L 300 | weeks inside the starter line |
+|---|---|---|---|---|
+| within 2x | +3.5* / -0.2 | +4.7* / +0.7 | +6.7 / +1.2 | |
+| 1.5-2x | +3.4* (6/7 seasons) / +0.0 | +3.1 / +0.2 | +3.1 / +1.1 | 17-23% |
+| 2-3x | **-1.4\* / -2.3\*** | -0.7* / -0.2 | +0.2 / +0.3 | 11-13% |
+| RB 1.5-2x, L 200 | +4.6 (6/7) / +3.6 | | | |
+| WR 1.5-2x, L 200 | +7.9 (5/7) / +4.3 | | | |
+| QB 1.5-2x, L 200 | -1.2 / **-2.3\*** (superflex QB 1-1.5x -3.1*) | | | |
+
+- **The line is 2x for RB, WR and TE.** Out to 2x free agents beat the drop for rest of season; past it they lose at a 200 line and
+  are level deeper down. The bands inside 1.5x hold 5-15 players a cell; FP's dynasty list prices almost every startable player in
+  its top 250.
+- **QBs past the starter line never beat the drop.** VORP gives a bye-week fill-in no credit.
+- **Producing (points-per-game rank inside the starter line) adds nothing** past the ROS rank: producing with ROS past 1.5x, +3.6 /
+  +0.4 / +3.1 at L 200, none at 2 SE.
+- On next-season and three-season value these free agents trail at L 200 (the dropped player priced 151-200 has value of his own) and are level or ahead at 250-300.
+
+**Dynasty value** (every free agent, hold1): L 200 -16.9* / all trail at 2 SE; L 250 -5.2*; L 300 -2.1*. At L 300 by group, hold1
+(hold3 for 1QB):
+
+| Free agent | 1QB | superflex |
+|---|---|---|
+| healthy rookie | +1.5 | +0.1 |
+| rookie priced 301-350 / 351-400 / 401+ | +0.1 / -0.5 / **-4.8\*** | -0.6 / -1.0 / **-5.0\*** |
+| injured rookie | **-4.9\*** | **-5.3\*** |
+| QB under 33 | +2.0 (+5.3) | +2.7 |
+| QB under 33 priced 301-350 / 351-400 / 401+ | +1.4 / +2.9 / -1.1 | -2.5* / +3.9 / -3.6* |
+| QB 33+ | **-2.7\*** | -2.8 |
+| RB/WR/TE 25- (not rookie) | **-3.2\*** | **-3.5\*** |
+| RB/WR/TE 26+ | **-2.5\*** | **-3.1\*** |
+
+- **No fixed price cutoff works:** at a 200 or 250 line every group trails, rookies included (-4.0* / -7.3* at 250).
+- **Healthy rookies and QBs under 33 within 100 of the drop come out about even, not ahead.** Within 50 does no better than 51-100;
+  past 100 they trail. Injured players (the stashed rookies), QBs 33+ and every other RB, WR and TE trail at every price.
+- The site: two lists. Plays now, healthy free agents ranked within 2x the starter line (QBs inside it), any call. Dynasty value,
+  healthy rookies and QBs under 33 priced up to 100 past the team's lowest-priced rostered player. Limits: "rostered" is the top L
+  by FP price, not real rosters; the superflex signal is weaker throughout; the bands were chosen after a first look.
+
 ## Caveats
 
 - **Position-level residuals depend on league format.** The QB results flip sign between FP (1QB) and MFL, whose keeper pool includes superflex leagues. Within-position groupings are more trustworthy.

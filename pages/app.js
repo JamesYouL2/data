@@ -276,17 +276,28 @@ function render() {
   nowRows.sort((a, b) => b.k - a.k);
   $("now").innerHTML = D.meta.market ? table(nowRows.slice(0, 15), { owner: mode !== "r" }) : `<p class="hint">No trade-market data in this build.</p>`;
 
-  // free agents
-  const fa = [];
+  // free agents, scored against the player you'd drop for them (career_value/analysis/free_agents.py, README section 43).
+  // Plays now: healthy RB/WR/TE ranked within 2x the starter line rest of season beat the drop at a 200-300 roster line, and past
+  // 2x they didn't; QBs past the starter line never did. Points per game added nothing beyond the ROS rank.
+  // Dynasty value: only healthy rookies and QBs under 33 came out about even with the drop, priced up to 100 past it;
+  // injured players, QBs 33+ and other RB/WR/TE trailed at every price.
+  const worst = Math.max(0, ...rosterPlayers(roster).map((sid) => D.players[sid] && price(D.players[sid], fmt)).filter((v) => v != null));
+  const faNow = [], faDyn = [];
   for (const sid of Object.keys(D.players)) {
     if (owner[sid]) continue;
-    const p = D.players[sid], c = call(sid, fmt, mode), k = kind(c.act);
-    const producing = p.prk && p.prk <= START[fmt][p.p];
-    const pr = price(p, fmt);
-    if (["buy", "hold", "lotto"].includes(k) && ((pr != null && pr <= 300) || producing)) fa.push({ sid, c });
+    const p = D.players[sid];
+    if (!healthy(p)) continue;
+    const line = START[fmt][p.p], pr = price(p, fmt);
+    if (p.ros && line && p.ros[1] <= (p.p === "QB" ? 1 : 2) * line) faNow.push({ sid, c: call(sid, fmt, mode), k: p.ros[1] / line });
+    if (pr != null && worst && pr <= worst + 100 && (p.dy === D.meta.rookie || (p.p === "QB" && p.a != null && p.a < 33)))
+      faDyn.push({ sid, c: call(sid, fmt, mode) });
   }
-  fa.sort(byPrice);
-  $("fa").innerHTML = table(fa.slice(0, 40)) + (fa.length > 40 ? `<p class="hint">Showing the 40 highest-priced of ${fa.length}.</p>` : "");
+  faNow.sort((a, b) => a.k - b.k);
+  faDyn.sort(byPrice);
+  $("faNow").innerHTML = D.meta.ros ? table(faNow.slice(0, 25)) : `<p class="hint">No rest-of-season ranks yet (preseason).</p>`;
+  $("faDynHint").textContent = `Healthy rookies and QBs under 33 priced up to ${worst ? `#${worst + 100}, 100 past your lowest-priced player (#${worst})` : "100 past your lowest-priced player"}. ` +
+    "Backtested, they were about as good a bet as the player you'd drop, not better; other free agents trailed at every price.";
+  $("faDyn").innerHTML = table(faDyn.slice(0, 25));
   $("out").hidden = false;
 }
 
