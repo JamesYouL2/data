@@ -1804,7 +1804,8 @@ against the live calls:
   (after the season) or a title point this season (now), and costs a contender value either way.
 - **The rookie TE buy is the one candidate.** Dropping it gains rebuilding teams about 5 title points over seasons 1-3 in every
   cohort but one, and is mixed on value: a loss a year on (-12 / -49), a gain three years on (+59 / +8). Rebuilding is judged on value
-  a year on, so on the site's own test it stays (superflex fails).
+  a year on, so on the site's own test it would stay (superflex fails). The site dropped it anyway: one rule fewer, and 5 title
+  points over three seasons outweigh a value result that flips sign with the horizon. Rookie TEs are now a Hold for every team.
 
 ## Caveats
 

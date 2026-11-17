@@ -20,7 +20,7 @@ game at or inside the starter line: QB12 (QB24 in superflex), RB24, WR30, TE12; 
    (Rebuilding sells now); now for RBs 28-29 and WRs 30+, whose price doesn't; now for RBs 30+ and TEs 29+, except that
    Contending holds them.
 3. **A top-100 RB at 26-29 who isn't producing:** Contending holds, Default sells after the season, Rebuilding sells now.
-4. **Buy** top-100 rookie WRs (Default, Rebuilding), rookie TEs (Rebuilding) and top-100 TEs 30 or older (Contending, Default).
+4. **Buy** top-100 rookie WRs (Default, Rebuilding) and top-100 TEs 30 or older (Contending, Default).
 5. **Sell anyone priced outside the top 200 who isn't a rookie or a QB.** Past 300 he is waiver level: cut.
 6. **Sell RBs 25 or under who aren't producing.** Contending and Default hold the late-round ones (NFL round 4 or later, or undrafted) priced 101-200: holding them added title odds over three seasons in both formats.
 7. **QBs:** buy at 26-29 ranked QB25-32, the fringe starters (by QB rank, so the same players in both formats); sell at 33 or older.

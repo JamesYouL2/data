@@ -92,7 +92,9 @@ def f0(x):
 #      (Rebuilding: now), whose price lasts a year; now for RBs 28-29 and WRs 30+, whose price doesn't; now for RBs 30+ and TEs 29+,
 #      except that Contending holds them: selling cost title odds at any date.
 #   3  A top-100 RB at 26-29 who isn't producing: Contending holds, Default sells after the season, Rebuilding sells now.
-#   4  Buy top-100 rookie WRs (Default, Rebuilding), rookie TEs (Rebuilding) and top-100 TEs 30 or older (Contending, Default).
+#   4  Buy top-100 rookie WRs (Default, Rebuilding) and top-100 TEs 30 or older (Contending, Default). Rookie TEs were a Rebuilding
+#      buy until dropped: leaving them a Hold gained rebuilding teams about 5 title points over three seasons in both formats, and
+#      value three years on, at a cost in value a year on (-12 / -49; career_value README section 42).
 #   5  Sell anyone priced outside the top 200 who isn't a rookie or a QB. Past 300 he is waiver level: cut.
 #   6  Sell RBs 25 or under who aren't producing. Contending and Default hold the late-round ones (NFL round 4 or later, or undrafted)
 #      priced 101-200: holding them added title odds over three seasons in both formats (ruleset_sim.py GAP, EIGHT: +3.6 / +1.5
@@ -148,8 +150,6 @@ def classify(x, f, ctx, split=True):
             if pos == "WR" and top and m != "con":
                 return BUY, ("Rule 4: top-100 rookie WRs gained both title odds over three seasons and dynasty value. They cost "
                              "about a title point in their first season.")
-            if pos == "TE" and m == "reb":
-                return BUY, "Rule 4: rookie TEs gained dynasty value for rebuilding teams. They don't help this season."
             return HOLD, "A rookie: no rule says to move him."
         if pos == "TE" and a >= 30 and top and m != "reb":
             return BUY, ("Rule 4: a top-100 TE at 30 or older added title odds over the next two seasons in every cohort, with no "
